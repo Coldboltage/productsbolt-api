@@ -1,0 +1,207 @@
+```json
+[
+  {
+    "name": "Chaos Cards",
+    "protocol": "https://",
+    "website": "www.chaoscards.co.uk/",
+    "sitemap": "https://www.chaoscards.co.uk/sitemap.xml",
+    "category": "prod"
+  },
+  {
+    "name": "Tabletop Dominion",
+    "protocol": "https://",
+    "website": "tabletopdominion.com/",
+    "sitemap": "https://tabletopdominion.com/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Nostalgia TCG",
+    "protocol": "https://",
+    "website": "nostalgiatcg.com/",
+    "sitemap": "https://nostalgiatcg.com/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Trident Cards",
+    "protocol": "https://",
+    "website": "tridentcards.co.uk/",
+    "sitemap": "https://tridentcards.co.uk/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Play TCG",
+    "protocol": "https://",
+    "website": "playtcg.uk/",
+    "sitemap": "https://playtcg.uk/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Mighty Lancer Games",
+    "protocol": "https://",
+    "website": "www.mightylancergames.co.uk/",
+    "sitemap": "https://www.mightylancergames.co.uk/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Double Sleeved",
+    "protocol": "https://",
+    "website": "www.doublesleeved.co.uk/",
+    "sitemap": "https://www.doublesleeved.co.uk/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "The Card Vault",
+    "protocol": "https://",
+    "website": "thecardvault.co.uk/",
+    "sitemap": "https://thecardvault.co.uk/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Poke Ninja Japan",
+    "protocol": "https://",
+    "website": "pokeninjapan.store/",
+    "sitemap": "https://pokeninjapan.store/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Forbidden Planet",
+    "protocol": "https://",
+    "website": "forbiddenplanet.com/",
+    "sitemap": "https://forbiddenplanet.com/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "HMV",
+    "protocol": "https://",
+    "website": "hmv.com/",
+    "sitemap": "https://hmv.com/sitemap.xml",
+    "category": "store"
+  },
+  {
+    "name": "Board Game UK",
+    "protocol": "https://",
+    "website": "www.board-game.co.uk/",
+    "sitemap": "https://www.board-game.co.uk/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Gabe's Cave",
+    "protocol": "https://",
+    "website": "gabescave.com/",
+    "sitemap": "https://gabescave.com/sitemap.xml",
+    "category": "en-gb/products"
+  },
+  {
+    "name": "Guild of Games",
+    "protocol": "https://",
+    "website": "www.guildofgames.co.uk/",
+    "sitemap": "https://www.guildofgames.co.uk/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Highlander Games",
+    "protocol": "https://",
+    "website": "highlandergames.co.uk/",
+    "sitemap": "https://highlandergames.co.uk/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Crazy Thumbs",
+    "protocol": "https://",
+    "website": "crazythumbs.co.uk/",
+    "sitemap": "https://crazythumbs.co.uk/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Jump Ichiban",
+    "protocol": "https://",
+    "website": "jumpichiban.com/",
+    "sitemap": "https://jumpichiban.com/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Transcendent Cards",
+    "protocol": "https://",
+    "website": "transcendentcards.co.uk/",
+    "sitemap": "https://transcendentcards.co.uk/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "The Feisty Goblin",
+    "protocol": "https://",
+    "website": "thefeistygoblin.com/",
+    "sitemap": "https://thefeistygoblin.com/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "AFK Gaming",
+    "protocol": "https://",
+    "website": "afkgaming.co.uk/",
+    "sitemap": "https://afkgaming.co.uk/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Eclipse Cards",
+    "protocol": "https://",
+    "website": "eclipsecards.com/",
+    "sitemap": "https://eclipsecards.com/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Japan 2 UK",
+    "protocol": "https://",
+    "website": "www.japan2uk.com/",
+    "sitemap": "https://www.japan2uk.com/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "The Gamers Lodge",
+    "protocol": "https://",
+    "website": "thegamerslodge.com/",
+    "sitemap": "https://thegamerslodge.com/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Protech Games",
+    "protocol": "https://",
+    "website": "protechgames.co.uk/",
+    "sitemap": "https://protechgames.co.uk/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Sports Direct",
+    "protocol": "https://",
+    "website": "www.sportsdirect.com/",
+    "sitemap": "https://www.sportsdirect.com/sitemap.xml",
+    "category": ""
+  },
+  {
+    "name": "The TCG Shop",
+    "protocol": "https://",
+    "website": "www.thetcgshop.co.uk/",
+    "sitemap": "https://www.thetcgshop.co.uk/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Game Summon",
+    "protocol": "https://",
+    "website": "gamesummon.co.uk/",
+    "sitemap": "https://gamesummon.co.uk/sitemap.xml",
+    "category": ""
+  },
+  {
+    "name": "Gathering Games",
+    "protocol": "https://",
+    "website": "gatheringgames.co.uk/",
+    "sitemap": "https://gatheringgames.co.uk/sitemap.xml",
+    "category": "products"
+  },
+  {
+    "name": "Famous Grail",
+    "protocol": "https://",
+    "website": "famousgrail.com/",
+    "sitemap": "https://famousgrail.com/sitemap.xml",
+    "category": "collections"
+  }
+]
+```
