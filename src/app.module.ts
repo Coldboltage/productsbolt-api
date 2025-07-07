@@ -12,6 +12,7 @@ import { ShopProductModule } from './shop-product/shop-product.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BlackListUrlModule } from './blacklist-url/blacklist-url.module';
 import { RabbitmqModule } from './rabbitmq/rabbitmq.module';
+import { EbayModule } from './ebay/ebay.module';
 import 'dotenv/config';
 
 @Module({
@@ -36,6 +37,7 @@ import 'dotenv/config';
     ShopProductModule,
     BlackListUrlModule,
     RabbitmqModule,
+    EbayModule,
   ],
   controllers: [AppController],
   providers: [AppService],
