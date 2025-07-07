@@ -25,6 +25,11 @@ export class ShopController {
     return this.shopService.updateSitemap();
   }
 
+  @Post('/shopify-check')
+  async shopifyCheck() {
+    return this.shopService.checkShopsIfShopify();
+  }
+
   @Get('find-shop/:website')
   findShop(@Param('website') website: string) {
     return this.shopService.findShop(website);

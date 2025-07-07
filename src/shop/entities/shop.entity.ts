@@ -7,6 +7,12 @@ import {
 } from 'typeorm';
 import { ShopProduct } from '../../shop-product/entities/shop-product.entity';
 
+export enum UniqueShopType {
+  TIKTOK = "TIKTOK",
+  EBAY = "EBAY",
+  AMAZON = "AMAZON"
+}
+
 @Entity()
 @Unique(['name', 'website'])
 export class Shop {
@@ -33,6 +39,12 @@ export class Shop {
 
   @Column({ default: true })
   active: boolean;
+
+  @Column({ default: false})
+  isShopifySite: boolean;
+
+  @Column({enum: UniqueShopType, nullable: true})
+  uniqueShopType: UniqueShopType
 
   @OneToMany(() => ShopProduct, (shopProduct) => shopProduct.shop)
   shopProducts: ShopProduct[];

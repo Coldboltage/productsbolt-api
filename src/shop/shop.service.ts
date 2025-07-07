@@ -67,7 +67,7 @@ export class ShopService implements OnApplicationBootstrap {
     });
   }
 
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  // @Cron(CronExpression.EVERY_30_MINUTES)
   async updateSitemap() {
     const allActiveShops = await this.findAll();
     // Start a background task and don’t await it
@@ -78,6 +78,15 @@ export class ShopService implements OnApplicationBootstrap {
         // await new Promise((res) => setTimeout(res, delay));
       }
     })();
+  }
+
+  checkShopsIfShopify = async () => {
+    const shopEntities = await this.findAll()
+    for (const shop of shopEntities) {
+      // Check if main site and it's content is shopify
+      // / true or false
+      this.miscClient.emit('shopyifyCheck', shop)
+    }
   }
 
   @OnEvent('product.created')
@@ -109,6 +118,7 @@ export class ShopService implements OnApplicationBootstrap {
         sitemapUrls: shop.sitemapUrls,
         productId: product.id,
         shopId: shop.id,
+        shopifySite: shop.isShopifySite, 
       };
       this.processClient.emit<CreateProcessDto>(
         'webpageDiscovery',
@@ -135,6 +145,7 @@ export class ShopService implements OnApplicationBootstrap {
       },
     });
   }
+
 
   async update(id: string, updateShopDto: UpdateShopDto) {
     const updatedEntity = await this.shopsRepository.update(

@@ -163,7 +163,8 @@ export class WebpageService {
     return response;
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
+
+  // @Cron(CronExpression.EVERY_HOUR)
   async updateAllPages() {
     const webPages = await this.findAll();
     console.log(webPages.length);

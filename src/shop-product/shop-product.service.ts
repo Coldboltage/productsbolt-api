@@ -4,7 +4,7 @@ import { UpdateShopProductDto } from './dto/update-shop-product.dto';
 import { OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ShopProduct } from './entities/shop-product.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { ShopService } from '../shop/shop.service';
 import { Product } from '../product/entities/product.entity';
 import { ClientProxy } from '@nestjs/microservices';
@@ -105,6 +105,7 @@ export class ShopProductService {
         sitemapUrls: shopProduct.shop.sitemapUrls,
         productId: shopProduct.productId,
         shopId: shopProduct.shopId,
+        shopifySite: shopProduct.shop.isShopifySite
       };
       this.processClient.emit<CreateProcessDto>(
         'webpageDiscovery',
@@ -146,6 +147,7 @@ export class ShopProductService {
         sitemapUrls: shopProduct.shop.sitemapUrls,
         productId: shopProduct.productId,
         shopId: shopProduct.shopId,
+        shopifySite: shopProduct.shop.isShopifySite
       };
       this.processClient.emit<CreateProcessDto>(
         'webpageDiscovery',
@@ -154,9 +156,50 @@ export class ShopProductService {
     }
   }
 
+  // async manualCheckAllShopsShopfiy() {
+  //   const shopProdutEntities = await this.findOneWebPageFromShop()
+  //   console.log(shopProdutEntities.length);
+
+  //   for (const shopProduct of shopProdutEntities) {
+  //     const createProcess: CreateProcessDto = {
+  //       sitemap: shopProduct.shop.sitemap,
+  //       url: shopProduct.shop.website,
+  //       category: shopProduct.shop.category,
+  //       name: shopProduct.product.name,
+  //       shopWebsite: shopProduct.shop.name,
+  //       type: shopProduct.product.type,
+  //       context: shopProduct.product.context,
+  //       crawlAmount: 30,
+  //       sitemapUrls: shopProduct.shop.sitemapUrls,
+  //       productId: shopProduct.productId,
+  //       shopId: shopProduct.shopId,
+  //     };
+  //     this.processClient.emit<CreateProcessDto>(
+  //       'ShopifyCheck',
+  //       createProcess,
+  //     );
+  //   }
+  // }
+
   create(createShopProductDto: CreateShopProductDto) {
     return 'This action adds a new shopProduct';
   }
+
+  // async findOneWebPageFromShop() {
+  //   const shopProdctEntities = await this.shopProductRepository.find({
+  //    where: {
+  //       webPages: { id: Not(IsNull()) }, // only ShopProducts with at least one webpage
+
+      
+  //    }
+  //   })
+  //   const filteredShopProductEntities = shopProdctEntities.filter(shopProduct => {
+  //     return shopProduct.webPages.find(webpage => {
+  //       return webpage.id
+  //    })
+  //   }) 
+  //   return filteredShopProductEntities
+  // }
 
   findAll() {
     return `This action returns all shopProduct`;

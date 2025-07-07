@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsNumber,
   IsString,
@@ -38,6 +39,9 @@ export class CreateProcessDto {
 
   @IsUUID()
   shopId: string;
+
+  @IsBoolean()
+  shopifySite: boolean
 
   @IsArray()
   @IsString({ each: true })
