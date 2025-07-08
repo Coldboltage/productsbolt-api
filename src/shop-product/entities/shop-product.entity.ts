@@ -1,9 +1,11 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
@@ -11,6 +13,7 @@ import { Shop } from '../../shop/entities/shop.entity';
 import { Product } from '../../product/entities/product.entity';
 import { Webpage } from '../../webpage/entities/webpage.entity';
 import { BlackListUrl } from '../../blacklist-url/entities/blacklist-url.entity';
+import { EbayProductDetail } from 'src/ebay/entities/ebay-product-detail.entity';
 
 @Entity()
 @Unique(['name', 'shopId', 'productId'])
@@ -43,4 +46,8 @@ export class ShopProduct {
 
   @OneToMany(() => Webpage, (webPages) => webPages.shopProduct)
   webPages: Webpage[];
+
+  @OneToOne(() => EbayProductDetail, (ebayProductDetail) => ebayProductDetail.shopProduct)
+  @JoinColumn()
+  ebayProductDetail: EbayProductDetail
 }

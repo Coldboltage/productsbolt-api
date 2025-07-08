@@ -8,12 +8,13 @@ import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Shop } from './entities/shop.entity';
+import { Shop, UniqueShopType } from './entities/shop.entity';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { Product } from '../product/entities/product.entity';
 import { ClientProxy } from '@nestjs/microservices';
 import { CreateProcessDto } from './dto/create-process.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
 
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
@@ -89,42 +90,31 @@ export class ShopService implements OnApplicationBootstrap {
     }
   }
 
-  @OnEvent('product.created')
-  async findShopsToUpdateProducts(product: Product) {
-    console.log(`Adding new product: ${product.name}`);
-    const shopsWithoutPage = await this.shopsRepository
-      .createQueryBuilder('shop')
-      .leftJoin(
-        'shop.shopProducts',
-        'shopProduct',
-        'shopProduct.productId = :productId',
-        { productId: product.id },
-      )
-      .leftJoin('shopProduct.webPages', 'webPage')
-      .where('webPage.id IS NULL')
-      .andWhere('shop.active = :active', { active: true })
-      .getMany();
-    console.log(shopsWithoutPage);
-    for (const shop of shopsWithoutPage) {
+  @OnEvent('shop-product.created')
+  async findShopsToUpdateProducts(shopProduct: ShopProduct) {
+    console.log(`Adding new product: ${shopProduct.product.name}`);
       const createProcess: CreateProcessDto = {
-        sitemap: shop.sitemap,
-        url: shop.website,
-        category: shop.category,
-        name: product.name,
-        shopWebsite: shop.name,
-        type: product.type,
-        context: product.context,
+        sitemap: shopProduct.shop.sitemap,
+        url: shopProduct.shop.website,
+        category: shopProduct.shop.category,
+        name: shopProduct.product.name,
+        shopProductId: shopProduct.id,
+        shopWebsite: shopProduct.shop.name,
+        type: shopProduct.product.type,
+        context: shopProduct.product.context,
         crawlAmount: 30,
-        sitemapUrls: shop.sitemapUrls,
-        productId: product.id,
-        shopId: shop.id,
-        shopifySite: shop.isShopifySite, 
+        sitemapUrls: shopProduct.shop.sitemapUrls,
+        productId: shopProduct.product.id,
+        shopId: shopProduct.shop.id,
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType
       };
+
       this.processClient.emit<CreateProcessDto>(
         'webpageDiscovery',
         createProcess,
       );
-    }
+    
   }
 
   async findAll() {

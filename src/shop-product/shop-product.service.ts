@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateShopProductDto } from './dto/create-shop-product.dto';
 import { UpdateShopProductDto } from './dto/update-shop-product.dto';
-import { OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ShopProduct } from './entities/shop-product.entity';
 import { IsNull, Not, Repository } from 'typeorm';
@@ -10,7 +10,7 @@ import { Product } from '../product/entities/product.entity';
 import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
 import { CreateProcessDto } from '../shop/dto/create-process.dto';
-import { Shop } from '../shop/entities/shop.entity';
+import { Shop, UniqueShopType } from '../shop/entities/shop.entity';
 
 @Injectable()
 export class ShopProductService {
@@ -20,6 +20,7 @@ export class ShopProductService {
     private shopProductRepository: Repository<ShopProduct>,
     private shopService: ShopService,
     private productService: ProductService,
+    private eventEmitter: EventEmitter2,
   ) { }
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
@@ -56,6 +57,11 @@ export class ShopProductService {
       });
     });
     const response = await Promise.all(shopProductsPromises);
+    for (const shopProduct of response) {
+      this.eventEmitter.emit('shop-product.created', {
+        shopProduct
+      })
+    }
     console.log(response);
   }
 
@@ -98,6 +104,7 @@ export class ShopProductService {
         url: shopProduct.shop.website,
         category: shopProduct.shop.category,
         name: shopProduct.product.name,
+        shopProductId: shopProduct.id,
         shopWebsite: shopProduct.shop.name,
         type: shopProduct.product.type,
         context: shopProduct.product.context,
@@ -105,8 +112,17 @@ export class ShopProductService {
         sitemapUrls: shopProduct.shop.sitemapUrls,
         productId: shopProduct.productId,
         shopId: shopProduct.shopId,
-        shopifySite: shopProduct.shop.isShopifySite
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType
       };
+
+      if (shopProduct.shop.uniqueShopType === UniqueShopType.EBAY && shopProduct.ebayProductDetail) {
+        createProcess.ebayProductDetail = {
+          ebayProductDetailId: shopProduct.ebayProductDetail.id,
+          productId: shopProduct.ebayProductDetail.productId,
+        }
+      }
+
       this.processClient.emit<CreateProcessDto>(
         'webpageDiscovery',
         createProcess,
@@ -140,6 +156,7 @@ export class ShopProductService {
         url: shopProduct.shop.website,
         category: shopProduct.shop.category,
         name: product.name,
+        shopProductId: shopProduct.id,
         shopWebsite: shopProduct.shop.name,
         type: product.type,
         context: product.context,
@@ -147,8 +164,17 @@ export class ShopProductService {
         sitemapUrls: shopProduct.shop.sitemapUrls,
         productId: shopProduct.productId,
         shopId: shopProduct.shopId,
-        shopifySite: shopProduct.shop.isShopifySite
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType,
       };
+
+      if (shopProduct.shop.uniqueShopType === UniqueShopType.EBAY && shopProduct.ebayProductDetail) {
+        createProcess.ebayProductDetail = {
+          ebayProductDetailId: shopProduct.ebayProductDetail.id,
+          productId: shopProduct.ebayProductDetail.productId,
+        }
+      }
+
       this.processClient.emit<CreateProcessDto>(
         'webpageDiscovery',
         createProcess,
