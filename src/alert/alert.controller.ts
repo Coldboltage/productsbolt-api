@@ -13,7 +13,7 @@ import { UpdateAlertDto } from './dto/update-alert.dto';
 
 @Controller('alert')
 export class AlertController {
-  constructor(private readonly alertService: AlertService) { }
+  constructor(private readonly alertService: AlertService) {}
 
   @Post()
   create(@Body() createAlertDto: CreateAlertDto) {

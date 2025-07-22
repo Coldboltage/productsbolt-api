@@ -13,4 +13,4 @@ import { ProductModule } from '../product/product.module';
   providers: [ShopProductService],
   exports: [ShopProductService],
 })
-export class ShopProductModule { }
+export class ShopProductModule {}

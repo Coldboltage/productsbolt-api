@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { EbayService } from './ebay.service';
 import { CreateEbayDto } from './dto/create-ebay.dto';
 import { UpdateEbayDto } from './dto/update-ebay.dto';

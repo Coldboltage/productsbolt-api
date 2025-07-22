@@ -16,7 +16,7 @@ export class AlertService {
     private userService: UserService,
     private productService: ProductService,
     private webPagesService: WebpageService,
-  ) { }
+  ) {}
   async create(createAlertDto: CreateAlertDto) {
     const userEntity = await this.userService.findOneByEmail(
       createAlertDto.email,
@@ -43,7 +43,7 @@ export class AlertService {
       alertEntity.id,
     );
     console.log(webPagesList);
-    return webPagesList
+    return webPagesList;
   }
 
   findAll() {

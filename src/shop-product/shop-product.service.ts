@@ -56,13 +56,13 @@ export class ShopProductService {
         productId: product.id,
       });
     });
-    const response = await Promise.all(shopProductsPromises);
-    for (const shopProduct of response) {
+    const shopProductResponses = await Promise.all(shopProductsPromises);
+    for (const shopProduct of shopProductResponses) {
       this.eventEmitter.emit('shop-product.created', {
-        shopProduct
-      })
+        shopProduct,
+      });
     }
-    console.log(response);
+    console.log(shopProductResponses);
   }
 
   @OnEvent('shop.created')
@@ -113,14 +113,17 @@ export class ShopProductService {
         productId: shopProduct.productId,
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
-        shopType: shopProduct.shop.uniqueShopType
+        shopType: shopProduct.shop.uniqueShopType,
       };
 
-      if (shopProduct.shop.uniqueShopType === UniqueShopType.EBAY && shopProduct.ebayProductDetail) {
+      if (
+        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+        shopProduct.ebayProductDetail
+      ) {
         createProcess.ebayProductDetail = {
           ebayProductDetailId: shopProduct.ebayProductDetail.id,
           productId: shopProduct.ebayProductDetail.productId,
-        }
+        };
       }
 
       this.processClient.emit<CreateProcessDto>(
@@ -168,11 +171,14 @@ export class ShopProductService {
         shopType: shopProduct.shop.uniqueShopType,
       };
 
-      if (shopProduct.shop.uniqueShopType === UniqueShopType.EBAY && shopProduct.ebayProductDetail) {
+      if (
+        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+        shopProduct.ebayProductDetail
+      ) {
         createProcess.ebayProductDetail = {
           ebayProductDetailId: shopProduct.ebayProductDetail.id,
           productId: shopProduct.ebayProductDetail.productId,
-        }
+        };
       }
 
       this.processClient.emit<CreateProcessDto>(
@@ -216,14 +222,13 @@ export class ShopProductService {
   //    where: {
   //       webPages: { id: Not(IsNull()) }, // only ShopProducts with at least one webpage
 
-      
   //    }
   //   })
   //   const filteredShopProductEntities = shopProdctEntities.filter(shopProduct => {
   //     return shopProduct.webPages.find(webpage => {
   //       return webpage.id
   //    })
-  //   }) 
+  //   })
   //   return filteredShopProductEntities
   // }
 

@@ -1,14 +1,14 @@
-import { ShopProduct } from "src/shop-product/entities/shop-product.entity";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class EbayProductDetail {
   @PrimaryGeneratedColumn('uuid')
-  id: string
+  id: string;
 
   @Column()
-  productId: string
+  productId: string;
 
-  @OneToOne(() => ShopProduct, (shopProduct)=> shopProduct.ebayProductDetail)
-  shopProduct: ShopProduct
+  @OneToOne(() => ShopProduct, (shopProduct) => shopProduct.ebayProductDetail)
+  shopProduct: ShopProduct;
 }

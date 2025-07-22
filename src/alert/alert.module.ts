@@ -17,4 +17,4 @@ import { WebpageModule } from '../webpage/webpage.module';
   controllers: [AlertController],
   providers: [AlertService],
 })
-export class AlertModule { }
+export class AlertModule {}

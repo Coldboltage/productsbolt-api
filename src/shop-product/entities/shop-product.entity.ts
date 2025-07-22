@@ -47,7 +47,10 @@ export class ShopProduct {
   @OneToMany(() => Webpage, (webPages) => webPages.shopProduct)
   webPages: Webpage[];
 
-  @OneToOne(() => EbayProductDetail, (ebayProductDetail) => ebayProductDetail.shopProduct)
+  @OneToOne(
+    () => EbayProductDetail,
+    (ebayProductDetail) => ebayProductDetail.shopProduct,
+  )
   @JoinColumn()
-  ebayProductDetail: EbayProductDetail
+  ebayProductDetail: EbayProductDetail;
 }

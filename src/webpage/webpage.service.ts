@@ -24,7 +24,7 @@ export class WebpageService {
     private readonly miscClient: ClientProxy,
     private shopProductService: ShopProductService,
     private productService: ProductService,
-  ) { }
+  ) {}
 
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
@@ -162,7 +162,6 @@ export class WebpageService {
     console.log(response[0].webPages.length);
     return response;
   }
-
 
   // @Cron(CronExpression.EVERY_HOUR)
   async updateAllPages() {

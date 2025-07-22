@@ -13,7 +13,7 @@ import { UpdateShopProductDto } from './dto/update-shop-product.dto';
 
 @Controller('shop-product')
 export class ShopProductController {
-  constructor(private readonly shopProductService: ShopProductService) { }
+  constructor(private readonly shopProductService: ShopProductService) {}
 
   @Post('manual-update-shops-all-products/')
   manualUpdateAllShopProducts() {

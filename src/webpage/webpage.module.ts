@@ -18,4 +18,4 @@ import { ProductModule } from '../product/product.module';
   providers: [WebpageService],
   exports: [WebpageService],
 })
-export class WebpageModule { }
+export class WebpageModule {}

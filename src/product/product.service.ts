@@ -11,7 +11,7 @@ export class ProductService {
   constructor(
     @InjectRepository(Product) private productsRepository: Repository<Product>,
     private eventEmitter: EventEmitter2,
-  ) { }
+  ) {}
   async create(createProductDto: CreateProductDto) {
     let entity: Product;
     try {

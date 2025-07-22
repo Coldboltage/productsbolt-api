@@ -13,7 +13,7 @@ import { UpdateShopDto } from './dto/update-shop.dto';
 
 @Controller('shop')
 export class ShopController {
-  constructor(private readonly shopService: ShopService) { }
+  constructor(private readonly shopService: ShopService) {}
 
   @Post()
   create(@Body() createShopDto: CreateShopDto) {

@@ -1,9 +1,9 @@
-import { IsString, IsUUID } from "class-validator";
+import { IsString, IsUUID } from 'class-validator';
 
 export class EbayProductDetailDto {
   @IsUUID()
-  ebayProductDetailId: string
+  ebayProductDetailId: string;
 
   @IsString()
-  productId: string
+  productId: string;
 }

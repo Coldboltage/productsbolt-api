@@ -14,7 +14,7 @@ export class BlackListUrlService {
     private blackListRepository: Repository<BlackListUrl>,
     private shopProductsService: ShopProductService,
     private webPageService: WebpageService,
-  ) { }
+  ) {}
   async create(createBlackListUrlDto: CreateBlackListUrlDto) {
     const webpageEntity = await this.webPageService.findOneByUrl(
       createBlackListUrlDto.url,
@@ -25,7 +25,7 @@ export class BlackListUrlService {
       shopProducts: [webpageEntity.shopProduct],
     });
 
-    console.log(webpageEntity)
+    console.log(webpageEntity);
 
     await this.shopProductsService.update(webpageEntity.shopProduct.id, {
       populated: false,
@@ -34,7 +34,7 @@ export class BlackListUrlService {
     const response = await this.webPageService.removeWebpage(
       createBlackListUrlDto.url,
     );
-    if (!response) throw new Error('page might not have been deleted')
+    if (!response) throw new Error('page might not have been deleted');
     return this.blackListRepository.save<BlackListUrl>(blackListEntity);
   }
 

@@ -25,7 +25,7 @@ export class ShopService implements OnApplicationBootstrap {
     @Inject('MISC_CLIENT')
     private readonly miscClient: ClientProxy,
     private eventEmitter: EventEmitter2,
-  ) { }
+  ) {}
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
     await this.processClient.connect();
@@ -107,14 +107,13 @@ export class ShopService implements OnApplicationBootstrap {
       productId: shopProduct.product.id,
       shopId: shopProduct.shop.id,
       shopifySite: shopProduct.shop.isShopifySite,
-      shopType: shopProduct.shop.uniqueShopType
+      shopType: shopProduct.shop.uniqueShopType,
     };
 
     this.processClient.emit<CreateProcessDto>(
       'webpageDiscovery',
       createProcess,
     );
-
   }
 
   async findAll() {

@@ -13,7 +13,7 @@ import { UpdateWebpageDto } from './dto/update-webpage.dto';
 
 @Controller('webpage')
 export class WebpageController {
-  constructor(private readonly webpageService: WebpageService) { }
+  constructor(private readonly webpageService: WebpageService) {}
 
   @Post()
   create(@Body() createWebpageDto: CreateWebpageDto) {

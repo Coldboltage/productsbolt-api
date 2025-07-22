@@ -28,7 +28,7 @@ export class CreateProcessDto {
   name: string;
 
   @IsUUID()
-  shopProductId: string
+  shopProductId: string;
 
   @IsString()
   shopWebsite: string;
@@ -49,10 +49,10 @@ export class CreateProcessDto {
   shopId: string;
 
   @IsBoolean()
-  shopifySite: boolean
+  shopifySite: boolean;
 
   @IsEnum(UniqueShopType)
-  shopType: UniqueShopType
+  shopType: UniqueShopType;
 
   @IsArray()
   @IsString({ each: true })
@@ -61,5 +61,5 @@ export class CreateProcessDto {
   @ValidateNested()
   @Type(() => EbayProductDetailDto)
   @IsOptional()
-  ebayProductDetail?: EbayProductDetailDto
+  ebayProductDetail?: EbayProductDetailDto;
 }
