@@ -81,13 +81,13 @@ export class ShopService implements OnApplicationBootstrap {
   }
 
   checkShopsIfShopify = async () => {
-    const shopEntities = await this.findAll()
+    const shopEntities = await this.findAll();
     for (const shop of shopEntities) {
       // Check if main site and it's content is shopify
       // / true or false
-      this.miscClient.emit('shopyifyCheck', shop)
+      this.miscClient.emit('shopyifyCheck', shop);
     }
-  }
+  };
 
   @OnEvent('product.created')
   async findShopsToUpdateProducts(product: Product) {
@@ -118,7 +118,7 @@ export class ShopService implements OnApplicationBootstrap {
         sitemapUrls: shop.sitemapUrls,
         productId: product.id,
         shopId: shop.id,
-        shopifySite: shop.isShopifySite, 
+        shopifySite: shop.isShopifySite,
       };
       this.processClient.emit<CreateProcessDto>(
         'webpageDiscovery',
@@ -145,7 +145,6 @@ export class ShopService implements OnApplicationBootstrap {
       },
     });
   }
-
 
   async update(id: string, updateShopDto: UpdateShopDto) {
     const updatedEntity = await this.shopsRepository.update(
