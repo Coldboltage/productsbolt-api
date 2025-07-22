@@ -82,39 +82,39 @@ export class ShopService implements OnApplicationBootstrap {
   }
 
   checkShopsIfShopify = async () => {
-    const shopEntities = await this.findAll()
+    const shopEntities = await this.findAll();
     for (const shop of shopEntities) {
       // Check if main site and it's content is shopify
       // / true or false
-      this.miscClient.emit('shopyifyCheck', shop)
+      this.miscClient.emit('shopyifyCheck', shop);
     }
-  }
+  };
 
   @OnEvent('shop-product.created')
   async findShopsToUpdateProducts(shopProduct: ShopProduct) {
     console.log(`Adding new product: ${shopProduct.product.name}`);
-      const createProcess: CreateProcessDto = {
-        sitemap: shopProduct.shop.sitemap,
-        url: shopProduct.shop.website,
-        category: shopProduct.shop.category,
-        name: shopProduct.product.name,
-        shopProductId: shopProduct.id,
-        shopWebsite: shopProduct.shop.name,
-        type: shopProduct.product.type,
-        context: shopProduct.product.context,
-        crawlAmount: 30,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
-        productId: shopProduct.product.id,
-        shopId: shopProduct.shop.id,
-        shopifySite: shopProduct.shop.isShopifySite,
-        shopType: shopProduct.shop.uniqueShopType
-      };
+    const createProcess: CreateProcessDto = {
+      sitemap: shopProduct.shop.sitemap,
+      url: shopProduct.shop.website,
+      category: shopProduct.shop.category,
+      name: shopProduct.product.name,
+      shopProductId: shopProduct.id,
+      shopWebsite: shopProduct.shop.name,
+      type: shopProduct.product.type,
+      context: shopProduct.product.context,
+      crawlAmount: 30,
+      sitemapUrls: shopProduct.shop.sitemapUrls,
+      productId: shopProduct.product.id,
+      shopId: shopProduct.shop.id,
+      shopifySite: shopProduct.shop.isShopifySite,
+      shopType: shopProduct.shop.uniqueShopType
+    };
 
-      this.processClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
-    
+    this.processClient.emit<CreateProcessDto>(
+      'webpageDiscovery',
+      createProcess,
+    );
+
   }
 
   async findAll() {
@@ -135,7 +135,6 @@ export class ShopService implements OnApplicationBootstrap {
       },
     });
   }
-
 
   async update(id: string, updateShopDto: UpdateShopDto) {
     const updatedEntity = await this.shopsRepository.update(
