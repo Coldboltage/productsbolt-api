@@ -58,9 +58,28 @@ export class ShopProductService {
     });
     const shopProductResponses = await Promise.all(shopProductsPromises);
     for (const shopProduct of shopProductResponses) {
-      this.eventEmitter.emit('shop-product.created', {
-        shopProduct,
-      });
+      console.log(`Adding new product: ${shopProduct.product.name}`);
+      const createProcess: CreateProcessDto = {
+        sitemap: shopProduct.shop.sitemap,
+        url: shopProduct.shop.website,
+        category: shopProduct.shop.category,
+        name: shopProduct.product.name,
+        shopProductId: shopProduct.id,
+        shopWebsite: shopProduct.shop.name,
+        type: shopProduct.product.type,
+        context: shopProduct.product.context,
+        crawlAmount: 30,
+        sitemapUrls: shopProduct.shop.sitemapUrls,
+        productId: shopProduct.product.id,
+        shopId: shopProduct.shop.id,
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType,
+      };
+
+      this.processClient.emit<CreateProcessDto>(
+        'webpageDiscovery',
+        createProcess,
+      );
     }
     console.log(shopProductResponses);
   }

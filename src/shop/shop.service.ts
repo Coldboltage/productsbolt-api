@@ -25,7 +25,7 @@ export class ShopService implements OnApplicationBootstrap {
     @Inject('MISC_CLIENT')
     private readonly miscClient: ClientProxy,
     private eventEmitter: EventEmitter2,
-  ) {}
+  ) { }
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
     await this.processClient.connect();
@@ -72,13 +72,13 @@ export class ShopService implements OnApplicationBootstrap {
   async updateSitemap() {
     const allActiveShops = await this.findAll();
     // Start a background task and don’t await it
-    (async () => {
-      for (const shop of allActiveShops) {
-        this.miscClient.emit('sitemapSearch', shop);
-        // const delay = 2000 + Math.random() * 500;
-        // await new Promise((res) => setTimeout(res, delay));
-      }
-    })();
+
+    for (const shop of allActiveShops) {
+      this.miscClient.emit('sitemapSearch', shop);
+      // const delay = 2000 + Math.random() * 500;
+      // await new Promise((res) => setTimeout(res, delay));
+    }
+
   }
 
   checkShopsIfShopify = async () => {
@@ -90,31 +90,31 @@ export class ShopService implements OnApplicationBootstrap {
     }
   };
 
-  @OnEvent('shop-product.created')
-  async findShopsToUpdateProducts(shopProduct: ShopProduct) {
-    console.log(`Adding new product: ${shopProduct.product.name}`);
-    const createProcess: CreateProcessDto = {
-      sitemap: shopProduct.shop.sitemap,
-      url: shopProduct.shop.website,
-      category: shopProduct.shop.category,
-      name: shopProduct.product.name,
-      shopProductId: shopProduct.id,
-      shopWebsite: shopProduct.shop.name,
-      type: shopProduct.product.type,
-      context: shopProduct.product.context,
-      crawlAmount: 30,
-      sitemapUrls: shopProduct.shop.sitemapUrls,
-      productId: shopProduct.product.id,
-      shopId: shopProduct.shop.id,
-      shopifySite: shopProduct.shop.isShopifySite,
-      shopType: shopProduct.shop.uniqueShopType,
-    };
+  // @OnEvent('shop-product.created')
+  // async findShopsToUpdateProducts(shopProduct: ShopProduct) {
+  //   console.log(`Adding new product: ${shopProduct.product.name}`);
+  //   const createProcess: CreateProcessDto = {
+  //     sitemap: shopProduct.shop.sitemap,
+  //     url: shopProduct.shop.website,
+  //     category: shopProduct.shop.category,
+  //     name: shopProduct.product.name,
+  //     shopProductId: shopProduct.id,
+  //     shopWebsite: shopProduct.shop.name,
+  //     type: shopProduct.product.type,
+  //     context: shopProduct.product.context,
+  //     crawlAmount: 30,
+  //     sitemapUrls: shopProduct.shop.sitemapUrls,
+  //     productId: shopProduct.product.id,
+  //     shopId: shopProduct.shop.id,
+  //     shopifySite: shopProduct.shop.isShopifySite,
+  //     shopType: shopProduct.shop.uniqueShopType,
+  //   };
 
-    this.processClient.emit<CreateProcessDto>(
-      'webpageDiscovery',
-      createProcess,
-    );
-  }
+  //   this.processClient.emit<CreateProcessDto>(
+  //     'webpageDiscovery',
+  //     createProcess,
+  //   );
+  // }
 
   async findAll() {
     return this.shopsRepository.find({
