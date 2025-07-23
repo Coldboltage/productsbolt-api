@@ -13,7 +13,12 @@ import { UpdateShopProductDto } from './dto/update-shop-product.dto';
 
 @Controller('shop-product')
 export class ShopProductController {
-  constructor(private readonly shopProductService: ShopProductService) {}
+  constructor(private readonly shopProductService: ShopProductService) { }
+
+  @Post('scan-shop-product-individual/:id')
+  checkForIndividualShopProduct(@Param('id') id: string) {
+    return this.shopProductService.checkForIndividualShopProduct(id);
+  }
 
   @Post('manual-update-shops-all-products/')
   manualUpdateAllShopProducts() {

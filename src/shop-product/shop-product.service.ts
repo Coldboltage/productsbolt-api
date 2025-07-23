@@ -152,9 +152,6 @@ export class ShopProductService {
       );
     }
   }
-
-  // Scrap for shopProductById (check for a product for a certain website manually for testing)
-
   async manualFindShopsToUpdateProducts(productId: string) {
     const product = await this.productService.findOne(productId);
     console.log(`Adding new product: ${product.name}`);
@@ -234,6 +231,41 @@ export class ShopProductService {
   //     );
   //   }
   // }
+
+  // Scrap for shopProductById (check for a product for a certain website manually for testing)
+  async checkForIndividualShopProduct(shopProductId: string) {
+    const shopProduct = await this.shopProductRepository.findOne({
+      where: {
+        id: shopProductId,
+      },
+      relations: {
+        shop: true,
+        product: true,
+      },
+    });
+
+    const createProcess: CreateProcessDto = {
+      sitemap: shopProduct.shop.sitemap,
+      url: shopProduct.shop.website,
+      category: shopProduct.shop.category,
+      name: shopProduct.product.name,
+      shopProductId: shopProduct.id,
+      shopWebsite: shopProduct.shop.name,
+      type: shopProduct.product.type,
+      context: shopProduct.product.context,
+      crawlAmount: 90,
+      sitemapUrls: shopProduct.shop.sitemapUrls,
+      productId: shopProduct.productId,
+      shopId: shopProduct.shopId,
+      shopifySite: shopProduct.shop.isShopifySite,
+      shopType: shopProduct.shop.uniqueShopType,
+    };
+
+    this.processClient.emit<CreateProcessDto>(
+      'webpageDiscovery',
+      createProcess,
+    );
+  }
 
   create(createShopProductDto: CreateShopProductDto) {
     return 'This action adds a new shopProduct';
