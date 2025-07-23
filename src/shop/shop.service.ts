@@ -102,7 +102,7 @@ export class ShopService implements OnApplicationBootstrap {
   //     shopWebsite: shopProduct.shop.name,
   //     type: shopProduct.product.type,
   //     context: shopProduct.product.context,
-  //     crawlAmount: 30,
+  //     crawlAmount: 90,
   //     sitemapUrls: shopProduct.shop.sitemapUrls,
   //     productId: shopProduct.product.id,
   //     shopId: shopProduct.shop.id,

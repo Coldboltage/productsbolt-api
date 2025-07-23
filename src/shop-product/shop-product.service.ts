@@ -68,7 +68,7 @@ export class ShopProductService {
         shopWebsite: shopProduct.shop.name,
         type: shopProduct.product.type,
         context: shopProduct.product.context,
-        crawlAmount: 30,
+        crawlAmount: 90,
         sitemapUrls: shopProduct.shop.sitemapUrls,
         productId: shopProduct.product.id,
         shopId: shopProduct.shop.id,
@@ -98,6 +98,7 @@ export class ShopProductService {
       });
     });
     const response = await Promise.all(shopProductsPromises);
+    // Setup a sitemap emit to the worker for this shop
     console.log(response);
     return response;
   }
@@ -127,7 +128,7 @@ export class ShopProductService {
         shopWebsite: shopProduct.shop.name,
         type: shopProduct.product.type,
         context: shopProduct.product.context,
-        crawlAmount: 30,
+        crawlAmount: 90,
         sitemapUrls: shopProduct.shop.sitemapUrls,
         productId: shopProduct.productId,
         shopId: shopProduct.shopId,
@@ -151,6 +152,8 @@ export class ShopProductService {
       );
     }
   }
+
+  // Scrap for shopProductById (check for a product for a certain website manually for testing)
 
   async manualFindShopsToUpdateProducts(productId: string) {
     const product = await this.productService.findOne(productId);
@@ -182,7 +185,7 @@ export class ShopProductService {
         shopWebsite: shopProduct.shop.name,
         type: product.type,
         context: product.context,
-        crawlAmount: 30,
+        crawlAmount: 90,
         sitemapUrls: shopProduct.shop.sitemapUrls,
         productId: shopProduct.productId,
         shopId: shopProduct.shopId,
@@ -220,7 +223,7 @@ export class ShopProductService {
   //       shopWebsite: shopProduct.shop.name,
   //       type: shopProduct.product.type,
   //       context: shopProduct.product.context,
-  //       crawlAmount: 30,
+  //       crawlAmount: 90,
   //       sitemapUrls: shopProduct.shop.sitemapUrls,
   //       productId: shopProduct.productId,
   //       shopId: shopProduct.shopId,
