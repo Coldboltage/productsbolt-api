@@ -20,6 +20,11 @@ export class ShopProductController {
     return this.shopProductService.checkForIndividualShopProduct(id);
   }
 
+  @Post('scan-for-individual-shop/:shopId')
+  checkForAllShopProductsFromShop(@Param('shopId') shopId: string) {
+    return this.shopProductService.checkForAllShopProductsFromShop(shopId);
+  }
+
   @Post('manual-update-shops-all-products/')
   manualUpdateAllShopProducts() {
     return this.shopProductService.manualUpdateAllShopProducts();

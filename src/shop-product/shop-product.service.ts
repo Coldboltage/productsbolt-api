@@ -267,6 +267,55 @@ export class ShopProductService {
     );
   }
 
+  // Check all shopProducts for shop
+  async checkForAllShopProductsFromShop(shopId: string) {
+    const shopProducts = await this.shopProductRepository.find({
+      where: {
+        shopId,
+      },
+      relations: {
+        shop: true,
+        product: true,
+      },
+    });
+
+    console.log(shopProducts.length);
+
+    for (const shopProduct of shopProducts) {
+      const createProcess: CreateProcessDto = {
+        sitemap: shopProduct.shop.sitemap,
+        url: shopProduct.shop.website,
+        category: shopProduct.shop.category,
+        name: shopProduct.product.name,
+        shopProductId: shopProduct.id,
+        shopWebsite: shopProduct.shop.name,
+        type: shopProduct.product.type,
+        context: shopProduct.product.context,
+        crawlAmount: 90,
+        sitemapUrls: shopProduct.shop.sitemapUrls,
+        productId: shopProduct.productId,
+        shopId: shopProduct.shopId,
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType,
+      };
+
+      if (
+        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+        shopProduct.ebayProductDetail
+      ) {
+        createProcess.ebayProductDetail = {
+          ebayProductDetailId: shopProduct.ebayProductDetail.id,
+          productId: shopProduct.ebayProductDetail.productId,
+        };
+      }
+
+      this.processClient.emit<CreateProcessDto>(
+        'webpageDiscovery',
+        createProcess,
+      );
+    }
+  }
+
   create(createShopProductDto: CreateShopProductDto) {
     return 'This action adds a new shopProduct';
   }
