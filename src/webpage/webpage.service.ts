@@ -7,7 +7,11 @@ import {
 import { CreateWebpageDto } from './dto/create-webpage.dto';
 import { UpdateWebpageDto } from './dto/update-webpage.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { StrippedWebpage, Webpage } from './entities/webpage.entity';
+import {
+  StrippedWebpage,
+  StrippedWebpageSlim,
+  Webpage,
+} from './entities/webpage.entity';
 import { Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { ClientProxy } from '@nestjs/microservices';
@@ -24,7 +28,7 @@ export class WebpageService {
     private readonly miscClient: ClientProxy,
     private shopProductService: ShopProductService,
     private productService: ProductService,
-  ) {}
+  ) { }
 
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
@@ -111,6 +115,9 @@ export class WebpageService {
 
   async findAll() {
     return this.webpagesRepository.find({
+      order: {
+        price: 'ASC',
+      },
       where: {},
       relations: {
         shopProduct: {
@@ -136,6 +143,9 @@ export class WebpageService {
           product: true,
         },
       },
+      order: {
+        price: 'ASC',
+      },
     });
   }
 
@@ -153,6 +163,30 @@ export class WebpageService {
         price: webpage.price,
         currencyCode: webpage.currencyCode,
         reason: webpage.reason,
+      }));
+      response.push({
+        productName: product.name,
+        webPages: strippedWebpages,
+      });
+    }
+    console.log(response[0].webPages.length);
+    return response;
+  }
+
+  async findAllWebpagesDividedByProductSlim() {
+    const products = await this.productService.findAll();
+    const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
+      [];
+    for (const product of products) {
+      const specificWebPagesForProduct = await this.findAllByProduct(
+        product.id,
+      );
+      const strippedWebpages = specificWebPagesForProduct.map((webpage) => ({
+        id: webpage.id,
+        url: webpage.url,
+        inStock: webpage.inStock,
+        price: webpage.price,
+        currencyCode: webpage.currencyCode,
       }));
       response.push({
         productName: product.name,

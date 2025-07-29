@@ -23,7 +23,7 @@ import 'dotenv/config';
       port: 5432,
       username: process.env.TYPEORM_USERNAME,
       password: process.env.TYPEORM_PASSWORD,
-      database: 'productsbolt-postgres',
+      database: 'test_productsbolt',
       autoLoadEntities: true,
       synchronize: true,
     }),
@@ -42,4 +42,4 @@ import 'dotenv/config';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
