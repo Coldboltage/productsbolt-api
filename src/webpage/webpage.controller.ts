@@ -35,6 +35,24 @@ export class WebpageController {
     return this.webpageService.findAllWebpagesDividedByProductSlim();
   }
 
+  @Get('find-all-divided-by-product/:stockState')
+  findAllWebpagesDividedByProductsStockState(
+    @Param('stockState') stockState: boolean,
+  ) {
+    return this.webpageService.findAllWebpagesDividedByProductsStockState(
+      stockState,
+    );
+  }
+
+  @Get('find-all-divided-by-product-slim/:stockState')
+  findAllWebpagesDividedByProductsStockStateSlim(
+    @Param('stockState') stockState: boolean,
+  ) {
+    return this.webpageService.findAllWebpagesDividedByProductsStockStateSlim(
+      stockState,
+    );
+  }
+
   @Get('find-all-by-product/:id')
   findAllByProduct(@Param('id') id: string) {
     return this.webpageService.findAllByProduct(id);
@@ -43,6 +61,11 @@ export class WebpageController {
   @Get('update-all-pages')
   updateAllPages() {
     return this.webpageService.updateAllPages();
+  }
+
+  @Get('update-single-page/:webpageId')
+  updatePage(@Param('webpageId') webpageId: string) {
+    return this.webpageService.updatePage(webpageId);
   }
 
   @Get(':id')
@@ -57,6 +80,7 @@ export class WebpageController {
 
   @Delete('/delete-and-update-shop-product-page/:id')
   removeWebpage(@Param('id') id: string) {
+    console.log(id);
     return this.webpageService.removeWebpage(id);
   }
 

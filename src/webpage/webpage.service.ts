@@ -57,18 +57,21 @@ export class WebpageService {
       createWebpageDto.url,
     );
 
-    if (checkForExistanceEntity)
+    if (checkForExistanceEntity) {
+      console.error('Webpage already exists elsewhere');
       throw new ConflictException({
         statusCode: 409,
         error: 'Webpage URL Conflict',
-        message: 'WebPage exists for shopProduct',
+        message: 'Webpage already exists',
         details: {
           field: 'url',
           value: `${createWebpageDto.url}`,
           suggestion:
-            'Check if the URL that exists should be for the shopProduct. Dumb Bot',
+            'The webpage already exists therefore it is already assiocated to another product',
         },
       });
+    }
+
     const entity = this.webpagesRepository.create(createWebpageDto);
     const shopProductEntity = await this.shopProductService.findOneByProductId(
       createWebpageDto.productId,
@@ -77,6 +80,8 @@ export class WebpageService {
 
     console.log(shopProductEntity);
     if (shopProductEntity.populated === true) {
+      console.error('WebPage exists for shopProduct');
+
       throw new ConflictException({
         statusCode: 409,
         error: 'Webpage URL Conflict',
@@ -149,6 +154,27 @@ export class WebpageService {
     });
   }
 
+  async findAllByProductStock(state: boolean, productId: string) {
+    return this.webpagesRepository.find({
+      where: {
+        shopProduct: {
+          product: {
+            id: productId,
+          },
+        },
+        inStock: state,
+      },
+      relations: {
+        shopProduct: {
+          product: true,
+        },
+      },
+      order: {
+        price: 'ASC',
+      },
+    });
+  }
+
   async findAllWebpagesDividedByProduct() {
     const products = await this.productService.findAll();
     const response: { productName: string; webPages: StrippedWebpage[] }[] = [];
@@ -163,6 +189,56 @@ export class WebpageService {
         price: webpage.price,
         currencyCode: webpage.currencyCode,
         reason: webpage.reason,
+      }));
+      response.push({
+        productName: product.name,
+        webPages: strippedWebpages,
+      });
+    }
+    console.log(response[0].webPages.length);
+    return response;
+  }
+
+  async findAllWebpagesDividedByProductsStockState(state: boolean) {
+    const products = await this.productService.findAll();
+    const response: { productName: string; webPages: StrippedWebpage[] }[] = [];
+    for (const product of products) {
+      const specificWebPagesForProduct = await this.findAllByProductStock(
+        state,
+        product.id,
+      );
+      const strippedWebpages = specificWebPagesForProduct.map((webpage) => ({
+        id: webpage.id,
+        url: webpage.url,
+        inStock: webpage.inStock,
+        price: webpage.price,
+        currencyCode: webpage.currencyCode,
+        reason: webpage.reason,
+      }));
+      response.push({
+        productName: product.name,
+        webPages: strippedWebpages,
+      });
+    }
+    console.log(response[0].webPages.length);
+    return response;
+  }
+
+  async findAllWebpagesDividedByProductsStockStateSlim(state: boolean) {
+    const products = await this.productService.findAll();
+    const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
+      [];
+    for (const product of products) {
+      const specificWebPagesForProduct = await this.findAllByProductStock(
+        state,
+        product.id,
+      );
+      const strippedWebpages = specificWebPagesForProduct.map((webpage) => ({
+        id: webpage.id,
+        url: webpage.url,
+        inStock: webpage.inStock,
+        price: webpage.price,
+        currencyCode: webpage.currencyCode,
       }));
       response.push({
         productName: product.name,
@@ -209,23 +285,46 @@ export class WebpageService {
         type: page.shopProduct.product.type,
         shopWebsite: page.shopProduct.shop.name,
         webPageId: page.id,
+        shopifySite: page.shopProduct.shop.isShopifySite,
       });
     }
     return webPages;
   }
 
+  async updatePage(webpageId) {
+    const page = await this.findOne(webpageId);
+
+    console.log(page);
+    this.processClient.emit('updatePage', {
+      url: page.url,
+      query: page.shopProduct.name,
+      type: page.shopProduct.product.type,
+      shopWebsite: page.shopProduct.shop.name,
+      webPageId: page.id,
+      shopifySite: page.shopProduct.shop.isShopifySite,
+    });
+
+    return page;
+  }
+
   async findOne(id: string) {
     return this.webpagesRepository.findOne({
       where: { id },
-      relations: { shopProduct: true },
+      relations: {
+        shopProduct: {
+          shop: true,
+          product: true,
+        },
+      },
     });
   }
 
   async findOneByUrl(url: string) {
-    return this.webpagesRepository.findOne({
+    const entity = await this.webpagesRepository.findOne({
       where: { url },
       relations: { shopProduct: true },
     });
+    return entity;
   }
 
   async update(id: string, updateWebpageDto: UpdateWebpageDto) {
@@ -237,9 +336,10 @@ export class WebpageService {
     return this.findOne(id);
   }
 
-  async removeWebpage(url: string) {
+  async removeWebpage(id: string) {
+    console.log(id);
     const webpage = await this.webpagesRepository.findOne({
-      where: { url },
+      where: { id },
       relations: ['shopProduct'],
     });
     if (!webpage) throw new NotFoundException('Webpage not found');

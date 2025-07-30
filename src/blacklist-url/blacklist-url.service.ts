@@ -6,6 +6,7 @@ import { BlackListUrl } from './entities/blacklist-url.entity';
 import { Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { WebpageService } from '../webpage/webpage.service';
+import { url } from 'inspector';
 
 @Injectable()
 export class BlackListUrlService {
@@ -14,16 +15,24 @@ export class BlackListUrlService {
     private blackListRepository: Repository<BlackListUrl>,
     private shopProductsService: ShopProductService,
     private webPageService: WebpageService,
-  ) {}
+  ) { }
   async create(createBlackListUrlDto: CreateBlackListUrlDto) {
     const webpageEntity = await this.webPageService.findOneByUrl(
       createBlackListUrlDto.url,
     );
 
-    const blackListEntity = this.blackListRepository.create({
-      url: webpageEntity.url,
-      shopProducts: [webpageEntity.shopProduct],
-    });
+    const urlExist = await this.findOneByUrl(createBlackListUrlDto.url);
+    let blackListEntity: BlackListUrl;
+
+    if (urlExist) {
+      urlExist.shopProducts.push(webpageEntity.shopProduct);
+      await this.blackListRepository.save(urlExist);
+    } else {
+      blackListEntity = this.blackListRepository.create({
+        url: webpageEntity.url,
+        shopProducts: [webpageEntity.shopProduct],
+      });
+    }
 
     console.log(webpageEntity);
 
@@ -31,10 +40,9 @@ export class BlackListUrlService {
       populated: false,
     });
 
-    const response = await this.webPageService.removeWebpage(
-      createBlackListUrlDto.url,
-    );
+    const response = await this.webPageService.removeWebpage(webpageEntity.id);
     if (!response) throw new Error('page might not have been deleted');
+
     return this.blackListRepository.save<BlackListUrl>(blackListEntity);
   }
 

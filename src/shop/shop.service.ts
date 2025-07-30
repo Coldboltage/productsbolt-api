@@ -21,7 +21,6 @@ export class ShopService implements OnApplicationBootstrap {
   constructor(
     @InjectRepository(Shop) private shopsRepository: Repository<Shop>,
     @Inject('PROCESS_CLIENT') private processClient: ClientProxy,
-
     @Inject('MISC_CLIENT')
     private readonly miscClient: ClientProxy,
     private eventEmitter: EventEmitter2,
@@ -86,7 +85,7 @@ export class ShopService implements OnApplicationBootstrap {
     for (const shop of shopEntities) {
       // Check if main site and it's content is shopify
       // / true or false
-      this.miscClient.emit('shopyifyCheck', shop);
+      this.processClient.emit('shopyifyCheck', shop);
     }
   };
 
