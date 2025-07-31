@@ -10,8 +10,8 @@ export class Alert {
   @Column()
   name: string;
 
-  @ManyToOne(() => User, (user) => user.alerts)
-  user: User;
+  // @ManyToOne(() => User, (user) => user.alerts)
+  // user: User;
 
   @ManyToOne(() => Product, (product) => product.alerts)
   product: Product;

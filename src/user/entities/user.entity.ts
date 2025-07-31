@@ -16,6 +16,6 @@ export class User {
   @Column()
   email: string;
 
-  @OneToMany(() => Alert, (alert) => alert.user)
-  alerts: Alert[];
+  // @OneToMany(() => Alert, (alert) => alert.user)
+  // alerts: Alert[];
 }
