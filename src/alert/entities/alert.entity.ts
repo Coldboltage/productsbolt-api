@@ -1,5 +1,4 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '../../user/entities/user.entity';
 import { Product } from '../../product/entities/product.entity';
 
 @Entity()
@@ -15,4 +14,10 @@ export class Alert {
 
   @ManyToOne(() => Product, (product) => product.alerts)
   product: Product;
+
+  @Column()
+  price: number;
+
+  @Column({ default: false })
+  alerted: boolean;
 }

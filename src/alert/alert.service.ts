@@ -5,34 +5,37 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Alert } from './entities/alert.entity';
 import { Repository } from 'typeorm';
 import { ProductService } from '../product/product.service';
-import { UserService } from '../user/user.service';
 import { WebpageService } from '../webpage/webpage.service';
 import { Webpage } from '../webpage/entities/webpage.entity';
+import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class AlertService {
   constructor(
     @InjectRepository(Alert) private alertsRepository: Repository<Alert>,
-    private userService: UserService,
+    // private userService: UserService,
     private productService: ProductService,
     private webPagesService: WebpageService,
-  ) {}
+  ) { }
   async create(createAlertDto: CreateAlertDto) {
-    const userEntity = await this.userService.findOneByEmail(
-      createAlertDto.email,
-    );
+    console.log(createAlertDto);
+    // const userEntity = await this.userService.findOneByEmail(
+    //   createAlertDto.email,
+    // );
     const productEntity = await this.productService.findOne(
       createAlertDto.productId,
     );
+    console.log(productEntity);
     try {
       const alertEntity = await this.alertsRepository.save({
         name: createAlertDto.name,
-        price: createAlertDto.priceAlert,
+        price: createAlertDto.price,
         product: productEntity,
-        user: userEntity,
+        // user: userEntity,
       });
       return alertEntity;
     } catch (error) {
+      console.log(error);
       throw new ConflictException('alert_already_made_for_user');
     }
   }
@@ -46,6 +49,24 @@ export class AlertService {
     return webPagesList;
   }
 
+  @OnEvent('webpage.updated')
+  async checkAlert(webpage: Webpage) {
+    console.log('webpage-updated event fired');
+
+    const alert = await this.findOneByProductId(webpage.shopProduct.product.id);
+    if (!alert) return false
+    const isWebpageCheaper = webpage.price <= alert.price;
+    if (isWebpageCheaper && webpage.inStock === true) {
+      alert.alerted = true;
+      await this.alertsRepository.save(alert);
+    } else {
+      console.log({
+        cheaper: isWebpageCheaper,
+        inStock: webpage.inStock,
+      });
+    }
+  }
+
   findAll() {
     return `This action returns all alert`;
   }
@@ -54,6 +75,16 @@ export class AlertService {
     return this.alertsRepository.findOne({
       where: {
         id,
+      },
+    });
+  }
+
+  async findOneByProductId(productId: string) {
+    return this.alertsRepository.findOne({
+      where: {
+        product: {
+          id: productId,
+        },
       },
     });
   }

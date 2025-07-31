@@ -17,17 +17,17 @@ import { ShopProductService } from '../shop-product/shop-product.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ProductService } from '../product/product.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class WebpageService {
   constructor(
     @InjectRepository(Webpage) private webpagesRepository: Repository<Webpage>,
     @Inject('PROCESS_CLIENT') private processClient: ClientProxy,
-
-    @Inject('MISC_CLIENT')
-    private readonly miscClient: ClientProxy,
+    @Inject('MISC_CLIENT') private readonly miscClient: ClientProxy,
     private shopProductService: ShopProductService,
     private productService: ProductService,
+    private eventEmitter: EventEmitter2,
   ) { }
 
   async onApplicationBootstrap() {
@@ -115,6 +115,7 @@ export class WebpageService {
     const webpageEntity = await this.webpagesRepository.save(entity);
     console.log(`Page being created: ${createWebpageDto.url}`);
     console.log(webpageEntity);
+    this.eventEmitter.emit('webpage.updated', webpageEntity);
     return webpageEntity;
   }
 
@@ -333,6 +334,9 @@ export class WebpageService {
       price: updateWebpageDto.price,
       inStock: updateWebpageDto.inStock,
     });
+    const webpageEntity = await this.findOne(id);
+    this.eventEmitter.emit('webpage.updated', webpageEntity);
+
     return this.findOne(id);
   }
 
