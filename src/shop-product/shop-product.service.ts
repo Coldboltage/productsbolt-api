@@ -372,6 +372,9 @@ export class ShopProductService {
         productId,
         shopId,
       },
+      relations: {
+        product: true,
+      },
     });
   }
   // async findOneByShopName(name: string): Promise<ShopProduct> {

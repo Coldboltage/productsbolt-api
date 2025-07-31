@@ -54,9 +54,9 @@ export class AlertService {
     console.log('webpage-updated event fired');
 
     const alert = await this.findOneByProductId(webpage.shopProduct.product.id);
-    if (!alert) return false
+    if (!alert) return false;
     const isWebpageCheaper = webpage.price <= alert.price;
-    if (isWebpageCheaper && webpage.inStock === true) {
+    if (isWebpageCheaper && webpage.inStock === true && webpage.price !== 0) {
       alert.alerted = true;
       await this.alertsRepository.save(alert);
     } else {

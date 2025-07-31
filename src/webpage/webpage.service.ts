@@ -115,7 +115,7 @@ export class WebpageService {
     const webpageEntity = await this.webpagesRepository.save(entity);
     console.log(`Page being created: ${createWebpageDto.url}`);
     console.log(webpageEntity);
-    this.eventEmitter.emit('webpage.updated', webpageEntity);
+    // this.eventEmitter.emit('webpage.updated', webpageEntity);
     return webpageEntity;
   }
 
