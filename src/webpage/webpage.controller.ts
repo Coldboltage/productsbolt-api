@@ -68,6 +68,11 @@ export class WebpageController {
     return this.webpageService.updatePage(webpageId);
   }
 
+  @Get('show-products-true')
+  showProductsTrue() {
+    return this.webpageService.showProductsTrue();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.webpageService.findOne(id);

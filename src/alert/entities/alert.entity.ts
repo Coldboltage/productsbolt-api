@@ -1,5 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Product } from '../../product/entities/product.entity';
+import { Webpage } from '../../webpage/entities/webpage.entity';
 
 @Entity()
 export class Alert {
@@ -20,4 +21,9 @@ export class Alert {
 
   @Column({ default: false })
   alerted: boolean;
+}
+
+export interface ProductWebpagesInterface {
+  name: string;
+  webpages: Webpage[];
 }

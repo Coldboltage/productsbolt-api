@@ -18,6 +18,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ProductService } from '../product/product.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { AlertService } from '../alert/alert.service';
 
 @Injectable()
 export class WebpageService {
@@ -27,6 +28,7 @@ export class WebpageService {
     @Inject('MISC_CLIENT') private readonly miscClient: ClientProxy,
     private shopProductService: ShopProductService,
     private productService: ProductService,
+    private alertService: AlertService,
     private eventEmitter: EventEmitter2,
   ) { }
 
@@ -225,6 +227,35 @@ export class WebpageService {
     return response;
   }
 
+  async showAllWebpagesForAlert(id: string): Promise<Webpage[]> {
+    const alertEntity = await this.findOne(id);
+    const webPagesList = await this.findAllByProduct(alertEntity.id);
+    console.log(webPagesList);
+    return webPagesList;
+  }
+
+  async showProductsTrue(): Promise<StrippedWebpageSlim[]> {
+    const alertsTriggered = await this.alertService.findAllState(true);
+    // Alerts which are true are here. I can get the products now in question
+    const productWebpages = [];
+    for (const alert of alertsTriggered) {
+      const webpages = await this.findAllByProductStock(true, alert.product.id);
+      const strippedWebpages = webpages.map((webpage) => ({
+        id: webpage.id,
+        url: webpage.url,
+        inStock: webpage.inStock,
+        price: webpage.price,
+        currencyCode: webpage.currencyCode,
+      }));
+      const productWebpagesObject = {
+        name: alert.name,
+        webpages: strippedWebpages,
+      };
+      productWebpages.push(productWebpagesObject);
+    }
+    return productWebpages;
+  }
+
   async findAllWebpagesDividedByProductsStockStateSlim(state: boolean) {
     const products = await this.productService.findAll();
     const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
@@ -234,6 +265,7 @@ export class WebpageService {
         state,
         product.id,
       );
+      if (specificWebPagesForProduct.length === 0) continue;
       const strippedWebpages = specificWebPagesForProduct.map((webpage) => ({
         id: webpage.id,
         url: webpage.url,
@@ -258,6 +290,7 @@ export class WebpageService {
       const specificWebPagesForProduct = await this.findAllByProduct(
         product.id,
       );
+      if (specificWebPagesForProduct.length === 0) continue;
       const strippedWebpages = specificWebPagesForProduct.map((webpage) => ({
         id: webpage.id,
         url: webpage.url,

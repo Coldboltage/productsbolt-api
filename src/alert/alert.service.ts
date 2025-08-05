@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Alert } from './entities/alert.entity';
 import { Repository } from 'typeorm';
 import { ProductService } from '../product/product.service';
-import { WebpageService } from '../webpage/webpage.service';
 import { Webpage } from '../webpage/entities/webpage.entity';
 import { OnEvent } from '@nestjs/event-emitter';
 
@@ -15,7 +14,6 @@ export class AlertService {
     @InjectRepository(Alert) private alertsRepository: Repository<Alert>,
     // private userService: UserService,
     private productService: ProductService,
-    private webPagesService: WebpageService,
   ) { }
   async create(createAlertDto: CreateAlertDto) {
     console.log(createAlertDto);
@@ -40,15 +38,6 @@ export class AlertService {
     }
   }
 
-  async showAllWebpagesForAlert(id: string): Promise<Webpage[]> {
-    const alertEntity = await this.findOne(id);
-    const webPagesList = await this.webPagesService.findAllByProduct(
-      alertEntity.id,
-    );
-    console.log(webPagesList);
-    return webPagesList;
-  }
-
   @OnEvent('webpage.updated')
   async checkAlert(webpage: Webpage) {
     console.log('webpage-updated event fired');
@@ -67,8 +56,26 @@ export class AlertService {
     }
   }
 
-  findAll() {
-    return `This action returns all alert`;
+  async resetAlerts() {
+    const alerts = await this.findAll();
+    alerts.forEach((alert) => (alert.alerted = false));
+    const updatedAlerts = await this.alertsRepository.save(alerts);
+    return updatedAlerts;
+  }
+
+  async findAll() {
+    return this.alertsRepository.find({});
+  }
+
+  async findAllState(state: boolean) {
+    return this.alertsRepository.find({
+      where: {
+        alerted: state,
+      },
+      relations: {
+        product: true,
+      },
+    });
   }
 
   findOne(id: string) {

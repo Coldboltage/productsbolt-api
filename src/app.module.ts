@@ -13,6 +13,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { BlackListUrlModule } from './blacklist-url/blacklist-url.module';
 import { RabbitmqModule } from './rabbitmq/rabbitmq.module';
 import { EbayModule } from './ebay/ebay.module';
+import { WebpageUtilsModule } from './webpage-utils/webpage-utils.module';
 import 'dotenv/config';
 
 @Module({
@@ -38,6 +39,7 @@ import 'dotenv/config';
     BlackListUrlModule,
     RabbitmqModule,
     EbayModule,
+    WebpageUtilsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

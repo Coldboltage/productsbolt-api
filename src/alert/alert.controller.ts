@@ -13,15 +13,25 @@ import { UpdateAlertDto } from './dto/update-alert.dto';
 
 @Controller('alert')
 export class AlertController {
-  constructor(private readonly alertService: AlertService) {}
+  constructor(private readonly alertService: AlertService) { }
 
   @Post()
   create(@Body() createAlertDto: CreateAlertDto) {
     return this.alertService.create(createAlertDto);
   }
 
+  @Post('reset-all-alerts-false')
+  resetAlerts() {
+    return this.alertService.resetAlerts();
+  }
+
   @Get()
   findAll() {
+    return this.alertService.findAll();
+  }
+
+  @Get('find-all-alerts')
+  findAllAlerts() {
     return this.alertService.findAll();
   }
 

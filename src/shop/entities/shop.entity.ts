@@ -43,6 +43,12 @@ export class Shop {
   @Column({ default: false })
   isShopifySite: boolean;
 
+  @Column({ nullable: true })
+  etag: string;
+
+  @Column({ default: 0 })
+  etagCount: number;
+
   @Column({ enum: UniqueShopType, nullable: true })
   uniqueShopType: UniqueShopType;
 
