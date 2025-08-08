@@ -42,3 +42,11 @@ export interface StrippedWebpage {
   currencyCode: string;
   reason: string;
 }
+
+export interface StrippedWebpageSlim {
+  id: string;
+  url: string;
+  inStock: boolean;
+  price: number;
+  currencyCode: string;
+}

@@ -8,29 +8,29 @@ import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Shop } from './entities/shop.entity';
+import { Shop, UniqueShopType } from './entities/shop.entity';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { Product } from '../product/entities/product.entity';
 import { ClientProxy } from '@nestjs/microservices';
 import { CreateProcessDto } from './dto/create-process.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
 
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
   constructor(
     @InjectRepository(Shop) private shopsRepository: Repository<Shop>,
-    @Inject('PROCESS_CLIENT') private processClient: ClientProxy,
-
-    @Inject('MISC_CLIENT')
-    private readonly miscClient: ClientProxy,
+    @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
+    @Inject('HEADLESS_CLIENT')
+    private readonly headlessClient: ClientProxy,
     private eventEmitter: EventEmitter2,
   ) { }
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
-    await this.processClient.connect();
+    await this.headfulClient.connect();
 
     // Dig into the amqp-connection-manager instance
-    const client: any = this.processClient;
+    const client: any = this.headfulClient;
     const managers = client.client; // the amqp-connection-manager Client
     const manager =
       managers as import('amqp-connection-manager').AmqpConnectionManager;
@@ -71,13 +71,18 @@ export class ShopService implements OnApplicationBootstrap {
   async updateSitemap() {
     const allActiveShops = await this.findAll();
     // Start a background task and don’t await it
-    (async () => {
-      for (const shop of allActiveShops) {
-        this.miscClient.emit('sitemapSearch', shop);
-        // const delay = 2000 + Math.random() * 500;
-        // await new Promise((res) => setTimeout(res, delay));
-      }
-    })();
+
+    for (const shop of allActiveShops) {
+      this.headlessClient.emit('sitemapSearch', shop);
+      // const delay = 2000 + Math.random() * 500;
+      // await new Promise((res) => setTimeout(res, delay));
+    }
+  }
+
+  async updateSpecificShopSitemap(shopId: string) {
+    const shop = await this.findOne(shopId);
+    console.log(shop);
+    this.headlessClient.emit('sitemapSearch', shop);
   }
 
   checkShopsIfShopify = async () => {
@@ -85,47 +90,35 @@ export class ShopService implements OnApplicationBootstrap {
     for (const shop of shopEntities) {
       // Check if main site and it's content is shopify
       // / true or false
-      this.miscClient.emit('shopyifyCheck', shop);
+      this.headfulClient.emit('shopyifyCheck', shop);
     }
   };
 
-  @OnEvent('product.created')
-  async findShopsToUpdateProducts(product: Product) {
-    console.log(`Adding new product: ${product.name}`);
-    const shopsWithoutPage = await this.shopsRepository
-      .createQueryBuilder('shop')
-      .leftJoin(
-        'shop.shopProducts',
-        'shopProduct',
-        'shopProduct.productId = :productId',
-        { productId: product.id },
-      )
-      .leftJoin('shopProduct.webPages', 'webPage')
-      .where('webPage.id IS NULL')
-      .andWhere('shop.active = :active', { active: true })
-      .getMany();
-    console.log(shopsWithoutPage);
-    for (const shop of shopsWithoutPage) {
-      const createProcess: CreateProcessDto = {
-        sitemap: shop.sitemap,
-        url: shop.website,
-        category: shop.category,
-        name: product.name,
-        shopWebsite: shop.name,
-        type: product.type,
-        context: product.context,
-        crawlAmount: 30,
-        sitemapUrls: shop.sitemapUrls,
-        productId: product.id,
-        shopId: shop.id,
-        shopifySite: shop.isShopifySite,
-      };
-      this.processClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
-    }
-  }
+  // @OnEvent('shop-product.created')
+  // async findShopsToUpdateProducts(shopProduct: ShopProduct) {
+  //   console.log(`Adding new product: ${shopProduct.product.name}`);
+  //   const createProcess: CreateProcessDto = {
+  //     sitemap: shopProduct.shop.sitemap,
+  //     url: shopProduct.shop.website,
+  //     category: shopProduct.shop.category,
+  //     name: shopProduct.product.name,
+  //     shopProductId: shopProduct.id,
+  //     shopWebsite: shopProduct.shop.name,
+  //     type: shopProduct.product.type,
+  //     context: shopProduct.product.context,
+  //     crawlAmount: 90,
+  //     sitemapUrls: shopProduct.shop.sitemapUrls,
+  //     productId: shopProduct.product.id,
+  //     shopId: shopProduct.shop.id,
+  //     shopifySite: shopProduct.shop.isShopifySite,
+  //     shopType: shopProduct.shop.uniqueShopType,
+  //   };
+
+  //   this.headfulClient.emit<CreateProcessDto>(
+  //     'webpageDiscovery',
+  //     createProcess,
+  //   );
+  // }
 
   async findAll() {
     return this.shopsRepository.find({
@@ -138,10 +131,10 @@ export class ShopService implements OnApplicationBootstrap {
     });
   }
 
-  findOne(website: string) {
+  findOne(id: string) {
     return this.shopsRepository.findOne({
       where: {
-        website,
+        id,
       },
     });
   }
@@ -158,5 +151,41 @@ export class ShopService implements OnApplicationBootstrap {
 
   remove(id: number) {
     return `This action removes a #${id} shop`;
+  }
+
+  reduceSitemap(urls: string[], query: string) {
+    const extractKeywords = (rawUrl: string) => {
+      const noQuery = rawUrl.split('?')[0].replace(/\/+$/, '');
+      const name = decodeURIComponent(noQuery.split('/').pop() || '');
+
+      const cleaned = name
+        .toLowerCase()
+        .normalize('NFKD') // normalize accents
+        .replace(/[\u0300-\u036f]/g, '') // strip accent marks
+        .replace(/[’'`]/g, '') // drop apostrophes (smart + straight)
+        .replace(/[^a-z0-9]+/g, ' ') // everything non-alnum -> space
+        .trim();
+
+      return cleaned.split(/\s+/); // ['magic','the','gathering','assassins','creed','collector','booster','box']
+    };
+
+    const requiredMatches = (n: number) => Math.max(1, Math.floor((3 / 5) * n));
+
+    const countMatches = (productKeys: string[], queryKeys: string[]) =>
+      queryKeys.filter((k) => productKeys.includes(k)).length;
+
+    const filterProducts = (urls: string[], query: string): string[] => {
+      const products = urls.map((url) => ({
+        url,
+        keywords: extractKeywords(url),
+      }));
+      const queryKeys = query.toLowerCase().split(' ').filter(Boolean);
+      const minMatches = requiredMatches(queryKeys.length);
+      return products
+        .filter((p) => countMatches(p.keywords, queryKeys) >= minMatches)
+        .map((p) => p.url);
+    };
+    const result = filterProducts(urls, query);
+    return result;
   }
 }

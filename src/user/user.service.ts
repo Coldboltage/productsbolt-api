@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 export class UserService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
-  ) { }
+  ) {}
   async create(createUserDto: CreateUserDto) {
     try {
       const entity = await this.usersRepository.save(createUserDto);

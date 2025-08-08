@@ -15,4 +15,4 @@ import { WebpageModule } from '../webpage/webpage.module';
   controllers: [BlackListUrlController],
   providers: [BlackListUrlService],
 })
-export class BlackListUrlModule { }
+export class BlackListUrlModule {}

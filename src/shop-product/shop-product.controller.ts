@@ -15,6 +15,16 @@ import { UpdateShopProductDto } from './dto/update-shop-product.dto';
 export class ShopProductController {
   constructor(private readonly shopProductService: ShopProductService) { }
 
+  @Post('scan-shop-product-individual/:id')
+  checkForIndividualShopProduct(@Param('id') id: string) {
+    return this.shopProductService.checkForIndividualShopProduct(id);
+  }
+
+  @Post('scan-for-individual-shop/:shopId')
+  checkForAllShopProductsFromShop(@Param('shopId') shopId: string) {
+    return this.shopProductService.checkForAllShopProductsFromShop(shopId);
+  }
+
   @Post('manual-update-shops-all-products/')
   manualUpdateAllShopProducts() {
     return this.shopProductService.manualUpdateAllShopProducts();

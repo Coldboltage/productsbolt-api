@@ -25,6 +25,11 @@ export class ShopController {
     return this.shopService.updateSitemap();
   }
 
+  @Post('/update-specific-shop-sitemap/:shopId')
+  async updateSpecificShopSitemap(@Param('shopId') shopId: string) {
+    return this.shopService.updateSpecificShopSitemap(shopId);
+  }
+
   @Post('/shopify-check')
   async shopifyCheck() {
     return this.shopService.checkShopsIfShopify();

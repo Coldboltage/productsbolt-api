@@ -8,9 +8,9 @@ import {
 import { ShopProduct } from '../../shop-product/entities/shop-product.entity';
 
 export enum UniqueShopType {
-  TIKTOK = "TIKTOK",
-  EBAY = "EBAY",
-  AMAZON = "AMAZON"
+  TIKTOK = 'TIKTOK',
+  EBAY = 'EBAY',
+  AMAZON = 'AMAZON',
 }
 
 @Entity()
@@ -28,9 +28,6 @@ export class Shop {
   @Column()
   sitemap: string;
 
-  @Column('simple-array', { default: '' })
-  sitemapUrls: string[];
-
   @Column()
   category: string;
 
@@ -40,12 +37,21 @@ export class Shop {
   @Column({ default: true })
   active: boolean;
 
-  @Column({ default: false})
+  @Column({ default: false })
   isShopifySite: boolean;
 
-  @Column({enum: UniqueShopType, nullable: true})
-  uniqueShopType: UniqueShopType
+  @Column({ nullable: true })
+  etag: string;
+
+  @Column({ default: 0 })
+  etagCount: number;
+
+  @Column({ enum: UniqueShopType, nullable: true })
+  uniqueShopType: UniqueShopType;
 
   @OneToMany(() => ShopProduct, (shopProduct) => shopProduct.shop)
   shopProducts: ShopProduct[];
+
+  @Column('simple-array', { default: '' })
+  sitemapUrls: string[];
 }

@@ -13,7 +13,7 @@ import { UpdateBlackListUrlDto } from './dto/update-blacklist-url.dto';
 
 @Controller('blacklist-url')
 export class BlackListUrlController {
-  constructor(private readonly BlackListUrlService: BlackListUrlService) { }
+  constructor(private readonly BlackListUrlService: BlackListUrlService) {}
 
   @Post()
   create(@Body() createBlackListUrlDto: CreateBlackListUrlDto) {

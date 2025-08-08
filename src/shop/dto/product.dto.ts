@@ -15,7 +15,7 @@ export class CreateProcessDto {
   name: string;
 
   @IsString()
-  shopWebsite: string
+  shopWebsite: string;
 
   @IsEnum(ProductType)
   type: ProductType;

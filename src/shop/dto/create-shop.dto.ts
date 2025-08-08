@@ -14,5 +14,5 @@ export class CreateShopDto {
   category: string;
 
   @IsString()
-  protocol: string
+  protocol: string;
 }

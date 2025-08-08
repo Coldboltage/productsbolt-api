@@ -20,14 +20,29 @@ export class AlertController {
     return this.alertService.create(createAlertDto);
   }
 
+  @Post('reset-all-alerts-false')
+  resetAlerts() {
+    return this.alertService.resetAlerts();
+  }
+
   @Get()
   findAll() {
+    return this.alertService.findAll();
+  }
+
+  @Get('find-all-alerts')
+  findAllAlerts() {
     return this.alertService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.alertService.findOne(id);
+  }
+
+  @Patch('shallow-update-alerts')
+  shallowUpdateAlerts() {
+    return this.alertService.shallowUpdateAlerts()
   }
 
   @Patch(':id')

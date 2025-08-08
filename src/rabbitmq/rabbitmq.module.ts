@@ -8,21 +8,21 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
   imports: [
     ClientsModule.register([
       {
-        name: 'PROCESS_CLIENT',
+        name: 'HEADFUL_CLIENT',
         transport: Transport.RMQ,
         options: {
           urls: ['amqp://localhost:5672'],
-          queue: 'process_queue',
+          queue: 'headful_queue',
           queueOptions: { durable: false },
           prefetchCount: 10,
         },
       },
       {
-        name: 'MISC_CLIENT',
+        name: 'HEADLESS_CLIENT',
         transport: Transport.RMQ,
         options: {
           urls: ['amqp://localhost:5672'],
-          queue: 'misc_queue',
+          queue: 'headless_queue',
           queueOptions: { durable: false },
           prefetchCount: 10,
         },
@@ -32,6 +32,5 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
   controllers: [RabbitmqController],
   providers: [RabbitmqService],
   exports: [ClientsModule], // <- THIS IS NEEDED!
-
 })
 export class RabbitmqModule { }
