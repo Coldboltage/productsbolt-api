@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { RabbitmqService } from './rabbitmq.service';
 import { CreateRabbitmqDto } from './dto/create-rabbitmq.dto';
 import { UpdateRabbitmqDto } from './dto/update-rabbitmq.dto';
@@ -23,7 +31,10 @@ export class RabbitmqController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRabbitmqDto: UpdateRabbitmqDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateRabbitmqDto: UpdateRabbitmqDto,
+  ) {
     return this.rabbitmqService.update(+id, updateRabbitmqDto);
   }
 

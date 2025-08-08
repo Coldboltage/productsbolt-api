@@ -11,4 +11,4 @@ import { ClientsModule } from '@nestjs/microservices';
   providers: [ShopService],
   exports: [ShopService],
 })
-export class ShopModule { }
+export class ShopModule {}

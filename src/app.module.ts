@@ -12,6 +12,8 @@ import { ShopProductModule } from './shop-product/shop-product.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BlackListUrlModule } from './blacklist-url/blacklist-url.module';
 import { RabbitmqModule } from './rabbitmq/rabbitmq.module';
+import { EbayModule } from './ebay/ebay.module';
+import { WebpageUtilsModule } from './webpage-utils/webpage-utils.module';
 import 'dotenv/config';
 
 @Module({
@@ -22,7 +24,7 @@ import 'dotenv/config';
       port: 5432,
       username: process.env.TYPEORM_USERNAME,
       password: process.env.TYPEORM_PASSWORD,
-      database: 'productsbolt-postgres',
+      database: 'test_productsbolt',
       autoLoadEntities: true,
       synchronize: true,
     }),
@@ -36,6 +38,8 @@ import 'dotenv/config';
     ShopProductModule,
     BlackListUrlModule,
     RabbitmqModule,
+    EbayModule,
+    WebpageUtilsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

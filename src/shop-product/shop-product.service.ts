@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateShopProductDto } from './dto/create-shop-product.dto';
 import { UpdateShopProductDto } from './dto/update-shop-product.dto';
-import { OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ShopProduct } from './entities/shop-product.entity';
 import { IsNull, Not, Repository } from 'typeorm';
@@ -10,23 +10,28 @@ import { Product } from '../product/entities/product.entity';
 import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
 import { CreateProcessDto } from '../shop/dto/create-process.dto';
-import { Shop } from '../shop/entities/shop.entity';
+import { Shop, UniqueShopType } from '../shop/entities/shop.entity';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class ShopProductService {
   constructor(
-    @Inject('PROCESS_CLIENT') private processClient: ClientProxy,
+    @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
+    @Inject('HEADLESS_CLIENT') private headlessClient: ClientProxy,
+
     @InjectRepository(ShopProduct)
     private shopProductRepository: Repository<ShopProduct>,
     private shopService: ShopService,
     private productService: ProductService,
+    private eventEmitter: EventEmitter2,
   ) { }
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
-    await this.processClient.connect();
+    await this.headfulClient.connect();
+    await this.headlessClient.connect();
 
     // Dig into the amqp-connection-manager instance
-    const client: any = this.processClient;
+    const client: any = this.headfulClient;
     const managers = client.client; // the amqp-connection-manager Client
     const manager =
       managers as import('amqp-connection-manager').AmqpConnectionManager;
@@ -55,8 +60,39 @@ export class ShopProductService {
         productId: product.id,
       });
     });
-    const response = await Promise.all(shopProductsPromises);
-    console.log(response);
+    const shopProductResponses = await Promise.all(shopProductsPromises);
+    for (const shopProduct of shopProductResponses) {
+      console.log(`Adding new product: ${shopProduct.product.name}`);
+      const createProcess: CreateProcessDto = {
+        sitemap: shopProduct.shop.sitemap,
+        url: shopProduct.shop.website,
+        category: shopProduct.shop.category,
+        name: shopProduct.product.name,
+        shopProductId: shopProduct.id,
+        shopWebsite: shopProduct.shop.name,
+        type: shopProduct.product.type,
+        context: shopProduct.product.context,
+        crawlAmount: 90,
+        productId: shopProduct.product.id,
+        shopId: shopProduct.shop.id,
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType,
+        sitemapUrls: shopProduct.shop.sitemapUrls,
+      };
+
+      if (shopProduct.shop.isShopifySite === true) {
+        this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else {
+        this.headfulClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      }
+    }
+    console.log(shopProductResponses);
   }
 
   @OnEvent('shop.created')
@@ -73,6 +109,7 @@ export class ShopProductService {
       });
     });
     const response = await Promise.all(shopProductsPromises);
+    // Setup a sitemap emit to the worker for this shop
     console.log(response);
     return response;
   }
@@ -93,27 +130,58 @@ export class ShopProductService {
     console.log(shopProductsOrphan.length);
 
     for (const shopProduct of shopProductsOrphan) {
+      const reducedSitemap = this.shopService.reduceSitemap(
+        shopProduct.shop.sitemapUrls,
+        shopProduct.product.name,
+      );
+
+      console.log(reducedSitemap.length)
+
+      if (reducedSitemap.length === 0) continue;
+
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
         url: shopProduct.shop.website,
         category: shopProduct.shop.category,
         name: shopProduct.product.name,
+        shopProductId: shopProduct.id,
         shopWebsite: shopProduct.shop.name,
         type: shopProduct.product.type,
         context: shopProduct.product.context,
-        crawlAmount: 30,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
+        crawlAmount: 90,
         productId: shopProduct.productId,
         shopId: shopProduct.shopId,
-        shopifySite: shopProduct.shop.isShopifySite
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType,
+        sitemapUrls: shopProduct.shop.sitemapUrls,
       };
-      this.processClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
+
+      if (
+        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+        shopProduct.ebayProductDetail
+      ) {
+        createProcess.ebayProductDetail = {
+          ebayProductDetailId: shopProduct.ebayProductDetail.id,
+          productId: shopProduct.ebayProductDetail.productId,
+        };
+      }
+
+      if (shopProduct.shop.isShopifySite === true) {
+        console.log('shopifySiteFound')
+        this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else {
+        console.log('normal setup')
+        this.headfulClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      }
+      await new Promise((r) => setTimeout(r, 2));
     }
   }
-
   async manualFindShopsToUpdateProducts(productId: string) {
     const product = await this.productService.findOne(productId);
     console.log(`Adding new product: ${product.name}`);
@@ -140,19 +208,39 @@ export class ShopProductService {
         url: shopProduct.shop.website,
         category: shopProduct.shop.category,
         name: product.name,
+        shopProductId: shopProduct.id,
         shopWebsite: shopProduct.shop.name,
         type: product.type,
         context: product.context,
-        crawlAmount: 30,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
+        crawlAmount: 90,
         productId: shopProduct.productId,
         shopId: shopProduct.shopId,
-        shopifySite: shopProduct.shop.isShopifySite
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType,
+        sitemapUrls: shopProduct.shop.sitemapUrls,
       };
-      this.processClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
+
+      if (
+        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+        shopProduct.ebayProductDetail
+      ) {
+        createProcess.ebayProductDetail = {
+          ebayProductDetailId: shopProduct.ebayProductDetail.id,
+          productId: shopProduct.ebayProductDetail.productId,
+        };
+      }
+
+      if (shopProduct.shop.isShopifySite === true) {
+        this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else {
+        this.headfulClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      }
     }
   }
 
@@ -169,17 +257,115 @@ export class ShopProductService {
   //       shopWebsite: shopProduct.shop.name,
   //       type: shopProduct.product.type,
   //       context: shopProduct.product.context,
-  //       crawlAmount: 30,
+  //       crawlAmount: 90,
   //       sitemapUrls: shopProduct.shop.sitemapUrls,
   //       productId: shopProduct.productId,
   //       shopId: shopProduct.shopId,
   //     };
-  //     this.processClient.emit<CreateProcessDto>(
+  //     this.headfulClient.emit<CreateProcessDto>(
   //       'ShopifyCheck',
   //       createProcess,
   //     );
   //   }
   // }
+
+  // Scrap for shopProductById (check for a product for a certain website manually for testing)
+  async checkForIndividualShopProduct(shopProductId: string) {
+    const shopProduct = await this.shopProductRepository.findOne({
+      where: {
+        id: shopProductId,
+      },
+      relations: {
+        shop: true,
+        product: true,
+      },
+    });
+
+    const createProcess: CreateProcessDto = {
+      sitemap: shopProduct.shop.sitemap,
+      url: shopProduct.shop.website,
+      category: shopProduct.shop.category,
+      name: shopProduct.product.name,
+      shopProductId: shopProduct.id,
+      shopWebsite: shopProduct.shop.name,
+      type: shopProduct.product.type,
+      context: shopProduct.product.context,
+      crawlAmount: 90,
+      productId: shopProduct.productId,
+      shopId: shopProduct.shopId,
+      shopifySite: shopProduct.shop.isShopifySite,
+      shopType: shopProduct.shop.uniqueShopType,
+      sitemapUrls: shopProduct.shop.sitemapUrls,
+    };
+
+    if (shopProduct.shop.isShopifySite === true) {
+      this.headlessClient.emit<CreateProcessDto>(
+        'webpageDiscovery',
+        createProcess,
+      );
+    } else {
+      this.headfulClient.emit<CreateProcessDto>(
+        'webpageDiscovery',
+        createProcess,
+      );
+    }
+  }
+
+  // Check all shopProducts for shop
+  async checkForAllShopProductsFromShop(shopId: string) {
+    const shopProducts = await this.shopProductRepository.find({
+      where: {
+        shopId,
+      },
+      relations: {
+        shop: true,
+        product: true,
+      },
+    });
+
+    console.log(shopProducts.length);
+
+    for (const shopProduct of shopProducts) {
+      const createProcess: CreateProcessDto = {
+        sitemap: shopProduct.shop.sitemap,
+        url: shopProduct.shop.website,
+        category: shopProduct.shop.category,
+        name: shopProduct.product.name,
+        shopProductId: shopProduct.id,
+        shopWebsite: shopProduct.shop.name,
+        type: shopProduct.product.type,
+        context: shopProduct.product.context,
+        crawlAmount: 90,
+        productId: shopProduct.productId,
+        shopId: shopProduct.shopId,
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType,
+        sitemapUrls: shopProduct.shop.sitemapUrls,
+      };
+
+      if (
+        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+        shopProduct.ebayProductDetail
+      ) {
+        createProcess.ebayProductDetail = {
+          ebayProductDetailId: shopProduct.ebayProductDetail.id,
+          productId: shopProduct.ebayProductDetail.productId,
+        };
+      }
+
+      if (shopProduct.shop.isShopifySite === true) {
+        this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else {
+        this.headfulClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      }
+    }
+  }
 
   create(createShopProductDto: CreateShopProductDto) {
     return 'This action adds a new shopProduct';
@@ -190,14 +376,13 @@ export class ShopProductService {
   //    where: {
   //       webPages: { id: Not(IsNull()) }, // only ShopProducts with at least one webpage
 
-      
   //    }
   //   })
   //   const filteredShopProductEntities = shopProdctEntities.filter(shopProduct => {
   //     return shopProduct.webPages.find(webpage => {
   //       return webpage.id
   //    })
-  //   }) 
+  //   })
   //   return filteredShopProductEntities
   // }
 
@@ -238,6 +423,9 @@ export class ShopProductService {
         productId,
         shopId,
       },
+      relations: {
+        product: true,
+      },
     });
   }
   // async findOneByShopName(name: string): Promise<ShopProduct> {
@@ -254,7 +442,7 @@ export class ShopProductService {
   //   });
   // }
 
-  update(id: string, updateShopProductDto: UpdateShopProductDto) {
+  async update(id: string, updateShopProductDto: UpdateShopProductDto) {
     return this.shopProductRepository.update({ id }, updateShopProductDto);
   }
 

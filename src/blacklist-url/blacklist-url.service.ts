@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBlackListUrlDto } from './dto/create-blacklist-url.dto';
 import { UpdateBlackListUrlDto } from './dto/update-blacklist-url.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,21 +20,31 @@ export class BlackListUrlService {
       createBlackListUrlDto.url,
     );
 
-    const blackListEntity = this.blackListRepository.create({
-      url: webpageEntity.url,
-      shopProducts: [webpageEntity.shopProduct],
-    });
+    const urlExist = await this.findOneByUrl(createBlackListUrlDto.url);
+    let blackListEntity: BlackListUrl;
 
-    console.log(webpageEntity)
+    if (!webpageEntity) throw new NotFoundException('webpage_does_not_exist')
+
+    if (urlExist) {
+      console.log(urlExist)
+      urlExist.shopProducts.push(webpageEntity.shopProduct);
+      await this.blackListRepository.save(urlExist);
+    } else {
+      blackListEntity = this.blackListRepository.create({
+        url: webpageEntity.url,
+        shopProducts: [webpageEntity.shopProduct],
+      });
+    }
+
+    console.log(webpageEntity);
 
     await this.shopProductsService.update(webpageEntity.shopProduct.id, {
       populated: false,
     });
 
-    const response = await this.webPageService.removeWebpage(
-      createBlackListUrlDto.url,
-    );
-    if (!response) throw new Error('page might not have been deleted')
+    const response = await this.webPageService.removeWebpage(webpageEntity.id);
+    if (!response) throw new Error('page might not have been deleted');
+
     return this.blackListRepository.save<BlackListUrl>(blackListEntity);
   }
 
@@ -55,6 +65,7 @@ export class BlackListUrlService {
       where: {
         url,
       },
+      relations: { shopProducts: true }
     });
   }
 

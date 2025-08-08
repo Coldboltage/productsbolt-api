@@ -3,11 +3,16 @@ import {
   IsBoolean,
   IsEnum,
   IsNumber,
+  IsOptional,
   IsString,
   IsUrl,
   IsUUID,
+  ValidateNested,
 } from 'class-validator';
 import { ProductType } from '../../product/entities/product.entity';
+import { UniqueShopType } from '../entities/shop.entity';
+import { EbayProductDetailDto } from 'src/ebay/dto/ebay-product-detail.dto';
+import { Type } from 'class-transformer';
 
 export class CreateProcessDto {
   @IsUrl()
@@ -21,6 +26,9 @@ export class CreateProcessDto {
 
   @IsString()
   name: string;
+
+  @IsUUID()
+  shopProductId: string;
 
   @IsString()
   shopWebsite: string;
@@ -41,9 +49,17 @@ export class CreateProcessDto {
   shopId: string;
 
   @IsBoolean()
-  shopifySite: boolean
+  shopifySite: boolean;
+
+  @IsEnum(UniqueShopType)
+  shopType: UniqueShopType;
 
   @IsArray()
   @IsString({ each: true })
   sitemapUrls: string[];
+
+  @ValidateNested()
+  @Type(() => EbayProductDetailDto)
+  @IsOptional()
+  ebayProductDetail?: EbayProductDetailDto;
 }
