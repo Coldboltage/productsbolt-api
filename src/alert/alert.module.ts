@@ -5,9 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Alert } from './entities/alert.entity';
 import { UserModule } from '../user/user.module';
 import { ProductModule } from '../product/product.module';
+import { WebpageUtilsModule } from '../webpage-utils/webpage-utils.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Alert]), UserModule, ProductModule],
+  imports: [
+    TypeOrmModule.forFeature([Alert]),
+    UserModule,
+    ProductModule,
+    WebpageUtilsModule,
+  ],
   controllers: [AlertController],
   providers: [AlertService],
   exports: [AlertService],

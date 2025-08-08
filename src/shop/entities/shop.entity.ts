@@ -28,9 +28,6 @@ export class Shop {
   @Column()
   sitemap: string;
 
-  @Column('simple-array', { default: '' })
-  sitemapUrls: string[];
-
   @Column()
   category: string;
 
@@ -54,4 +51,7 @@ export class Shop {
 
   @OneToMany(() => ShopProduct, (shopProduct) => shopProduct.shop)
   shopProducts: ShopProduct[];
+
+  @Column('simple-array', { default: '' })
+  sitemapUrls: string[];
 }

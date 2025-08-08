@@ -89,6 +89,12 @@ export class WebpageController {
     return this.webpageService.removeWebpage(id);
   }
 
+  @Delete('/delete-and-update-shop-product-page-all')
+  removeAllWebPages(@Param('id') id: string) {
+    console.log(id);
+    return this.webpageService.removeAllWebPages();
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.webpageService.remove(id);

@@ -13,7 +13,7 @@ import { UpdateShopDto } from './dto/update-shop.dto';
 
 @Controller('shop')
 export class ShopController {
-  constructor(private readonly shopService: ShopService) {}
+  constructor(private readonly shopService: ShopService) { }
 
   @Post()
   create(@Body() createShopDto: CreateShopDto) {
@@ -23,6 +23,11 @@ export class ShopController {
   @Post('/update-sitemap')
   async updateSitemap() {
     return this.shopService.updateSitemap();
+  }
+
+  @Post('/update-specific-shop-sitemap/:shopId')
+  async updateSpecificShopSitemap(@Param('shopId') shopId: string) {
+    return this.shopService.updateSpecificShopSitemap(shopId);
   }
 
   @Post('/shopify-check')

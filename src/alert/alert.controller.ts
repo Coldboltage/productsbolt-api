@@ -40,6 +40,11 @@ export class AlertController {
     return this.alertService.findOne(id);
   }
 
+  @Patch('shallow-update-alerts')
+  shallowUpdateAlerts() {
+    return this.alertService.shallowUpdateAlerts()
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAlertDto: UpdateAlertDto) {
     return this.alertService.update(+id, updateAlertDto);

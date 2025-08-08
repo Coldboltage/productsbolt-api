@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBlackListUrlDto } from './dto/create-blacklist-url.dto';
 import { UpdateBlackListUrlDto } from './dto/update-blacklist-url.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,7 +6,6 @@ import { BlackListUrl } from './entities/blacklist-url.entity';
 import { Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { WebpageService } from '../webpage/webpage.service';
-import { url } from 'inspector';
 
 @Injectable()
 export class BlackListUrlService {
@@ -24,7 +23,10 @@ export class BlackListUrlService {
     const urlExist = await this.findOneByUrl(createBlackListUrlDto.url);
     let blackListEntity: BlackListUrl;
 
+    if (!webpageEntity) throw new NotFoundException('webpage_does_not_exist')
+
     if (urlExist) {
+      console.log(urlExist)
       urlExist.shopProducts.push(webpageEntity.shopProduct);
       await this.blackListRepository.save(urlExist);
     } else {
@@ -63,6 +65,7 @@ export class BlackListUrlService {
       where: {
         url,
       },
+      relations: { shopProducts: true }
     });
   }
 

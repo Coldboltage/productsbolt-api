@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { ProductService } from '../product/product.service';
 import { Webpage } from '../webpage/entities/webpage.entity';
 import { OnEvent } from '@nestjs/event-emitter';
+import { WebpageUtilsService } from '../webpage-utils/webpage-utils.service';
 
 @Injectable()
 export class AlertService {
@@ -14,6 +15,7 @@ export class AlertService {
     @InjectRepository(Alert) private alertsRepository: Repository<Alert>,
     // private userService: UserService,
     private productService: ProductService,
+    private webpageUtilsService: WebpageUtilsService,
   ) { }
   async create(createAlertDto: CreateAlertDto) {
     console.log(createAlertDto);
@@ -54,6 +56,13 @@ export class AlertService {
         inStock: webpage.inStock,
       });
     }
+  }
+
+  async shallowUpdateAlerts() {
+    const webpages = await this.webpageUtilsService.findAll();
+    webpages.forEach(async (webpage) => {
+      await this.checkAlert(webpage);
+    });
   }
 
   async resetAlerts() {

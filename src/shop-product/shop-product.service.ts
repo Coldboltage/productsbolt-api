@@ -11,11 +11,14 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
 import { CreateProcessDto } from '../shop/dto/create-process.dto';
 import { Shop, UniqueShopType } from '../shop/entities/shop.entity';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class ShopProductService {
   constructor(
-    @Inject('PROCESS_CLIENT') private processClient: ClientProxy,
+    @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
+    @Inject('HEADLESS_CLIENT') private headlessClient: ClientProxy,
+
     @InjectRepository(ShopProduct)
     private shopProductRepository: Repository<ShopProduct>,
     private shopService: ShopService,
@@ -24,10 +27,11 @@ export class ShopProductService {
   ) { }
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
-    await this.processClient.connect();
+    await this.headfulClient.connect();
+    await this.headlessClient.connect();
 
     // Dig into the amqp-connection-manager instance
-    const client: any = this.processClient;
+    const client: any = this.headfulClient;
     const managers = client.client; // the amqp-connection-manager Client
     const manager =
       managers as import('amqp-connection-manager').AmqpConnectionManager;
@@ -69,17 +73,24 @@ export class ShopProductService {
         type: shopProduct.product.type,
         context: shopProduct.product.context,
         crawlAmount: 90,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
         productId: shopProduct.product.id,
         shopId: shopProduct.shop.id,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
+        sitemapUrls: shopProduct.shop.sitemapUrls,
       };
 
-      this.processClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
+      if (shopProduct.shop.isShopifySite === true) {
+        this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else {
+        this.headfulClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      }
     }
     console.log(shopProductResponses);
   }
@@ -119,6 +130,15 @@ export class ShopProductService {
     console.log(shopProductsOrphan.length);
 
     for (const shopProduct of shopProductsOrphan) {
+      const reducedSitemap = this.shopService.reduceSitemap(
+        shopProduct.shop.sitemapUrls,
+        shopProduct.product.name,
+      );
+
+      console.log(reducedSitemap.length)
+
+      if (reducedSitemap.length === 0) continue;
+
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
         url: shopProduct.shop.website,
@@ -129,11 +149,11 @@ export class ShopProductService {
         type: shopProduct.product.type,
         context: shopProduct.product.context,
         crawlAmount: 90,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
         productId: shopProduct.productId,
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
+        sitemapUrls: shopProduct.shop.sitemapUrls,
       };
 
       if (
@@ -146,10 +166,20 @@ export class ShopProductService {
         };
       }
 
-      this.processClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
+      if (shopProduct.shop.isShopifySite === true) {
+        console.log('shopifySiteFound')
+        this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else {
+        console.log('normal setup')
+        this.headfulClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      }
+      await new Promise((r) => setTimeout(r, 2));
     }
   }
   async manualFindShopsToUpdateProducts(productId: string) {
@@ -183,11 +213,11 @@ export class ShopProductService {
         type: product.type,
         context: product.context,
         crawlAmount: 90,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
         productId: shopProduct.productId,
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
+        sitemapUrls: shopProduct.shop.sitemapUrls,
       };
 
       if (
@@ -200,10 +230,17 @@ export class ShopProductService {
         };
       }
 
-      this.processClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
+      if (shopProduct.shop.isShopifySite === true) {
+        this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else {
+        this.headfulClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      }
     }
   }
 
@@ -225,7 +262,7 @@ export class ShopProductService {
   //       productId: shopProduct.productId,
   //       shopId: shopProduct.shopId,
   //     };
-  //     this.processClient.emit<CreateProcessDto>(
+  //     this.headfulClient.emit<CreateProcessDto>(
   //       'ShopifyCheck',
   //       createProcess,
   //     );
@@ -254,17 +291,24 @@ export class ShopProductService {
       type: shopProduct.product.type,
       context: shopProduct.product.context,
       crawlAmount: 90,
-      sitemapUrls: shopProduct.shop.sitemapUrls,
       productId: shopProduct.productId,
       shopId: shopProduct.shopId,
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
+      sitemapUrls: shopProduct.shop.sitemapUrls,
     };
 
-    this.processClient.emit<CreateProcessDto>(
-      'webpageDiscovery',
-      createProcess,
-    );
+    if (shopProduct.shop.isShopifySite === true) {
+      this.headlessClient.emit<CreateProcessDto>(
+        'webpageDiscovery',
+        createProcess,
+      );
+    } else {
+      this.headfulClient.emit<CreateProcessDto>(
+        'webpageDiscovery',
+        createProcess,
+      );
+    }
   }
 
   // Check all shopProducts for shop
@@ -292,11 +336,11 @@ export class ShopProductService {
         type: shopProduct.product.type,
         context: shopProduct.product.context,
         crawlAmount: 90,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
         productId: shopProduct.productId,
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
+        sitemapUrls: shopProduct.shop.sitemapUrls,
       };
 
       if (
@@ -309,10 +353,17 @@ export class ShopProductService {
         };
       }
 
-      this.processClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
+      if (shopProduct.shop.isShopifySite === true) {
+        this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else {
+        this.headfulClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      }
     }
   }
 
@@ -391,7 +442,7 @@ export class ShopProductService {
   //   });
   // }
 
-  update(id: string, updateShopProductDto: UpdateShopProductDto) {
+  async update(id: string, updateShopProductDto: UpdateShopProductDto) {
     return this.shopProductRepository.update({ id }, updateShopProductDto);
   }
 

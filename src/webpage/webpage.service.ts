@@ -15,17 +15,17 @@ import {
 import { Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { ClientProxy } from '@nestjs/microservices';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { ProductService } from '../product/product.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AlertService } from '../alert/alert.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class WebpageService {
   constructor(
     @InjectRepository(Webpage) private webpagesRepository: Repository<Webpage>,
-    @Inject('PROCESS_CLIENT') private processClient: ClientProxy,
-    @Inject('MISC_CLIENT') private readonly miscClient: ClientProxy,
+    @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
+    @Inject('HEADLESS_CLIENT') private readonly headlessClient: ClientProxy,
     private shopProductService: ShopProductService,
     private productService: ProductService,
     private alertService: AlertService,
@@ -34,10 +34,11 @@ export class WebpageService {
 
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
-    await this.processClient.connect();
+    await this.headfulClient.connect();
+    await this.headlessClient.connect();
 
     // Dig into the amqp-connection-manager instance
-    const client: any = this.processClient;
+    const client: any = this.headfulClient;
     const managers = client.client; // the amqp-connection-manager Client
     const manager =
       managers as import('amqp-connection-manager').AmqpConnectionManager;
@@ -307,20 +308,31 @@ export class WebpageService {
     return response;
   }
 
-  // @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_HOUR)
   async updateAllPages() {
     const webPages = await this.findAll();
     console.log(webPages.length);
     for (const page of webPages) {
       console.log(page);
-      this.processClient.emit('updatePage', {
-        url: page.url,
-        query: page.shopProduct.name,
-        type: page.shopProduct.product.type,
-        shopWebsite: page.shopProduct.shop.name,
-        webPageId: page.id,
-        shopifySite: page.shopProduct.shop.isShopifySite,
-      });
+      if (page.shopProduct.shop.isShopifySite === true) {
+        this.headlessClient.emit('updatePage', {
+          url: page.url,
+          query: page.shopProduct.name,
+          type: page.shopProduct.product.type,
+          shopWebsite: page.shopProduct.shop.name,
+          webPageId: page.id,
+          shopifySite: page.shopProduct.shop.isShopifySite,
+        });
+      } else {
+        this.headfulClient.emit('updatePage', {
+          url: page.url,
+          query: page.shopProduct.name,
+          type: page.shopProduct.product.type,
+          shopWebsite: page.shopProduct.shop.name,
+          webPageId: page.id,
+          shopifySite: page.shopProduct.shop.isShopifySite,
+        });
+      }
     }
     return webPages;
   }
@@ -329,14 +341,25 @@ export class WebpageService {
     const page = await this.findOne(webpageId);
 
     console.log(page);
-    this.processClient.emit('updatePage', {
-      url: page.url,
-      query: page.shopProduct.name,
-      type: page.shopProduct.product.type,
-      shopWebsite: page.shopProduct.shop.name,
-      webPageId: page.id,
-      shopifySite: page.shopProduct.shop.isShopifySite,
-    });
+    if (page.shopProduct.shop.isShopifySite === true) {
+      this.headlessClient.emit('updatePage', {
+        url: page.url,
+        query: page.shopProduct.name,
+        type: page.shopProduct.product.type,
+        shopWebsite: page.shopProduct.shop.name,
+        webPageId: page.id,
+        shopifySite: page.shopProduct.shop.isShopifySite,
+      });
+    } else {
+      this.headfulClient.emit('updatePage', {
+        url: page.url,
+        query: page.shopProduct.name,
+        type: page.shopProduct.product.type,
+        shopWebsite: page.shopProduct.shop.name,
+        webPageId: page.id,
+        shopifySite: page.shopProduct.shop.isShopifySite,
+      });
+    }
 
     return page;
   }
@@ -371,6 +394,13 @@ export class WebpageService {
     this.eventEmitter.emit('webpage.updated', webpageEntity);
 
     return this.findOne(id);
+  }
+
+  async removeAllWebPages() {
+    const allWebpages = await this.findAll();
+    for (const webpage of allWebpages) {
+      await this.removeWebpage(webpage.id);
+    }
   }
 
   async removeWebpage(id: string) {

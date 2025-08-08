@@ -24,4 +24,7 @@ export class CreateWebpageDto {
 
   @IsString()
   shopId: string;
+
+  @IsString()
+  reason: string;
 }
