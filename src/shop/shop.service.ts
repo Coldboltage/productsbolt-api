@@ -8,21 +8,18 @@ import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Shop, UniqueShopType } from './entities/shop.entity';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
-import { Product } from '../product/entities/product.entity';
+import { Shop } from './entities/shop.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ClientProxy } from '@nestjs/microservices';
-import { CreateProcessDto } from './dto/create-process.dto';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
 
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
   constructor(
     @InjectRepository(Shop) private shopsRepository: Repository<Shop>,
     @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
-    @Inject('HEADLESS_CLIENT')
-    private readonly headlessClient: ClientProxy,
+    // @Inject('HEADLESS_CLIENT') private readonly headlessClient: ClientProxy,
+    @Inject('SITEMAP_CLIENT') private readonly sitemapClient: ClientProxy,
+
     private eventEmitter: EventEmitter2,
   ) { }
   async onApplicationBootstrap() {
@@ -73,7 +70,7 @@ export class ShopService implements OnApplicationBootstrap {
     // Start a background task and don’t await it
 
     for (const shop of allActiveShops) {
-      this.headlessClient.emit('sitemapSearch', shop);
+      this.sitemapClient.emit('sitemapSearch', shop);
       // const delay = 2000 + Math.random() * 500;
       // await new Promise((res) => setTimeout(res, delay));
     }
@@ -82,7 +79,7 @@ export class ShopService implements OnApplicationBootstrap {
   async updateSpecificShopSitemap(shopId: string) {
     const shop = await this.findOne(shopId);
     console.log(shop);
-    this.headlessClient.emit('sitemapSearch', shop);
+    this.sitemapClient.emit('sitemapSearch', shop);
   }
 
   checkShopsIfShopify = async () => {
