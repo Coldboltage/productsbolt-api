@@ -1,11 +1,14 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
 import { ShopProduct } from '../../shop-product/entities/shop-product.entity';
+import { Sitemap } from '../../sitemap/entities/sitemap.entity';
 
 export enum UniqueShopType {
   TIKTOK = 'TIKTOK',
@@ -51,6 +54,10 @@ export class Shop {
 
   @OneToMany(() => ShopProduct, (shopProduct) => shopProduct.shop)
   shopProducts: ShopProduct[];
+
+  @OneToOne(() => Sitemap)
+  @JoinColumn()
+  sitemapEntity: Sitemap;
 
   @Column('simple-array', { default: '' })
   sitemapUrls: string[];

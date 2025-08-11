@@ -1,23 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateSitemapDto } from './dto/create-sitemap.dto';
 import { UpdateSitemapDto } from './dto/update-sitemap.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Sitemap } from './entities/sitemap.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class SitemapService {
-  create(createSitemapDto: CreateSitemapDto) {
-    return 'This action adds a new sitemap';
+  constructor(
+    @InjectRepository(Sitemap) private sitemapRepository: Repository<Sitemap>,
+  ) { }
+  async create(createSitemapDto: CreateSitemapDto) {
+    const sitemapExist = await this.sitemapRepository.exists({
+      where: {
+        shop: {
+          id: createSitemapDto.shopId,
+        },
+      },
+    });
+    if (sitemapExist) {
+      throw new ConflictException('sitemap_already_exists_for_shop');
+    }
+
+    return this.sitemapRepository.save(createSitemapDto);
   }
 
   findAll() {
     return `This action returns all sitemap`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} sitemap`;
+  async findOne(id: string) {
+    return this.sitemapRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        shop: true,
+      },
+    });
   }
 
-  update(id: number, updateSitemapDto: UpdateSitemapDto) {
-    return `This action updates a #${id} sitemap`;
+  update(id: string, updateSitemapDto: UpdateSitemapDto) {
+    return this.sitemapRepository.update(id, updateSitemapDto);
   }
 
   remove(id: number) {
