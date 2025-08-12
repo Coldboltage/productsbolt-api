@@ -1,15 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { SitemapService } from './sitemap.service';
 import { CreateSitemapDto } from './dto/create-sitemap.dto';
 import { UpdateSitemapDto } from './dto/update-sitemap.dto';
 
 @Controller('sitemap')
 export class SitemapController {
-  constructor(private readonly sitemapService: SitemapService) {}
+  constructor(private readonly sitemapService: SitemapService) { }
 
   @Post()
   create(@Body() createSitemapDto: CreateSitemapDto) {
     return this.sitemapService.create(createSitemapDto);
+  }
+
+  @Post('/generated-sitemap-all-shops')
+  generateSitemapAllShops() {
+    return this.sitemapService.generateSitemapAllShops();
   }
 
   @Get()
@@ -19,16 +32,16 @@ export class SitemapController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.sitemapService.findOne(+id);
+    return this.sitemapService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSitemapDto: UpdateSitemapDto) {
-    return this.sitemapService.update(+id, updateSitemapDto);
+    return this.sitemapService.update(id, updateSitemapDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.sitemapService.remove(+id);
+    return this.sitemapService.remove(id);
   }
 }

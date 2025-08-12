@@ -4,11 +4,13 @@ import { UpdateSitemapDto } from './dto/update-sitemap.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Sitemap } from './entities/sitemap.entity';
 import { Repository } from 'typeorm';
+import { ShopService } from '../shop/shop.service';
 
 @Injectable()
 export class SitemapService {
   constructor(
     @InjectRepository(Sitemap) private sitemapRepository: Repository<Sitemap>,
+    private shopService: ShopService,
   ) { }
   async create(createSitemapDto: CreateSitemapDto) {
     const sitemapExist = await this.sitemapRepository.exists({
@@ -17,12 +19,33 @@ export class SitemapService {
           id: createSitemapDto.shopId,
         },
       },
+      relations: {
+        shop: true,
+      },
     });
     if (sitemapExist) {
       throw new ConflictException('sitemap_already_exists_for_shop');
     }
+    const shopEntity = await this.shopService.findOne(createSitemapDto.shopId);
+    console.log(sitemapExist);
+    return this.sitemapRepository.save({
+      ...createSitemapDto,
+      shop: shopEntity,
+    });
+  }
 
-    return this.sitemapRepository.save(createSitemapDto);
+  async generateSitemapAllShops() {
+    const shops = await this.shopService.findAllRegardless();
+    for (const shop of shops) {
+      console.log(shop);
+      const sitemapEntity = await this.create({
+        isShopifySite: shop.isShopifySite,
+        shopId: shop.id,
+        sitemapUrls: shop.sitemapEntity.sitemapUrls,
+        sitemap: shop.sitemap,
+      });
+      console.log(sitemapEntity);
+    }
   }
 
   findAll() {
@@ -41,10 +64,12 @@ export class SitemapService {
   }
 
   update(id: string, updateSitemapDto: UpdateSitemapDto) {
+    console.log(id)
+    console.log(updateSitemapDto.sitemapUrls.length)
     return this.sitemapRepository.update(id, updateSitemapDto);
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} sitemap`;
   }
 }

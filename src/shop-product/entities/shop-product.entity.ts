@@ -33,7 +33,9 @@ export class ShopProduct {
   @Column({ default: false })
   populated: boolean;
 
-  @ManyToOne(() => Shop, (shop) => shop.shopProducts)
+  @ManyToOne(() => Shop, (shop) => shop.shopProducts, {
+    onDelete: 'CASCADE',
+  })
   shop: Shop;
 
   @ManyToOne(() => Product, (product) => product.shopProducts)
@@ -44,7 +46,9 @@ export class ShopProduct {
   })
   blacklistUrls: BlackListUrl[];
 
-  @OneToMany(() => Webpage, (webPages) => webPages.shopProduct)
+  @OneToMany(() => Webpage, (webPages) => webPages.shopProduct, {
+    onDelete: 'CASCADE',
+  })
   webPages: Webpage[];
 
   @OneToOne(

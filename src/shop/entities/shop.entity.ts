@@ -1,7 +1,6 @@
 import {
   Column,
   Entity,
-  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -55,10 +54,6 @@ export class Shop {
   @OneToMany(() => ShopProduct, (shopProduct) => shopProduct.shop)
   shopProducts: ShopProduct[];
 
-  @OneToOne(() => Sitemap)
-  @JoinColumn()
+  @OneToOne(() => Sitemap, (sitemapEntity) => sitemapEntity.shop)
   sitemapEntity: Sitemap;
-
-  @Column('simple-array', { default: '' })
-  sitemapUrls: string[];
 }

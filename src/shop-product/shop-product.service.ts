@@ -77,7 +77,11 @@ export class ShopProductService {
         shopId: shopProduct.shop.id,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
+        sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          shopId: shopProduct.shop.id,
+        },
       };
 
       if (shopProduct.shop.isShopifySite === true) {
@@ -131,7 +135,7 @@ export class ShopProductService {
 
     for (const shopProduct of shopProductsOrphan) {
       const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapUrls,
+        shopProduct.shop.sitemapEntity.sitemapUrls,
         shopProduct.product.name,
       );
 
@@ -153,7 +157,11 @@ export class ShopProductService {
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
+        sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          shopId: shopProduct.shop.id,
+        },
       };
 
       if (
@@ -217,7 +225,11 @@ export class ShopProductService {
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
+        sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          shopId: shopProduct.shop.id,
+        },
       };
 
       if (
@@ -295,7 +307,11 @@ export class ShopProductService {
       shopId: shopProduct.shopId,
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
-      sitemapUrls: shopProduct.shop.sitemapUrls,
+      sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
+      sitemapEntity: {
+        ...shopProduct.shop.sitemapEntity,
+        shopId: shopProduct.shop.id,
+      },
     };
 
     if (shopProduct.shop.isShopifySite === true) {
@@ -340,7 +356,11 @@ export class ShopProductService {
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
+        sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          shopId: shopProduct.shop.id,
+        },
       };
 
       if (

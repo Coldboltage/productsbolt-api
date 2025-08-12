@@ -1,11 +1,25 @@
-import { IsBoolean, IsUUID } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateSitemapDto {
-  @IsBoolean()
-  shopifySite: boolean;
+  @IsString()
+  sitemap: string;
+
+  @IsOptional()
+  @IsArray()
+  sitemapUrls?: string[];
 
   @IsBoolean()
-  errored: boolean;
+  isShopifySite: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  errored?: boolean;
 
   @IsUUID()
   shopId: string;

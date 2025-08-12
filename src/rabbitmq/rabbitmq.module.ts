@@ -37,6 +37,16 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           prefetchCount: 1,
         },
       },
+      {
+        name: 'SLOW_SITEMAP_CLIENT',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://localhost:5672'],
+          queue: 'slow_sitemap_queue',
+          queueOptions: { durable: false },
+          prefetchCount: 1,
+        },
+      },
     ]),
   ],
   controllers: [RabbitmqController],
