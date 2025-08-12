@@ -25,6 +25,17 @@ export class ShopController {
     return this.shopService.updateSitemap();
   }
 
+  @Post('/test-shopify-site-collection/:shopId')
+  async testShopifySiteCollection(@Param('shopId') shopId: string) {
+    return this.shopService.testShopifySiteCollection(shopId)
+  }
+
+  @Post('/test-shopify-site-collection-all')
+  async testShopifySiteCollectionAllShopify() {
+    return this.shopService.testShopifySiteCollectionAllShopify()
+  }
+
+
   @Post('/update-specific-shop-sitemap/:shopId')
   async updateSpecificShopSitemap(@Param('shopId') shopId: string) {
     return this.shopService.updateSpecificShopSitemap(shopId);

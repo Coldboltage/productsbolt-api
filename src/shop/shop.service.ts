@@ -17,9 +17,10 @@ export class ShopService implements OnApplicationBootstrap {
   constructor(
     @InjectRepository(Shop) private shopsRepository: Repository<Shop>,
     @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
-    // @Inject('HEADLESS_CLIENT') private readonly headlessClient: ClientProxy,
+    @Inject('HEADLESS_CLIENT') private readonly headlessClient: ClientProxy,
     @Inject('SITEMAP_CLIENT') private readonly sitemapClient: ClientProxy,
-
+    @Inject('SLOW_SITEMAP_CLIENT')
+    private readonly slowSitemapClient: ClientProxy,
     private eventEmitter: EventEmitter2,
   ) { }
   async onApplicationBootstrap() {
@@ -70,16 +71,45 @@ export class ShopService implements OnApplicationBootstrap {
     // Start a background task and don’t await it
 
     for (const shop of allActiveShops) {
-      this.sitemapClient.emit('sitemapSearch', shop);
-      // const delay = 2000 + Math.random() * 500;
-      // await new Promise((res) => setTimeout(res, delay));
+      // this.sitemapClient.emit('sitemapSearch', shop);
+      if (shop.isShopifySite && shop.sitemapEntity.error === false) {
+        // if (shop.isShopifySite) {
+        // console.log('ignore for now')
+        this.headfulClient.emit('shopifySitemapSearch', shop);
+      }
+      else if (shop.sitemapEntity.fast === false) {
+        this.slowSitemapClient.emit('sitemapSearch', shop);
+      } else {
+        this.sitemapClient.emit('sitemapSearch', shop);
+      }
+    }
+  }
+
+  async testShopifySiteCollection(shopId) {
+    const shop = await this.findOne(shopId);
+    if (shop.isShopifySite) {
+      this.headlessClient.emit('shopifyCollectionsTest', shop);
+    }
+  }
+
+  async testShopifySiteCollectionAllShopify() {
+    const shops = await this.findAll();
+    const shopifyShops = shops.filter((shop) => shop.isShopifySite === true);
+    for (const shop of shopifyShops) {
+      this.sitemapClient.emit('shopifyCollectionsTest', shop);
     }
   }
 
   async updateSpecificShopSitemap(shopId: string) {
     const shop = await this.findOne(shopId);
-    console.log(shop);
-    this.sitemapClient.emit('sitemapSearch', shop);
+    // console.log(shop.sitemapEntity);
+    if (shop.isShopifySite) {
+      console.log('shopifySitemapSearch');
+      this.headlessClient.emit('shopifySitemapSearch', shop);
+    } else {
+      console.log('sitemapSearch');
+      this.sitemapClient.emit('sitemapSearch', shop);
+    }
   }
 
   checkShopsIfShopify = async () => {
@@ -124,14 +154,27 @@ export class ShopService implements OnApplicationBootstrap {
       },
       relations: {
         shopProducts: true,
+        sitemapEntity: true,
       },
     });
   }
 
-  findOne(id: string) {
+  async findAllRegardless() {
+    return this.shopsRepository.find({
+      where: {},
+      relations: {
+        shopProducts: true,
+      },
+    });
+  }
+
+  async findOne(id: string) {
     return this.shopsRepository.findOne({
       where: {
         id,
+      },
+      relations: {
+        sitemapEntity: true,
       },
     });
   }

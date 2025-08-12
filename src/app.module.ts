@@ -14,6 +14,7 @@ import { BlackListUrlModule } from './blacklist-url/blacklist-url.module';
 import { RabbitmqModule } from './rabbitmq/rabbitmq.module';
 import { EbayModule } from './ebay/ebay.module';
 import { WebpageUtilsModule } from './webpage-utils/webpage-utils.module';
+import { SitemapModule } from './sitemap/sitemap.module';
 import 'dotenv/config';
 
 @Module({
@@ -40,6 +41,7 @@ import 'dotenv/config';
     RabbitmqModule,
     EbayModule,
     WebpageUtilsModule,
+    SitemapModule,
   ],
   controllers: [AppController],
   providers: [AppService],

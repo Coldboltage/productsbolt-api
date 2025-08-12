@@ -29,6 +29,7 @@ export class Webpage {
   reason: string;
 
   @ManyToOne(() => ShopProduct, (shopProduct) => shopProduct.webPages, {
+    onDelete: 'CASCADE',
     cascade: ['update'],
   })
   shopProduct: ShopProduct;

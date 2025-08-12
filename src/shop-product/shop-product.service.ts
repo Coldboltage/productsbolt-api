@@ -77,7 +77,11 @@ export class ShopProductService {
         shopId: shopProduct.shop.id,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
+        sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          shopId: shopProduct.shop.id,
+        },
       };
 
       if (shopProduct.shop.isShopifySite === true) {
@@ -123,19 +127,21 @@ export class ShopProductService {
         },
       },
       relations: {
-        shop: true,
         product: true,
+        shop: {
+          sitemapEntity: true,
+        },
       },
     });
     console.log(shopProductsOrphan.length);
 
     for (const shopProduct of shopProductsOrphan) {
       const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapUrls,
+        shopProduct.shop.sitemapEntity.sitemapUrls,
         shopProduct.product.name,
       );
 
-      console.log(reducedSitemap.length)
+      console.log(reducedSitemap.length);
 
       if (reducedSitemap.length === 0) continue;
 
@@ -153,7 +159,11 @@ export class ShopProductService {
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
+        sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          shopId: shopProduct.shop.id,
+        },
       };
 
       if (
@@ -167,13 +177,13 @@ export class ShopProductService {
       }
 
       if (shopProduct.shop.isShopifySite === true) {
-        console.log('shopifySiteFound')
+        console.log('shopifySiteFound');
         this.headlessClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
         );
       } else {
-        console.log('normal setup')
+        console.log('normal setup');
         this.headfulClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
@@ -217,7 +227,11 @@ export class ShopProductService {
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
+        sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          shopId: shopProduct.shop.id,
+        },
       };
 
       if (
@@ -295,7 +309,11 @@ export class ShopProductService {
       shopId: shopProduct.shopId,
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
-      sitemapUrls: shopProduct.shop.sitemapUrls,
+      sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
+      sitemapEntity: {
+        ...shopProduct.shop.sitemapEntity,
+        shopId: shopProduct.shop.id,
+      },
     };
 
     if (shopProduct.shop.isShopifySite === true) {
@@ -340,7 +358,11 @@ export class ShopProductService {
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
-        sitemapUrls: shopProduct.shop.sitemapUrls,
+        sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          shopId: shopProduct.shop.id,
+        },
       };
 
       if (
