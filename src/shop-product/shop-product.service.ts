@@ -127,8 +127,10 @@ export class ShopProductService {
         },
       },
       relations: {
-        shop: true,
         product: true,
+        shop: {
+          sitemapEntity: true,
+        },
       },
     });
     console.log(shopProductsOrphan.length);
@@ -139,7 +141,7 @@ export class ShopProductService {
         shopProduct.product.name,
       );
 
-      console.log(reducedSitemap.length)
+      console.log(reducedSitemap.length);
 
       if (reducedSitemap.length === 0) continue;
 
@@ -175,13 +177,13 @@ export class ShopProductService {
       }
 
       if (shopProduct.shop.isShopifySite === true) {
-        console.log('shopifySiteFound')
+        console.log('shopifySiteFound');
         this.headlessClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
         );
       } else {
-        console.log('normal setup')
+        console.log('normal setup');
         this.headfulClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
