@@ -63,6 +63,11 @@ export class WebpageController {
     return this.webpageService.updateAllPages();
   }
 
+  @Get('update-all-pages-high-priority')
+  updateHighPriorityWebpages() {
+    return this.webpageService.updateHighPriorityWebpages();
+  }
+
   @Get('update-single-page/:webpageId')
   updatePage(@Param('webpageId') webpageId: string) {
     return this.webpageService.updatePage(webpageId);
