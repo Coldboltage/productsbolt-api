@@ -28,6 +28,9 @@ export class Product {
 
   @OneToMany(() => ShopProduct, (shopProducts) => shopProducts.product)
   shopProducts: ShopProduct[];
+
+  @Column({ default: false })
+  priority: boolean
 }
 
 export enum ProductType {

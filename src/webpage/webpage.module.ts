@@ -7,6 +7,7 @@ import { ShopProductModule } from '../shop-product/shop-product.module';
 import { ClientsModule } from '@nestjs/microservices';
 import { ProductModule } from '../product/product.module';
 import { AlertModule } from '../alert/alert.module';
+import { WebpageTools } from './webpage.tools';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { AlertModule } from '../alert/alert.module';
     AlertModule,
   ],
   controllers: [WebpageController],
-  providers: [WebpageService],
+  providers: [WebpageService, WebpageTools],
   exports: [WebpageService],
 })
 export class WebpageModule { }

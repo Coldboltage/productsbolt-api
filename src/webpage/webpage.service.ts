@@ -158,6 +158,28 @@ export class WebpageService {
     });
   }
 
+  async findAllHighPriority() {
+    return this.webpagesRepository.find({
+      where: {
+        shopProduct: {
+          product: {
+            priority: true,
+          },
+        },
+      },
+      relations: {
+        shopProduct: {
+          product: true,
+          shop: true,
+
+        },
+      },
+      order: {
+        price: 'ASC',
+      },
+    });
+  }
+
   async findAllByProductStock(state: boolean, productId: string) {
     return this.webpagesRepository.find({
       where: {
@@ -337,6 +359,35 @@ export class WebpageService {
     return webPages;
   }
 
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async updateHighPriorityWebpages() {
+    const webPages = await this.findAllHighPriority();
+    console.log(webPages.length);
+    for (const page of webPages) {
+      console.log(page);
+      if (page.shopProduct.shop.isShopifySite === true) {
+        this.headlessClient.emit('updatePage', {
+          url: page.url,
+          query: page.shopProduct.name,
+          type: page.shopProduct.product.type,
+          shopWebsite: page.shopProduct.shop.name,
+          webPageId: page.id,
+          shopifySite: page.shopProduct.shop.isShopifySite,
+        });
+      } else {
+        this.headfulClient.emit('updatePage', {
+          url: page.url,
+          query: page.shopProduct.name,
+          type: page.shopProduct.product.type,
+          shopWebsite: page.shopProduct.shop.name,
+          webPageId: page.id,
+          shopifySite: page.shopProduct.shop.isShopifySite,
+        });
+      }
+    }
+    return webPages;
+  }
+
   async updatePage(webpageId) {
     const page = await this.findOne(webpageId);
 
@@ -387,7 +438,7 @@ export class WebpageService {
   async update(id: string, updateWebpageDto: UpdateWebpageDto) {
     console.log(id);
     await this.webpagesRepository.update(id, {
-      price: updateWebpageDto.price,
+      price: updateWebpageDto.price ? updateWebpageDto.price : 0,
       inStock: updateWebpageDto.inStock,
     });
     const webpageEntity = await this.findOne(id);

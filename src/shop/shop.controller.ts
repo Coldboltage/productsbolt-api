@@ -25,6 +25,11 @@ export class ShopController {
     return this.shopService.updateSitemap();
   }
 
+  @Post('/update-sitemap-fast')
+  async fastSitemapAll() {
+    return this.shopService.fastSitemapAll()
+  }
+
   @Post('/test-shopify-site-collection/:shopId')
   async testShopifySiteCollection(@Param('shopId') shopId: string) {
     return this.shopService.testShopifySiteCollection(shopId)

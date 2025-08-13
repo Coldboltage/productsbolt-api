@@ -16,6 +16,7 @@ import { EbayModule } from './ebay/ebay.module';
 import { WebpageUtilsModule } from './webpage-utils/webpage-utils.module';
 import { SitemapModule } from './sitemap/sitemap.module';
 import 'dotenv/config';
+import { McpModule } from '@rekog/mcp-nest';
 
 @Module({
   imports: [
@@ -42,6 +43,12 @@ import 'dotenv/config';
     EbayModule,
     WebpageUtilsModule,
     SitemapModule,
+    McpModule.forRoot({
+      name: 'productsbolt-mcp',
+      version: '0.0.1',
+      // defaults: SSE + Streamable HTTP + STDIO enabled
+      // SSE endpoints: GET /sse (stream), POST /messages (calls)
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

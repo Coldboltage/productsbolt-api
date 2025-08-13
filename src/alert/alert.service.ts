@@ -47,8 +47,15 @@ export class AlertService {
     const alert = await this.findOneByProductId(webpage.shopProduct.product.id);
     if (!alert) return false;
     const isWebpageCheaper = webpage.price <= alert.price;
-    if (isWebpageCheaper && webpage.inStock === true && webpage.price !== 0) {
+    if (isWebpageCheaper && webpage.inStock === true && webpage.price > 0.01) {
       alert.alerted = true;
+      console.log({
+        websiteUrl: webpage.url,
+        cheaper: isWebpageCheaper,
+        inStock: webpage.inStock,
+        price: webpage.price,
+        logic: webpage.price > 0,
+      });
       await this.alertsRepository.save(alert);
     } else {
       console.log({
@@ -63,6 +70,7 @@ export class AlertService {
     webpages.forEach(async (webpage) => {
       await this.checkAlert(webpage);
     });
+    return true
   }
 
   async resetAlerts() {
