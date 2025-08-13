@@ -76,12 +76,19 @@ export class ShopService implements OnApplicationBootstrap {
         // if (shop.isShopifySite) {
         // console.log('ignore for now')
         this.headfulClient.emit('shopifySitemapSearch', shop);
-      }
-      else if (shop.sitemapEntity.fast === false) {
+      } else if (shop.sitemapEntity.fast === false) {
         this.slowSitemapClient.emit('sitemapSearch', shop);
       } else {
         this.sitemapClient.emit('sitemapSearch', shop);
       }
+    }
+  }
+
+  async fastSitemapAll() {
+    const allActiveShops = await this.findAll();
+    for (const shop of allActiveShops) {
+      shop.sitemapEntity.fast = true;
+      this.sitemapClient.emit('sitemapSearch', shop);
     }
   }
 

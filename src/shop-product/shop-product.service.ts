@@ -205,7 +205,9 @@ export class ShopProductService {
         productId: productId,
       },
       relations: {
-        shop: true,
+        shop: {
+          sitemapEntity: true,
+        },
         product: true,
       },
     });
@@ -290,7 +292,61 @@ export class ShopProductService {
         id: shopProductId,
       },
       relations: {
-        shop: true,
+        shop: {
+          sitemapEntity: true,
+        },
+        product: true,
+      },
+    });
+
+    const createProcess: CreateProcessDto = {
+      sitemap: shopProduct.shop.sitemap,
+      url: shopProduct.shop.website,
+      category: shopProduct.shop.category,
+      name: shopProduct.product.name,
+      shopProductId: shopProduct.id,
+      shopWebsite: shopProduct.shop.name,
+      type: shopProduct.product.type,
+      context: shopProduct.product.context,
+      crawlAmount: 90,
+      productId: shopProduct.productId,
+      shopId: shopProduct.shopId,
+      shopifySite: shopProduct.shop.isShopifySite,
+      shopType: shopProduct.shop.uniqueShopType,
+      sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
+      sitemapEntity: {
+        ...shopProduct.shop.sitemapEntity,
+        shopId: shopProduct.shop.id,
+      },
+    };
+
+    if (shopProduct.shop.isShopifySite === true) {
+      this.headlessClient.emit<CreateProcessDto>(
+        'webpageDiscovery',
+        createProcess,
+      );
+    } else {
+      this.headfulClient.emit<CreateProcessDto>(
+        'webpageDiscovery',
+        createProcess,
+      );
+    }
+  }
+
+  // Scan for shopProducts which are priority true
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async checkForIndividualShopProductPriority(shopProductId: string) {
+    const shopProduct = await this.shopProductRepository.findOne({
+      where: {
+        id: shopProductId,
+        product: {
+          priority: true,
+        },
+      },
+      relations: {
+        shop: {
+          sitemapEntity: true,
+        },
         product: true,
       },
     });
@@ -336,7 +392,9 @@ export class ShopProductService {
         shopId,
       },
       relations: {
-        shop: true,
+        shop: {
+          sitemapEntity: true,
+        },
         product: true,
       },
     });
