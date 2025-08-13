@@ -344,7 +344,9 @@ export class ShopProductService {
         },
       },
       relations: {
-        shop: true,
+        shop: {
+          sitemapEntity: true,
+        },
         product: true,
       },
     });

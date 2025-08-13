@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: productsbolt-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: alan
+      POSTGRES_PASSWORD: secretpass
+      POSTGRES_DB: productsbolt
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - productsbolt_net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: some-rabbit
+    restart: unless-stopped
+    ports:
+      - "5672:5672"   # RabbitMQ AMQP port
+      - "15672:15672" # Management UI
+    networks:
+      - productsbolt_net
+
+networks:
+  productsbolt_net:
+    driver: bridge
+
+volumes:
+  postgres_data:

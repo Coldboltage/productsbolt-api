@@ -8,6 +8,7 @@ import { ProductService } from '../product/product.service';
 import { Webpage } from '../webpage/entities/webpage.entity';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WebpageUtilsService } from '../webpage-utils/webpage-utils.service';
+import { DiscordService } from '../discord/discord.service';
 
 @Injectable()
 export class AlertService {
@@ -16,6 +17,7 @@ export class AlertService {
     // private userService: UserService,
     private productService: ProductService,
     private webpageUtilsService: WebpageUtilsService,
+    private discordService: DiscordService,
   ) { }
   async create(createAlertDto: CreateAlertDto) {
     console.log(createAlertDto);
@@ -44,6 +46,9 @@ export class AlertService {
   async checkAlert(webpage: Webpage) {
     console.log('webpage-updated event fired');
 
+    // console.log('Alert Triggered');
+    // await this.discordService.sendAlert(`Test Triggered`, webpage.url);
+
     const alert = await this.findOneByProductId(webpage.shopProduct.product.id);
     if (!alert) return false;
     const isWebpageCheaper = webpage.price <= alert.price;
@@ -56,7 +61,13 @@ export class AlertService {
         price: webpage.price,
         logic: webpage.price > 0,
       });
+
       await this.alertsRepository.save(alert);
+      console.log('Alert Triggered');
+      await this.discordService.sendAlert(
+        `${alert.name} Triggered`,
+        webpage.url,
+      );
     } else {
       console.log({
         cheaper: isWebpageCheaper,
@@ -70,7 +81,7 @@ export class AlertService {
     webpages.forEach(async (webpage) => {
       await this.checkAlert(webpage);
     });
-    return true
+    return true;
   }
 
   async resetAlerts() {
