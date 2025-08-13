@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { Shop } from './entities/shop.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ClientProxy } from '@nestjs/microservices';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
@@ -84,6 +85,7 @@ export class ShopService implements OnApplicationBootstrap {
     }
   }
 
+  @Cron(CronExpression.EVERY_12_HOURS)
   async fastSitemapAll() {
     const allActiveShops = await this.findAll();
     for (const shop of allActiveShops) {
