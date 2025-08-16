@@ -359,7 +359,7 @@ export class WebpageService {
     return webPages;
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron('*/3 * * * *')
   async updateHighPriorityWebpages() {
     const webPages = await this.findAllHighPriority();
     console.log(webPages.length);

@@ -52,7 +52,7 @@ export class AlertService {
     const alert = await this.findOneByProductId(webpage.shopProduct.product.id);
     if (!alert) return false;
     const isWebpageCheaper = webpage.price <= alert.price;
-    if (isWebpageCheaper && webpage.inStock === true && webpage.price > 0.01) {
+    if (isWebpageCheaper && webpage.inStock === true && webpage.price > 0.01 && webpage.shopProduct.product.priority === true) {
       alert.alerted = true;
       console.log({
         websiteUrl: webpage.url,
