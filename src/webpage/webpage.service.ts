@@ -330,7 +330,7 @@ export class WebpageService {
     return response;
   }
 
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_HOUR)
   async updateAllPages() {
     const webPages = await this.findAll();
     console.log(webPages.length);
@@ -359,7 +359,7 @@ export class WebpageService {
     return webPages;
   }
 
-  @Cron('*/3 * * * *')
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async updateHighPriorityWebpages() {
     const webPages = await this.findAllHighPriority();
     console.log(webPages.length);

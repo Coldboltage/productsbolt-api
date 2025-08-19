@@ -118,7 +118,7 @@ export class ShopProductService {
     return response;
   }
 
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_2_HOURS)
   async manualUpdateAllShopProducts() {
     const shopProductsOrphan = await this.shopProductRepository.find({
       where: {
@@ -335,7 +335,7 @@ export class ShopProductService {
   }
 
   // Scan for shopProducts which are priority true
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_HOUR)
   async checkForIndividualShopProductPriority(shopProductId: string) {
     const shopProduct = await this.shopProductRepository.findOne({
       where: {
