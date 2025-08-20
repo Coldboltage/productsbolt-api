@@ -124,19 +124,27 @@ export class ShopService implements OnApplicationBootstrap {
     const shops = await this.findAll();
     const shopifyShops = shops.filter((shop) => shop.isShopifySite === true);
     for (const shop of shopifyShops) {
-      this.sitemapClient.emit('shopifyCollectionsTest', shop);
+      this.slowSitemapClient.emit('shopifyCollectionsTest', shop);
     }
   }
 
   async updateSpecificShopSitemap(shopId: string) {
     const shop = await this.findOne(shopId);
     // console.log(shop.sitemapEntity);
-    if (shop.isShopifySite && shop.sitemapEntity.error === false) {
-      // if (shop.isShopifySite) {
-      // console.log('ignore for now')
+    if (
+      shop.isShopifySite &&
+      shop.sitemapEntity.error === false &&
+      shop.sitemapEntity.manual === false &&
+      shop.sitemapEntity.collections === true
+    ) {
       this.headfulClient.emit('shopifySitemapSearch', shop);
-    } else if (shop.sitemapEntity.fast === false) {
+    } else if (
+      shop.sitemapEntity.fast === false &&
+      shop.sitemapEntity.manual === false
+    ) {
       this.slowSitemapClient.emit('sitemapSearch', shop);
+    } else if (shop.sitemapEntity.manual === true) {
+      this.headfulClient.emit('manualSitemapSearch', shop);
     } else {
       this.sitemapClient.emit('sitemapSearch', shop);
     }

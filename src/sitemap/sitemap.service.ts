@@ -63,10 +63,11 @@ export class SitemapService {
     });
   }
 
-  update(id: string, updateSitemapDto: UpdateSitemapDto) {
+  async update(id: string, updateSitemapDto: UpdateSitemapDto) {
     console.log(id)
-    console.log(updateSitemapDto.sitemapUrls.length)
-    return this.sitemapRepository.update(id, updateSitemapDto);
+    const result = await this.sitemapRepository.update(id, updateSitemapDto);
+    console.log(result)
+    return result
   }
 
   remove(id: string) {
