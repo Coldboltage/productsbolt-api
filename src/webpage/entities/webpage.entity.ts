@@ -33,6 +33,9 @@ export class Webpage {
     cascade: ['update'],
   })
   shopProduct: ShopProduct;
+
+  @Column({ default: false })
+  disable: boolean
 }
 
 export interface StrippedWebpage {
