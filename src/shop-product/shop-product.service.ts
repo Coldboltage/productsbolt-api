@@ -25,7 +25,6 @@ export class ShopProductService {
     private productService: ProductService,
     private eventEmitter: EventEmitter2,
     private readonly scheduler: SchedulerRegistry,
-
   ) { }
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
@@ -48,11 +47,6 @@ export class ShopProductService {
 
     // Inspect the asserted queue options
     console.log('Client queueOptions:', client.options.queueOptions);
-
-    if (process.env.ENABLE_JOBS !== 'true') {
-      this.scheduler.getCronJob('manualUpdateAllShopProducts').stop();
-      this.scheduler.getCronJob('checkForIndividualShopProductPriority').stop();
-    }
   }
 
   @OnEvent('product.created')
@@ -125,7 +119,10 @@ export class ShopProductService {
     return response;
   }
 
-  @Cron(CronExpression.EVERY_2_HOURS, { name: 'manualUpdateAllShopProducts' })
+  @Cron(CronExpression.EVERY_2_HOURS, {
+    name: 'manualUpdateAllShopProducts',
+    disabled: process.env.ENABLE_JOBS === 'true' ? false : true,
+  })
   async manualUpdateAllShopProducts() {
     const shopProductsOrphan = await this.shopProductRepository.find({
       where: {
@@ -344,6 +341,7 @@ export class ShopProductService {
   // Scan for shopProducts which are priority true
   @Cron(CronExpression.EVERY_HOUR, {
     name: 'checkForIndividualShopProductPriority',
+    disabled: process.env.ENABLE_JOBS === 'true' ? false : true,
   })
   async checkForIndividualShopProductPriority(shopProductId: string) {
     const shopProduct = await this.shopProductRepository.findOne({

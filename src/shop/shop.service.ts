@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   OnApplicationBootstrap,
+  OnModuleInit,
 } from '@nestjs/common';
 import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
@@ -46,11 +47,8 @@ export class ShopService implements OnApplicationBootstrap {
 
     // Inspect the asserted queue options
     console.log('Client queueOptions:', client.options.queueOptions);
-
-    if (process.env.ENABLE_JOBS !== 'true') {
-      this.scheduler.getCronJob('reindex').stop();
-    }
   }
+
   async create(createShopDto: CreateShopDto) {
     try {
       const entity = await this.shopsRepository.save({
@@ -78,7 +76,10 @@ export class ShopService implements OnApplicationBootstrap {
     });
   }
 
-  @Cron(CronExpression.EVERY_12_HOURS, { name: 'updateSitemap' })
+  @Cron(CronExpression.EVERY_12_HOURS, {
+    name: 'updateSitemap',
+    disabled: process.env.ENABLE_JOBS === 'true' ? false : true,
+  })
   async updateSitemap() {
     const allActiveShops = await this.findAll();
     // Start a background task and don’t await it
@@ -88,6 +89,8 @@ export class ShopService implements OnApplicationBootstrap {
         this.headfulClient.emit('shopifySitemapSearch', shop);
       } else if (shop.sitemapEntity.fast === false) {
         this.slowSitemapClient.emit('sitemapSearch', shop);
+      } else if (shop.sitemapEntity.manual === true) {
+        this.headfulClient.emit('manualSitemapSearch', shop);
       } else {
         this.sitemapClient.emit('sitemapSearch', shop);
       }

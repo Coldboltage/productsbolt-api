@@ -41,13 +41,13 @@ export class ShopController {
   }
 
   @Post('/update-specific-shop-sitemap/:shopId')
-  async manuallyUpdateSitemap(@Param('shopId') shopId: string) {
-    return this.shopService.manuallyUpdateSitemap(shopId);
+  async updateSpecificShopSitemap(@Param('shopId') shopId: string) {
+    return this.shopService.updateSpecificShopSitemap(shopId);
   }
 
   @Post('/manually-update-sitemap/:shopId')
-  async updateSpecificShopSitemap(@Param('shopId') shopId: string) {
-    return this.shopService.updateSpecificShopSitemap(shopId);
+  async manuallyUpdateSitemap(@Param('shopId') shopId: string) {
+    return this.shopService.manuallyUpdateSitemap(shopId);
   }
 
   @Post('/shopify-check')

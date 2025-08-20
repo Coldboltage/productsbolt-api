@@ -54,11 +54,6 @@ export class WebpageService {
 
     // Inspect the asserted queue options
     console.log('Client queueOptions:', client.options.queueOptions);
-
-    if (process.env.ENABLE_JOBS !== 'true') {
-      this.scheduler.getCronJob('updateAllPages').stop();
-      this.scheduler.getCronJob('updateHighPriorityWebpages').stop();
-    }
   }
 
   async create(createWebpageDto: CreateWebpageDto) {
@@ -335,7 +330,10 @@ export class WebpageService {
     return response;
   }
 
-  @Cron(CronExpression.EVERY_HOUR, { name: 'updateAllPages' })
+  @Cron(CronExpression.EVERY_HOUR, {
+    name: 'updateAllPages',
+    disabled: process.env.ENABLE_JOBS === 'true' ? false : true,
+  })
   async updateAllPages() {
     const webPages = await this.findAll();
     console.log(webPages.length);
@@ -364,7 +362,10 @@ export class WebpageService {
     return webPages;
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES, { name: 'updateHighPriorityWebpages' })
+  @Cron(CronExpression.EVERY_5_MINUTES, {
+    name: 'updateHighPriorityWebpages',
+    disabled: process.env.ENABLE_JOBS === 'true' ? false : true,
+  })
   async updateHighPriorityWebpages() {
     const webPages = await this.findAllHighPriority();
     console.log(webPages.length);
