@@ -85,9 +85,16 @@ export class ShopService implements OnApplicationBootstrap {
     // Start a background task and don’t await it
 
     for (const shop of allActiveShops) {
-      if (shop.isShopifySite && shop.sitemapEntity.error === false) {
+      if (
+        shop.isShopifySite &&
+        shop.sitemapEntity.error === false &&
+        shop.sitemapEntity.manual === false
+      ) {
         this.headfulClient.emit('shopifySitemapSearch', shop);
-      } else if (shop.sitemapEntity.fast === false) {
+      } else if (
+        shop.sitemapEntity.fast === false &&
+        shop.sitemapEntity.manual === false
+      ) {
         this.slowSitemapClient.emit('sitemapSearch', shop);
       } else if (shop.sitemapEntity.manual === true) {
         this.headfulClient.emit('manualSitemapSearch', shop);
