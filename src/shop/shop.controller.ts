@@ -27,21 +27,25 @@ export class ShopController {
 
   @Post('/update-sitemap-fast')
   async fastSitemapAll() {
-    return this.shopService.fastSitemapAll()
+    return this.shopService.fastSitemapAll();
   }
 
   @Post('/test-shopify-site-collection/:shopId')
   async testShopifySiteCollection(@Param('shopId') shopId: string) {
-    return this.shopService.testShopifySiteCollection(shopId)
+    return this.shopService.testShopifySiteCollection(shopId);
   }
 
   @Post('/test-shopify-site-collection-all')
   async testShopifySiteCollectionAllShopify() {
-    return this.shopService.testShopifySiteCollectionAllShopify()
+    return this.shopService.testShopifySiteCollectionAllShopify();
   }
 
-
   @Post('/update-specific-shop-sitemap/:shopId')
+  async manuallyUpdateSitemap(@Param('shopId') shopId: string) {
+    return this.shopService.manuallyUpdateSitemap(shopId);
+  }
+
+  @Post('/manually-update-sitemap/:shopId')
   async updateSpecificShopSitemap(@Param('shopId') shopId: string) {
     return this.shopService.updateSpecificShopSitemap(shopId);
   }

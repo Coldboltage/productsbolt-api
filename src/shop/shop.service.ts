@@ -123,6 +123,11 @@ export class ShopService implements OnApplicationBootstrap {
     }
   }
 
+  async manuallyUpdateSitemap(shopId: string) {
+    const shop = await this.findOne(shopId);
+    this.headfulClient.emit('manualSitemapSearch', shop);
+  }
+
   checkShopsIfShopify = async () => {
     const shopEntities = await this.findAll();
     for (const shop of shopEntities) {
