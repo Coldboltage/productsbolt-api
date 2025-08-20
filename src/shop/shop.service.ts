@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   OnApplicationBootstrap,
+  OnModuleInit,
 } from '@nestjs/common';
 import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
@@ -11,7 +12,8 @@ import { Repository } from 'typeorm';
 import { Shop } from './entities/shop.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ClientProxy } from '@nestjs/microservices';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { Sitemap } from '../sitemap/entities/sitemap.entity';
 
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
@@ -23,6 +25,7 @@ export class ShopService implements OnApplicationBootstrap {
     @Inject('SLOW_SITEMAP_CLIENT')
     private readonly slowSitemapClient: ClientProxy,
     private eventEmitter: EventEmitter2,
+    private readonly scheduler: SchedulerRegistry,
   ) { }
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
@@ -45,9 +48,16 @@ export class ShopService implements OnApplicationBootstrap {
     // Inspect the asserted queue options
     console.log('Client queueOptions:', client.options.queueOptions);
   }
+
   async create(createShopDto: CreateShopDto) {
     try {
-      const entity = await this.shopsRepository.save(createShopDto);
+      const entity = await this.shopsRepository.save({
+        ...createShopDto,
+        sitemapEntity: {
+          sitemap: createShopDto.sitemap,
+          manual: createShopDto.manual,
+        } as Partial<Sitemap>,
+      });
       this.eventEmitter.emit('shop.created', entity);
       return entity;
     } catch (error) {
@@ -66,26 +76,35 @@ export class ShopService implements OnApplicationBootstrap {
     });
   }
 
-  // @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_12_HOURS, {
+    name: 'updateSitemap',
+    disabled: process.env.ENABLE_JOBS === 'true' ? false : true,
+  })
   async updateSitemap() {
     const allActiveShops = await this.findAll();
     // Start a background task and don’t await it
 
     for (const shop of allActiveShops) {
-      // this.sitemapClient.emit('sitemapSearch', shop);
-      if (shop.isShopifySite && shop.sitemapEntity.error === false) {
-        // if (shop.isShopifySite) {
-        // console.log('ignore for now')
+      if (
+        shop.isShopifySite &&
+        shop.sitemapEntity.error === false &&
+        shop.sitemapEntity.manual === false &&
+        shop.sitemapEntity.collections === true
+      ) {
         this.headfulClient.emit('shopifySitemapSearch', shop);
-      } else if (shop.sitemapEntity.fast === false) {
+      } else if (
+        shop.sitemapEntity.fast === false &&
+        shop.sitemapEntity.manual === false
+      ) {
         this.slowSitemapClient.emit('sitemapSearch', shop);
+      } else if (shop.sitemapEntity.manual === true) {
+        this.headfulClient.emit('manualSitemapSearch', shop);
       } else {
         this.sitemapClient.emit('sitemapSearch', shop);
       }
     }
   }
 
-  @Cron(CronExpression.EVERY_12_HOURS)
   async fastSitemapAll() {
     const allActiveShops = await this.findAll();
     for (const shop of allActiveShops) {
@@ -94,7 +113,7 @@ export class ShopService implements OnApplicationBootstrap {
     }
   }
 
-  async testShopifySiteCollection(shopId) {
+  async testShopifySiteCollection(shopId: string) {
     const shop = await this.findOne(shopId);
     if (shop.isShopifySite) {
       this.headlessClient.emit('shopifyCollectionsTest', shop);

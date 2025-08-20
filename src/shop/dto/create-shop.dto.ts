@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsBoolean, IsString } from 'class-validator';
 
 export class CreateShopDto {
   @IsString()
@@ -15,4 +15,7 @@ export class CreateShopDto {
 
   @IsString()
   protocol: string;
+
+  @IsBoolean()
+  manual: boolean;
 }

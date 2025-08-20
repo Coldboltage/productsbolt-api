@@ -11,7 +11,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
 import { CreateProcessDto } from '../shop/dto/create-process.dto';
 import { Shop, UniqueShopType } from '../shop/entities/shop.entity';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class ShopProductService {
@@ -24,6 +24,7 @@ export class ShopProductService {
     private shopService: ShopService,
     private productService: ProductService,
     private eventEmitter: EventEmitter2,
+    private readonly scheduler: SchedulerRegistry,
   ) { }
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
@@ -118,7 +119,10 @@ export class ShopProductService {
     return response;
   }
 
-  @Cron(CronExpression.EVERY_2_HOURS)
+  @Cron(CronExpression.EVERY_2_HOURS, {
+    name: 'manualUpdateAllShopProducts',
+    disabled: process.env.ENABLE_JOBS === 'true' ? false : true,
+  })
   async manualUpdateAllShopProducts() {
     const shopProductsOrphan = await this.shopProductRepository.find({
       where: {
@@ -335,7 +339,10 @@ export class ShopProductService {
   }
 
   // Scan for shopProducts which are priority true
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_HOUR, {
+    name: 'checkForIndividualShopProductPriority',
+    disabled: process.env.ENABLE_JOBS === 'true' ? false : true,
+  })
   async checkForIndividualShopProductPriority(shopProductId: string) {
     const shopProduct = await this.shopProductRepository.findOne({
       where: {

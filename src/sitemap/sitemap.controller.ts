@@ -37,6 +37,7 @@ export class SitemapController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSitemapDto: UpdateSitemapDto) {
+    console.log("hello")
     return this.sitemapService.update(id, updateSitemapDto);
   }
 
