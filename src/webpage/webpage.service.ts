@@ -18,7 +18,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AlertService } from '../alert/alert.service';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class WebpageService {
@@ -30,6 +30,7 @@ export class WebpageService {
     private productService: ProductService,
     private alertService: AlertService,
     private eventEmitter: EventEmitter2,
+    private scheduler: SchedulerRegistry,
   ) { }
 
   async onApplicationBootstrap() {
@@ -53,6 +54,11 @@ export class WebpageService {
 
     // Inspect the asserted queue options
     console.log('Client queueOptions:', client.options.queueOptions);
+
+    if (process.env.ENABLE_JOBS !== 'true') {
+      this.scheduler.getCronJob('updateAllPages').stop();
+      this.scheduler.getCronJob('updateHighPriorityWebpages').stop();
+    }
   }
 
   async create(createWebpageDto: CreateWebpageDto) {
@@ -171,7 +177,6 @@ export class WebpageService {
         shopProduct: {
           product: true,
           shop: true,
-
         },
       },
       order: {
@@ -330,7 +335,7 @@ export class WebpageService {
     return response;
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_HOUR, { name: 'updateAllPages' })
   async updateAllPages() {
     const webPages = await this.findAll();
     console.log(webPages.length);
@@ -359,7 +364,7 @@ export class WebpageService {
     return webPages;
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_5_MINUTES, { name: 'updateHighPriorityWebpages' })
   async updateHighPriorityWebpages() {
     const webPages = await this.findAllHighPriority();
     console.log(webPages.length);

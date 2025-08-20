@@ -54,6 +54,8 @@ export class Shop {
   @OneToMany(() => ShopProduct, (shopProduct) => shopProduct.shop)
   shopProducts: ShopProduct[];
 
-  @OneToOne(() => Sitemap, (sitemapEntity) => sitemapEntity.shop)
+  @OneToOne(() => Sitemap, (sitemapEntity) => sitemapEntity.shop, {
+    cascade: ['insert', 'update'],
+  })
   sitemapEntity: Sitemap;
 }

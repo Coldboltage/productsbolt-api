@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -20,7 +21,7 @@ export class Sitemap {
   @Column({ type: 'simple-array', default: '' })
   sitemapUrls: string[];
 
-  @Column()
+  @Column({ default: false })
   isShopifySite: boolean;
 
   @Column({ default: false })
@@ -47,7 +48,7 @@ export class Sitemap {
   @OneToOne(() => Shop, (shop) => shop.sitemapEntity, {
     onDelete: 'CASCADE',
   })
-  // @JoinColumn({ name: 'shop_id' })
+  @Index({ unique: true })
   @JoinColumn()
   shop: Shop;
 }
