@@ -35,7 +35,7 @@ export class Webpage {
   shopProduct: ShopProduct;
 
   @Column({ default: false })
-  disable: boolean
+  disable: boolean;
 }
 
 export interface StrippedWebpage {
