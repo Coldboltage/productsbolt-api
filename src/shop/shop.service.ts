@@ -88,7 +88,8 @@ export class ShopService implements OnApplicationBootstrap {
       if (
         shop.isShopifySite &&
         shop.sitemapEntity.error === false &&
-        shop.sitemapEntity.manual === false
+        shop.sitemapEntity.manual === false &&
+        shop.sitemapEntity.collections === true
       ) {
         this.headfulClient.emit('shopifySitemapSearch', shop);
       } else if (
