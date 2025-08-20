@@ -86,7 +86,7 @@ export class ShopService implements OnApplicationBootstrap {
 
     for (const shop of allActiveShops) {
       if (
-        shop.isShopifySite &&
+        shop.sitemapEntity.isShopifySite &&
         shop.sitemapEntity.error === false &&
         shop.sitemapEntity.manual === false &&
         shop.sitemapEntity.collections === true
