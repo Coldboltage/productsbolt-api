@@ -119,7 +119,6 @@ export class WebpageService {
     const webpageEntity = await this.webpagesRepository.save(entity);
     console.log(`Page being created: ${createWebpageDto.url}`);
     console.log(webpageEntity);
-    // this.eventEmitter.emit('webpage.updated', webpageEntity);
     return webpageEntity;
   }
 
@@ -332,7 +331,6 @@ export class WebpageService {
 
   @Cron(CronExpression.EVERY_HOUR, {
     name: 'updateAllPages',
-    
   })
   async updateAllPages() {
     const webPages = await this.findAll();
@@ -389,7 +387,7 @@ export class WebpageService {
         });
       }
     }
-    console.log(process.env.ENABLE_JOBS === 'true' ? false : true)
+    console.log(process.env.ENABLE_JOBS === 'true' ? false : true);
 
     return webPages;
   }
@@ -451,9 +449,13 @@ export class WebpageService {
     const result = await this.alertService.checkAlert(webpageEntity);
     if (result === true && webpageEntity.alertCount < 5) {
       const count = webpageEntity.alertCount + 1;
-      await this.update(webpageEntity.id, { alertCount: count });
+      await this.webpagesRepository.update(webpageEntity.id, {
+        alertCount: count,
+      });
     } else {
-      await this.update(webpageEntity.id, { disable: false });
+      await this.webpagesRepository.update(webpageEntity.id, {
+        disable: false,
+      });
     }
 
     return this.findOne(id);

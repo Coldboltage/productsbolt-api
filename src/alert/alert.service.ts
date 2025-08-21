@@ -6,7 +6,6 @@ import { Alert } from './entities/alert.entity';
 import { Repository } from 'typeorm';
 import { ProductService } from '../product/product.service';
 import { Webpage } from '../webpage/entities/webpage.entity';
-import { OnEvent } from '@nestjs/event-emitter';
 import { WebpageUtilsService } from '../webpage-utils/webpage-utils.service';
 import { DiscordService } from '../discord/discord.service';
 
@@ -14,16 +13,12 @@ import { DiscordService } from '../discord/discord.service';
 export class AlertService {
   constructor(
     @InjectRepository(Alert) private alertsRepository: Repository<Alert>,
-    // private userService: UserService,
     private productService: ProductService,
     private webpageUtilsService: WebpageUtilsService,
     private discordService: DiscordService,
   ) { }
   async create(createAlertDto: CreateAlertDto) {
     console.log(createAlertDto);
-    // const userEntity = await this.userService.findOneByEmail(
-    //   createAlertDto.email,
-    // );
     const productEntity = await this.productService.findOne(
       createAlertDto.productId,
     );
@@ -33,7 +28,6 @@ export class AlertService {
         name: createAlertDto.name,
         price: createAlertDto.price,
         product: productEntity,
-        // user: userEntity,
       });
       return alertEntity;
     } catch (error) {
@@ -42,7 +36,6 @@ export class AlertService {
     }
   }
 
-  @OnEvent('webpage.updated')
   async checkAlert(webpage: Webpage): Promise<boolean> {
     console.log('webpage-updated event fired');
 
