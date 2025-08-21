@@ -448,7 +448,11 @@ export class WebpageService {
       inStock: updateWebpageDto.inStock,
     });
     const webpageEntity = await this.findOne(id);
-    this.eventEmitter.emit('webpage.updated', webpageEntity);
+    const result = await this.alertService.checkAlert(webpageEntity);
+    if (result) {
+      webpageEntity.disable = true;
+      this.update(webpageEntity.id, webpageEntity);
+    }
 
     return this.findOne(id);
   }

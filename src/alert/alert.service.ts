@@ -43,7 +43,7 @@ export class AlertService {
   }
 
   @OnEvent('webpage.updated')
-  async checkAlert(webpage: Webpage) {
+  async checkAlert(webpage: Webpage): Promise<boolean> {
     console.log('webpage-updated event fired');
 
     // console.log('Alert Triggered');
@@ -74,11 +74,13 @@ export class AlertService {
         `${alert.name} Triggered`,
         webpage.url,
       );
+      return true;
     } else {
       console.log({
         cheaper: isWebpageCheaper,
         inStock: webpage.inStock,
       });
+      return false;
     }
   }
 
