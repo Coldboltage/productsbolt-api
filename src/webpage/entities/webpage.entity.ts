@@ -36,6 +36,9 @@ export class Webpage {
 
   @Column({ default: false })
   disable: boolean;
+
+  @Column({ default: 0 })
+  alertCount: number;
 }
 
 export interface StrippedWebpage {
