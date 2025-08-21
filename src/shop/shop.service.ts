@@ -78,7 +78,7 @@ export class ShopService implements OnApplicationBootstrap {
 
   @Cron(CronExpression.EVERY_12_HOURS, {
     name: 'updateSitemap',
-    disabled: process.env.ENABLE_JOBS === 'true' ? false : true,
+    
   })
   async updateSitemap() {
     const allActiveShops = await this.findAll();

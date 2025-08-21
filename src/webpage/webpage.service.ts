@@ -332,7 +332,7 @@ export class WebpageService {
 
   @Cron(CronExpression.EVERY_HOUR, {
     name: 'updateAllPages',
-    disabled: process.env.ENABLE_JOBS === 'true' ? false : true,
+    
   })
   async updateAllPages() {
     const webPages = await this.findAll();
@@ -364,13 +364,11 @@ export class WebpageService {
 
   @Cron(CronExpression.EVERY_5_MINUTES, {
     name: 'updateHighPriorityWebpages',
-    disabled: process.env.ENABLE_JOBS === 'true' ? false : true,
   })
   async updateHighPriorityWebpages() {
     const webPages = await this.findAllHighPriority();
     console.log(webPages.length);
     for (const page of webPages) {
-      console.log(page);
       if (page.shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit('updatePage', {
           url: page.url,
@@ -391,6 +389,8 @@ export class WebpageService {
         });
       }
     }
+    console.log(process.env.ENABLE_JOBS === 'true' ? false : true)
+
     return webPages;
   }
 

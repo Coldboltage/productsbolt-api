@@ -121,7 +121,7 @@ export class ShopProductService {
 
   @Cron(CronExpression.EVERY_2_HOURS, {
     name: 'manualUpdateAllShopProducts',
-    disabled: process.env.ENABLE_JOBS === 'true' ? false : true,
+    
   })
   async manualUpdateAllShopProducts() {
     const shopProductsOrphan = await this.shopProductRepository.find({
@@ -341,7 +341,7 @@ export class ShopProductService {
   // Scan for shopProducts which are priority true
   @Cron(CronExpression.EVERY_HOUR, {
     name: 'checkForIndividualShopProductPriority',
-    disabled: process.env.ENABLE_JOBS === 'true' ? false : true,
+    
   })
   async checkForIndividualShopProductPriority(shopProductId: string) {
     const shopProduct = await this.shopProductRepository.findOne({
