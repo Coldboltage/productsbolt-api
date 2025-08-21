@@ -448,7 +448,13 @@ export class WebpageService {
       inStock: updateWebpageDto.inStock,
     });
     const webpageEntity = await this.findOne(id);
-    this.eventEmitter.emit('webpage.updated', webpageEntity);
+    const result = await this.alertService.checkAlert(webpageEntity);
+    if (result === true && webpageEntity.alertCount < 5) {
+      const count = webpageEntity.alertCount + 1;
+      await this.update(webpageEntity.id, { alertCount: count });
+    } else {
+      await this.update(webpageEntity.id, { disable: false });
+    }
 
     return this.findOne(id);
   }
