@@ -491,4 +491,11 @@ export class WebpageService {
   async remove(id: string) {
     return this.webpagesRepository.delete({ id });
   }
+
+  @Cron(CronExpression.EVERY_DAY_AT_10AM)
+  async resetAlertCount() {
+    const webpageEntities = await this.findAll();
+    webpageEntities.forEach((webpage) => (webpage.alertCount = 0));
+    await this.webpagesRepository.save(webpageEntities);
+  }
 }
