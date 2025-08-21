@@ -453,7 +453,6 @@ export class WebpageService {
         alertCount: count,
       });
     } else {
-      alert('hello')
       await this.webpagesRepository.update(webpageEntity.id, {
         disable: true,
       });
