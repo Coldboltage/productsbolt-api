@@ -48,8 +48,18 @@ export class SitemapService {
     }
   }
 
-  findAll() {
-    return `This action returns all sitemap`;
+  async resetAllFastMode() {
+    const sitemaps = await this.findAll();
+    sitemaps.forEach((sitemap) => (sitemap.fast = false));
+    return this.sitemapRepository.save(sitemaps);
+  }
+
+  async findAll() {
+    return this.sitemapRepository.find({
+      relations: {
+        shop: true,
+      },
+    });
   }
 
   async findOne(id: string) {
@@ -64,10 +74,10 @@ export class SitemapService {
   }
 
   async update(id: string, updateSitemapDto: UpdateSitemapDto) {
-    console.log(id)
+    console.log(id);
     const result = await this.sitemapRepository.update(id, updateSitemapDto);
-    console.log(result)
-    return result
+    console.log(result);
+    return result;
   }
 
   remove(id: string) {

@@ -25,6 +25,11 @@ export class SitemapController {
     return this.sitemapService.generateSitemapAllShops();
   }
 
+  @Post('/reset-all-fast-mode')
+  resetAllFastMode() {
+    return this.sitemapService.resetAllFastMode();
+  }
+
   @Get()
   findAll() {
     return this.sitemapService.findAll();
