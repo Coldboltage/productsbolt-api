@@ -46,7 +46,7 @@ export class Sitemap {
   fast: boolean;
 
   @Column({ type: 'simple-array', nullable: true })
-  additionalArray: string[];
+  additionalSitemaps: string[];
 
   @OneToOne(() => Shop, (shop) => shop.sitemapEntity, {
     onDelete: 'CASCADE',
