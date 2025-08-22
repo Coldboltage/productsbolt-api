@@ -121,7 +121,7 @@ export class ShopProductService {
 
   @Cron(CronExpression.EVERY_2_HOURS, {
     name: 'manualUpdateAllShopProducts',
-    
+
   })
   async manualUpdateAllShopProducts() {
     const shopProductsOrphan = await this.shopProductRepository.find({
@@ -251,7 +251,7 @@ export class ShopProductService {
         };
       }
 
-      if (shopProduct.shop.isShopifySite === true) {
+      if (shopProduct.shop.sitemapEntity.isShopifySite === true) {
         this.headlessClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
@@ -341,7 +341,7 @@ export class ShopProductService {
   // Scan for shopProducts which are priority true
   @Cron(CronExpression.EVERY_HOUR, {
     name: 'checkForIndividualShopProductPriority',
-    
+
   })
   async checkForIndividualShopProductPriority(shopProductId: string) {
     const shopProduct = await this.shopProductRepository.findOne({
