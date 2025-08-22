@@ -55,6 +55,11 @@ export class ShopController {
     return this.shopService.checkShopsIfShopify();
   }
 
+  @Post('/check-if-shop-is-shopify/:shopId')
+  async checkIfShopIsShopify(@Param('id') shopId: string) {
+    return this.shopService.checkIfShopIsShopify(shopId);
+  }
+
   @Get('find-shop/:website')
   findShop(@Param('website') website: string) {
     return this.shopService.findShop(website);

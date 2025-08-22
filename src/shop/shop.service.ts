@@ -59,6 +59,7 @@ export class ShopService implements OnApplicationBootstrap {
         } as Partial<Sitemap>,
       });
       this.eventEmitter.emit('shop.created', entity);
+      this.headfulClient.emit('shopyifyCheck', entity);
       return entity;
     } catch (error) {
       throw new ConflictException('shop_already_created');
@@ -78,7 +79,6 @@ export class ShopService implements OnApplicationBootstrap {
 
   @Cron(CronExpression.EVERY_12_HOURS, {
     name: 'updateSitemap',
-    
   })
   async updateSitemap() {
     const allActiveShops = await this.findAll();
@@ -163,6 +163,11 @@ export class ShopService implements OnApplicationBootstrap {
       this.headfulClient.emit('shopyifyCheck', shop);
     }
   };
+
+  async checkIfShopIsShopify(shopId: string) {
+    const shop = await this.findOne(shopId);
+    if (shop) this.headfulClient.emit('shopyifyCheck', shop);
+  }
 
   // @OnEvent('shop-product.created')
   // async findShopsToUpdateProducts(shopProduct: ShopProduct) {
