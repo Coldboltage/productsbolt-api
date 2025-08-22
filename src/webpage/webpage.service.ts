@@ -447,12 +447,12 @@ export class WebpageService {
     });
     const webpageEntity = await this.findOne(id);
     const result = await this.alertService.checkAlert(webpageEntity);
-    if (result === true && webpageEntity.alertCount < 5) {
+    if (result === true && webpageEntity.alertCount <= 5) {
       const count = webpageEntity.alertCount + 1;
       await this.webpagesRepository.update(webpageEntity.id, {
         alertCount: count,
       });
-    } else {
+    } else if (result === true && webpageEntity.alertCount > 5) {
       await this.webpagesRepository.update(webpageEntity.id, {
         disable: true,
       });
