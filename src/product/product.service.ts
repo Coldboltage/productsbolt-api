@@ -36,9 +36,28 @@ export class ProductService {
     return allProducts;
   }
 
-  findOne(id: string) {
+  async findOne(id: string) {
     return this.productsRepository.findOne({
       where: { id },
+    });
+  }
+
+  async findAllWithEbayStat() {
+    return this.productsRepository.find({
+      relations: {
+        ebayStat: true,
+      },
+    });
+  }
+
+  async findOneWithEbayStat(id: string) {
+    return this.productsRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        ebayStat: true,
+      },
     });
   }
 

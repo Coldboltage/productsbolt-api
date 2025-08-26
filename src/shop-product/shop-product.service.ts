@@ -341,7 +341,6 @@ export class ShopProductService {
   // Scan for shopProducts which are priority true
   @Cron(CronExpression.EVERY_HOUR, {
     name: 'checkForIndividualShopProductPriority',
-
   })
   async checkForIndividualShopProductPriority(shopProductId: string) {
     const shopProduct = await this.shopProductRepository.findOne({

@@ -495,10 +495,43 @@ export class WebpageService {
   @Cron(CronExpression.EVERY_DAY_AT_10AM)
   async resetAlertCount() {
     const webpageEntities = await this.findAll();
-    webpageEntities.forEach((webpage) => (
-      webpage.alertCount = 0,
-      webpage.disable = false
-    ));
+    webpageEntities.forEach(
+      (webpage) => ((webpage.alertCount = 0), (webpage.disable = false)),
+    );
     await this.webpagesRepository.save(webpageEntities);
+  }
+
+  async nextProductToSell() {
+    const products = await this.productService.findAllWithEbayStat();
+
+    const roiCalc = (sellPrice: number, buyPrice: number) => {
+      return ((sellPrice - buyPrice) / buyPrice) * 100;
+    };
+    const roiProducts: {
+      name: string;
+      clearPriceRoi: number;
+      jitPriceeRoi: number;
+      maximisedPriceRoi: number;
+    }[] = [];
+    for (const product of products) {
+      const webpages = await this.findAllByProductStock(true, product.id);
+      const cheapestWebpage = webpages.at(1);
+
+      const { clearPrice, jitPrice, maximisedPrice } = product.ebayStat;
+
+      const clearPriceRoi = roiCalc(clearPrice, cheapestWebpage.price);
+      const jitPriceeRoi = roiCalc(jitPrice, cheapestWebpage.price);
+      const maximisedPriceRoi = roiCalc(maximisedPrice, cheapestWebpage.price);
+      roiProducts.push({
+        name: product.name,
+        clearPriceRoi,
+        jitPriceeRoi,
+        maximisedPriceRoi,
+      });
+    }
+
+    roiProducts.sort((a, b) => b.clearPriceRoi - a.clearPriceRoi);
+    const highestRoi = roiProducts.at(1);
+    console.log(highestRoi);
   }
 }

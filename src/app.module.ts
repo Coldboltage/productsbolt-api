@@ -31,7 +31,9 @@ import { DiscordModule } from './discord/discord.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    ScheduleModule.forRoot(),
+    ScheduleModule.forRoot({
+      cronJobs: process.env.NABLE_JOBS === 'true' ? true : false,
+    }),
     EventEmitterModule.forRoot(),
     ProductModule,
     ShopModule,

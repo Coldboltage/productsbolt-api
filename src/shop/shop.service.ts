@@ -3,7 +3,6 @@ import {
   Inject,
   Injectable,
   OnApplicationBootstrap,
-  OnModuleInit,
 } from '@nestjs/common';
 import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
