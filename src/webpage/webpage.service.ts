@@ -495,7 +495,10 @@ export class WebpageService {
   @Cron(CronExpression.EVERY_DAY_AT_10AM)
   async resetAlertCount() {
     const webpageEntities = await this.findAll();
-    webpageEntities.forEach((webpage) => (webpage.alertCount = 0));
+    webpageEntities.forEach((webpage) => (
+      webpage.alertCount = 0,
+      webpage.disable = false
+    ));
     await this.webpagesRepository.save(webpageEntities);
   }
 }
