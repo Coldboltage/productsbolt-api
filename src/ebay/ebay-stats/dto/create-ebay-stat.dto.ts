@@ -1,4 +1,4 @@
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsUUID } from 'class-validator';
 
 export class CreateEbayStatDto {
   @IsNumber()
@@ -9,4 +9,7 @@ export class CreateEbayStatDto {
 
   @IsNumber()
   maxPrice: string;
+
+  @IsUUID('4')
+  productId: string;
 }

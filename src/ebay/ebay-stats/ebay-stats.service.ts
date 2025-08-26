@@ -11,7 +11,7 @@ export class EbayStatsService {
     @InjectRepository(EbayStat)
     private ebayStatRepository: Repository<EbayStat>,
   ) { }
-  create(createEbayStatDto: CreateEbayStatDto) {
+  async create(createEbayStatDto: CreateEbayStatDto) {
     return 'This action adds a new ebayStat';
   }
 
