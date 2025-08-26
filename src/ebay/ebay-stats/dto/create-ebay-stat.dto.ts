@@ -2,13 +2,13 @@ import { IsNumber, IsUUID } from 'class-validator';
 
 export class CreateEbayStatDto {
   @IsNumber()
-  minPrice: string;
+  minPrice: number;
 
   @IsNumber()
-  averagePrice: string;
+  averagePrice: number;
 
   @IsNumber()
-  maxPrice: string;
+  maxPrice: number;
 
   @IsUUID('4')
   productId: string;

@@ -4,15 +4,24 @@ import { UpdateEbayStatDto } from './dto/update-ebay-stat.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EbayStat } from './entities/ebay-stat.entity';
 import { Repository } from 'typeorm';
+import { ProductService } from '../../product/product.service';
 
 @Injectable()
 export class EbayStatsService {
   constructor(
     @InjectRepository(EbayStat)
     private ebayStatRepository: Repository<EbayStat>,
+    private productService: ProductService,
   ) { }
   async create(createEbayStatDto: CreateEbayStatDto) {
-    return 'This action adds a new ebayStat';
+    const productEntity = await this.productService.findOne(
+      createEbayStatDto.productId,
+    );
+
+    return this.ebayStatRepository.save({
+      ...createEbayStatDto,
+      product: productEntity,
+    });
   }
 
   findAll() {
@@ -24,7 +33,7 @@ export class EbayStatsService {
   }
 
   async update(id: string, updateEbayStatDto: UpdateEbayStatDto) {
-    return `This action updates a #${id} ebayStat`;
+    return this.ebayStatRepository.update(id, updateEbayStatDto);
   }
 
   remove(id: number) {
