@@ -4,9 +4,11 @@ import {
   Unique,
   Entity,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { Alert } from '../../alert/entities/alert.entity';
 import { ShopProduct } from '../../shop-product/entities/shop-product.entity';
+import { EbayStat } from '../../ebay/ebay-stats/entities/ebay-stat.entity';
 
 @Entity()
 @Unique(['name', 'type'])
@@ -30,7 +32,10 @@ export class Product {
   shopProducts: ShopProduct[];
 
   @Column({ default: false })
-  priority: boolean
+  priority: boolean;
+
+  @OneToOne(() => EbayStat, (ebayStat) => ebayStat.product)
+  ebayStat: EbayStat;
 }
 
 export enum ProductType {

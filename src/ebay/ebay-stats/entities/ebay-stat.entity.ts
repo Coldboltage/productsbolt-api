@@ -1,9 +1,20 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Product } from '../../../product/entities/product.entity';
 
 @Entity()
 export class EbayStat {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @OneToOne(() => Product, (product) => product.ebayStat)
+  @JoinColumn()
+  product: Product;
 
   @Column('decimal', { nullable: true })
   minPrice: number;
