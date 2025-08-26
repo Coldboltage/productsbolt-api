@@ -1,11 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { EbayStatsService } from './ebay-stats.service';
 import { CreateEbayStatDto } from './dto/create-ebay-stat.dto';
 import { UpdateEbayStatDto } from './dto/update-ebay-stat.dto';
 
 @Controller('ebay-stats')
 export class EbayStatsController {
-  constructor(private readonly ebayStatsService: EbayStatsService) {}
+  constructor(private readonly ebayStatsService: EbayStatsService) { }
 
   @Post()
   create(@Body() createEbayStatDto: CreateEbayStatDto) {
@@ -23,8 +31,11 @@ export class EbayStatsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEbayStatDto: UpdateEbayStatDto) {
-    return this.ebayStatsService.update(+id, updateEbayStatDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateEbayStatDto: UpdateEbayStatDto,
+  ) {
+    return this.ebayStatsService.update(id, updateEbayStatDto);
   }
 
   @Delete(':id')
