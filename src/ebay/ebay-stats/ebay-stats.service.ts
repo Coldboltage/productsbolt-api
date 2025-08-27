@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EbayStat } from './entities/ebay-stat.entity';
 import { Repository } from 'typeorm';
 import { ProductService } from '../../product/product.service';
+import { WebpageService } from '../../webpage/webpage.service';
 
 @Injectable()
 export class EbayStatsService {
@@ -12,6 +13,7 @@ export class EbayStatsService {
     @InjectRepository(EbayStat)
     private ebayStatRepository: Repository<EbayStat>,
     private productService: ProductService,
+    private webpageService: WebpageService
   ) { }
   async create(createEbayStatDto: CreateEbayStatDto) {
     const productEntity = await this.productService.findOne(

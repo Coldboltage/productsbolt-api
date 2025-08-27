@@ -10,14 +10,23 @@ import {
 import { EbayStatsService } from './ebay-stats.service';
 import { CreateEbayStatDto } from './dto/create-ebay-stat.dto';
 import { UpdateEbayStatDto } from './dto/update-ebay-stat.dto';
+import { WebpageService } from '../../webpage/webpage.service';
 
 @Controller('ebay-stats')
 export class EbayStatsController {
-  constructor(private readonly ebayStatsService: EbayStatsService) { }
+  constructor(
+    private readonly ebayStatsService: EbayStatsService,
+    private readonly webpageService: WebpageService,
+  ) { }
 
   @Post()
   create(@Body() createEbayStatDto: CreateEbayStatDto) {
     return this.ebayStatsService.create(createEbayStatDto);
+  }
+
+  @Post('next-product-to-sell')
+  nextProductToSell() {
+    return this.webpageService.nextProductToSell();
   }
 
   @Get()
