@@ -284,6 +284,7 @@ export class WebpageService {
   }
 
   async findAllWebpagesDividedByProductsStockStateSlim(state: boolean) {
+    console.log('fired findAllWebpagesDividedByProductsStockStateSlim');
     const products = await this.productService.findAll();
     const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
       [];
@@ -529,6 +530,8 @@ export class WebpageService {
       // console.log(product.name);
 
       const webpages = await this.findAllByProductStock(true, product.id);
+
+      console.log(webpages)
       const cheapestWebpage = webpages.at(0);
 
       console.log({

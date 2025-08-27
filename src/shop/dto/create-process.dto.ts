@@ -55,10 +55,6 @@ export class CreateProcessDto {
   @IsEnum(UniqueShopType)
   shopType: UniqueShopType;
 
-  @IsArray()
-  @IsString({ each: true })
-  sitemapUrls: string[];
-
   @ValidateNested()
   @Type(() => EbayProductDetailDto)
   @IsOptional()
