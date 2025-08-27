@@ -54,6 +54,9 @@ export class WebpageService {
 
     // Inspect the asserted queue options
     console.log('Client queueOptions:', client.options.queueOptions);
+
+    // Testing area
+    await this.nextProductToSell();
   }
 
   async create(createWebpageDto: CreateWebpageDto) {
@@ -191,7 +194,9 @@ export class WebpageService {
       },
       relations: {
         shopProduct: {
-          product: true,
+          product: {
+            ebayStat: true,
+          },
         },
       },
       order: {
@@ -502,10 +507,15 @@ export class WebpageService {
   }
 
   async nextProductToSell() {
+    console.log('nextProductToSell fired');
     const products = await this.productService.findAllWithEbayStat();
 
     const roiCalc = (sellPrice: number, buyPrice: number) => {
-      return ((sellPrice - buyPrice) / buyPrice) * 100;
+      // console.log({
+      //   sellPrice,
+      //   buyPrice,
+      // });
+      return Math.round(((sellPrice - buyPrice) / buyPrice) * 100);
     };
     const roiProducts: {
       name: string;
@@ -514,14 +524,31 @@ export class WebpageService {
       maximisedPriceRoi: number;
     }[] = [];
     for (const product of products) {
+      if (!product.ebayStat) continue;
+
+      // console.log(product.name);
+
       const webpages = await this.findAllByProductStock(true, product.id);
-      const cheapestWebpage = webpages.at(1);
+      const cheapestWebpage = webpages.at(0);
+
+      console.log({
+        name: cheapestWebpage.url,
+        price: cheapestWebpage.price,
+      });
 
       const { clearPrice, jitPrice, maximisedPrice } = product.ebayStat;
 
       const clearPriceRoi = roiCalc(clearPrice, cheapestWebpage.price);
       const jitPriceeRoi = roiCalc(jitPrice, cheapestWebpage.price);
       const maximisedPriceRoi = roiCalc(maximisedPrice, cheapestWebpage.price);
+
+      // console.log({
+      //   name: product.name,
+      //   clearPriceRoi,
+      //   jitPriceeRoi,
+      //   maximisedPriceRoi,
+      // });
+
       roiProducts.push({
         name: product.name,
         clearPriceRoi,
@@ -531,7 +558,10 @@ export class WebpageService {
     }
 
     roiProducts.sort((a, b) => b.clearPriceRoi - a.clearPriceRoi);
-    const highestRoi = roiProducts.at(1);
+    // console.log(roiProducts);
+
+    const highestRoi = roiProducts.at(0);
     console.log(highestRoi);
+    return highestRoi;
   }
 }
