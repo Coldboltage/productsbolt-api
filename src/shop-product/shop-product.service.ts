@@ -150,7 +150,7 @@ export class ShopProductService {
         shopProduct.product.name,
       );
 
-      console.log(reducedSitemap.length);
+      // console.log(reducedSitemap.length);
 
       if (reducedSitemap.length === 0) continue;
 
@@ -198,7 +198,7 @@ export class ShopProductService {
           createProcess,
         );
       }
-      await new Promise((r) => setTimeout(r, 2));
+      await new Promise((r) => setTimeout(r, 100));
     }
   }
   async manualFindShopsToUpdateProducts(productId: string) {
