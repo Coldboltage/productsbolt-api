@@ -63,6 +63,11 @@ export class ShopProductService {
     });
     const shopProductResponses = await Promise.all(shopProductsPromises);
     for (const shopProduct of shopProductResponses) {
+      const reducedSitemap = this.shopService.reduceSitemap(
+        shopProduct.shop.sitemapEntity.sitemapUrls,
+        shopProduct.product.name,
+      );
+
       console.log(`Adding new product: ${shopProduct.product.name}`);
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
@@ -78,10 +83,10 @@ export class ShopProductService {
         shopId: shopProduct.shop.id,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
-        sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           shopId: shopProduct.shop.id,
+          sitemapUrls: reducedSitemap,
         },
       };
 
@@ -121,7 +126,6 @@ export class ShopProductService {
 
   @Cron(CronExpression.EVERY_2_HOURS, {
     name: 'manualUpdateAllShopProducts',
-
   })
   async manualUpdateAllShopProducts() {
     const shopProductsOrphan = await this.shopProductRepository.find({
@@ -146,7 +150,7 @@ export class ShopProductService {
         shopProduct.product.name,
       );
 
-      console.log(reducedSitemap.length);
+      // console.log(reducedSitemap.length);
 
       if (reducedSitemap.length === 0) continue;
 
@@ -164,9 +168,9 @@ export class ShopProductService {
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
-        sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
+          sitemapUrls: reducedSitemap,
           shopId: shopProduct.shop.id,
         },
       };
@@ -194,7 +198,7 @@ export class ShopProductService {
           createProcess,
         );
       }
-      await new Promise((r) => setTimeout(r, 2));
+      await new Promise((r) => setTimeout(r, 100));
     }
   }
   async manualFindShopsToUpdateProducts(productId: string) {
@@ -220,6 +224,10 @@ export class ShopProductService {
     console.log(shopProductsOrphan.length);
 
     for (const shopProduct of shopProductsOrphan) {
+      const reducedSitemap = this.shopService.reduceSitemap(
+        shopProduct.shop.sitemapEntity.sitemapUrls,
+        shopProduct.product.name,
+      );
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
         url: shopProduct.shop.website,
@@ -234,9 +242,9 @@ export class ShopProductService {
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
-        sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
+          sitemapUrls: reducedSitemap,
           shopId: shopProduct.shop.id,
         },
       };
@@ -304,6 +312,11 @@ export class ShopProductService {
       },
     });
 
+    const reducedSitemap = this.shopService.reduceSitemap(
+      shopProduct.shop.sitemapEntity.sitemapUrls,
+      shopProduct.product.name,
+    );
+
     const createProcess: CreateProcessDto = {
       sitemap: shopProduct.shop.sitemap,
       url: shopProduct.shop.website,
@@ -318,10 +331,10 @@ export class ShopProductService {
       shopId: shopProduct.shopId,
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
-      sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
         shopId: shopProduct.shop.id,
+        sitemapUrls: reducedSitemap,
       },
     };
 
@@ -341,7 +354,6 @@ export class ShopProductService {
   // Scan for shopProducts which are priority true
   @Cron(CronExpression.EVERY_HOUR, {
     name: 'checkForIndividualShopProductPriority',
-
   })
   async checkForIndividualShopProductPriority(shopProductId: string) {
     const shopProduct = await this.shopProductRepository.findOne({
@@ -359,6 +371,11 @@ export class ShopProductService {
       },
     });
 
+    const reducedSitemap = this.shopService.reduceSitemap(
+      shopProduct.shop.sitemapEntity.sitemapUrls,
+      shopProduct.product.name,
+    );
+
     const createProcess: CreateProcessDto = {
       sitemap: shopProduct.shop.sitemap,
       url: shopProduct.shop.website,
@@ -373,10 +390,10 @@ export class ShopProductService {
       shopId: shopProduct.shopId,
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
-      sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
         shopId: shopProduct.shop.id,
+        sitemapUrls: reducedSitemap,
       },
     };
 
@@ -410,6 +427,12 @@ export class ShopProductService {
     console.log(shopProducts.length);
 
     for (const shopProduct of shopProducts) {
+
+      const reducedSitemap = this.shopService.reduceSitemap(
+        shopProduct.shop.sitemapEntity.sitemapUrls,
+        shopProduct.product.name,
+      );
+
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
         url: shopProduct.shop.website,
@@ -424,10 +447,10 @@ export class ShopProductService {
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
-        sitemapUrls: shopProduct.shop.sitemapEntity.sitemapUrls,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           shopId: shopProduct.shop.id,
+          sitemapUrls: reducedSitemap,
         },
       };
 

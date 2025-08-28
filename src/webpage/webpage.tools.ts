@@ -37,6 +37,6 @@ export class WebpageTools {
       );
 
     // This ensures pretty JSON instead of one-line escaped string
-    return JSON.parse(JSON.stringify(result, null, 2));
+    return result
   }
 }

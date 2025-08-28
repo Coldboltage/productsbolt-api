@@ -54,6 +54,9 @@ export class WebpageService {
 
     // Inspect the asserted queue options
     console.log('Client queueOptions:', client.options.queueOptions);
+
+    // Testing area
+    await this.nextProductToSell();
   }
 
   async create(createWebpageDto: CreateWebpageDto) {
@@ -191,7 +194,9 @@ export class WebpageService {
       },
       relations: {
         shopProduct: {
-          product: true,
+          product: {
+            ebayStat: true,
+          },
         },
       },
       order: {
@@ -279,6 +284,7 @@ export class WebpageService {
   }
 
   async findAllWebpagesDividedByProductsStockStateSlim(state: boolean) {
+    console.log('fired findAllWebpagesDividedByProductsStockStateSlim');
     const products = await this.productService.findAll();
     const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
       [];
@@ -495,10 +501,70 @@ export class WebpageService {
   @Cron(CronExpression.EVERY_DAY_AT_10AM)
   async resetAlertCount() {
     const webpageEntities = await this.findAll();
-    webpageEntities.forEach((webpage) => (
-      webpage.alertCount = 0,
-      webpage.disable = false
-    ));
+    webpageEntities.forEach(
+      (webpage) => ((webpage.alertCount = 0), (webpage.disable = false)),
+    );
     await this.webpagesRepository.save(webpageEntities);
+  }
+
+  async nextProductToSell() {
+    console.log('nextProductToSell fired');
+    const products = await this.productService.findAllWithEbayStat();
+
+    const roiCalc = (sellPrice: number, buyPrice: number) => {
+      // console.log({
+      //   sellPrice,
+      //   buyPrice,
+      // });
+      return Math.round(((sellPrice - buyPrice) / buyPrice) * 100);
+    };
+    const roiProducts: {
+      name: string;
+      clearPriceRoi: number;
+      jitPriceeRoi: number;
+      maximisedPriceRoi: number;
+    }[] = [];
+    for (const product of products) {
+      if (!product.ebayStat) continue;
+
+      // console.log(product.name);
+
+      const webpages = await this.findAllByProductStock(true, product.id);
+
+      console.log(webpages)
+      const cheapestWebpage = webpages.at(0);
+
+      console.log({
+        name: cheapestWebpage.url,
+        price: cheapestWebpage.price,
+      });
+
+      const { clearPrice, jitPrice, maximisedPrice } = product.ebayStat;
+
+      const clearPriceRoi = roiCalc(clearPrice, cheapestWebpage.price);
+      const jitPriceeRoi = roiCalc(jitPrice, cheapestWebpage.price);
+      const maximisedPriceRoi = roiCalc(maximisedPrice, cheapestWebpage.price);
+
+      // console.log({
+      //   name: product.name,
+      //   clearPriceRoi,
+      //   jitPriceeRoi,
+      //   maximisedPriceRoi,
+      // });
+
+      roiProducts.push({
+        name: product.name,
+        clearPriceRoi,
+        jitPriceeRoi,
+        maximisedPriceRoi,
+      });
+    }
+
+    roiProducts.sort((a, b) => b.clearPriceRoi - a.clearPriceRoi);
+    // console.log(roiProducts);
+
+    const highestRoi = roiProducts.at(0);
+    console.log(highestRoi);
+    return highestRoi;
   }
 }

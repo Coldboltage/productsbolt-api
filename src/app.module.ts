@@ -31,7 +31,9 @@ import { DiscordModule } from './discord/discord.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    ScheduleModule.forRoot(),
+    ScheduleModule.forRoot({
+      cronJobs: process.env.NABLE_JOBS === 'true' ? true : false,
+    }),
     EventEmitterModule.forRoot(),
     ProductModule,
     ShopModule,
@@ -44,12 +46,12 @@ import { DiscordModule } from './discord/discord.module';
     EbayModule,
     WebpageUtilsModule,
     SitemapModule,
-    McpModule.forRoot({
-      name: 'productsbolt-mcp',
-      version: '0.0.1',
-      // defaults: SSE + Streamable HTTP + STDIO enabled
-      // SSE endpoints: GET /sse (stream), POST /messages (calls)
-    }),
+    // McpModule.forRoot({
+    //   name: 'productsbolt-mcp',
+    //   version: '0.0.1',
+    //   // defaults: SSE + Streamable HTTP + STDIO enabled
+    //   // SSE endpoints: GET /sse (stream), POST /messages (calls)
+    // }),
     DiscordModule,
   ],
   controllers: [AppController],
