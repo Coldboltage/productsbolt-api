@@ -32,7 +32,7 @@ import { DiscordModule } from './discord/discord.module';
       synchronize: true,
     }),
     ScheduleModule.forRoot({
-      cronJobs: process.env.NABLE_JOBS === 'true' ? true : false,
+      cronJobs: process.env.ENABLE_JOBS === 'true' ? true : false,
     }),
     EventEmitterModule.forRoot(),
     ProductModule,
