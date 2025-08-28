@@ -13,10 +13,10 @@ export class EbayStatsService {
     @InjectRepository(EbayStat)
     private ebayStatRepository: Repository<EbayStat>,
     private productService: ProductService,
-    private webpageService: WebpageService
+    private webpageService: WebpageService,
   ) { }
   async create(createEbayStatDto: CreateEbayStatDto) {
-    console.log(createEbayStatDto)
+    console.log(createEbayStatDto);
     const productEntity = await this.productService.findOne(
       createEbayStatDto.productId,
     );
