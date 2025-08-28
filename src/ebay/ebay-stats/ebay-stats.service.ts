@@ -16,6 +16,7 @@ export class EbayStatsService {
     private webpageService: WebpageService
   ) { }
   async create(createEbayStatDto: CreateEbayStatDto) {
+    console.log(createEbayStatDto)
     const productEntity = await this.productService.findOne(
       createEbayStatDto.productId,
     );
