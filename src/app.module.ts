@@ -18,6 +18,8 @@ import { SitemapModule } from './sitemap/sitemap.module';
 import 'dotenv/config';
 import { McpModule } from '@rekog/mcp-nest';
 import { DiscordModule } from './discord/discord.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 
 @Module({
   imports: [
@@ -31,8 +33,11 @@ import { DiscordModule } from './discord/discord.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     ScheduleModule.forRoot({
-      cronJobs: process.env.NABLE_JOBS === 'true' ? true : false,
+      cronJobs: process.env.ENABLE_JOBS === 'true' ? true : false,
     }),
     EventEmitterModule.forRoot(),
     ProductModule,
