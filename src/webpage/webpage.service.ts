@@ -513,6 +513,7 @@ export class WebpageService {
     };
     const roiProducts: {
       name: string;
+      webpage: string;
       clearPriceRoi: number;
       jitPriceeRoi: number;
       maximisedPriceRoi: number;
@@ -538,11 +539,14 @@ export class WebpageService {
 
       roiProducts.push({
         name: product.name,
+        webpage: cheapestWebpage.url,
         clearPriceRoi,
         jitPriceeRoi,
         maximisedPriceRoi,
       });
     }
+
+    console.log(roiProducts)
 
     roiProducts.sort((a, b) => b.clearPriceRoi - a.clearPriceRoi);
     // console.log(roiProducts);

@@ -2,7 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
@@ -47,6 +47,7 @@ export class ProductService {
       relations: {
         ebayStat: true,
       },
+      where: { ebayStat: { id: Not(IsNull()) } }, // generates "ebayStat.id IS NOT NULL"
     });
   }
 

@@ -10,6 +10,9 @@ export class CreateEbayStatDto {
   @IsNumber()
   maxPrice: number;
 
+  @IsNumber()
+  minActivePrice: number;
+
   @IsUUID('4')
   productId: string;
 }

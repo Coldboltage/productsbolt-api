@@ -34,8 +34,6 @@ export class EbayStatsController {
     return this.ebayStatsService.bestWebpageToCalc();
   }
 
-  @Post()
-
   @Get()
   findAll() {
     return this.ebayStatsService.findAll();
