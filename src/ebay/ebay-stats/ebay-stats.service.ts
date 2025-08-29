@@ -30,7 +30,8 @@ export class EbayStatsService {
   async bestWebpageToCalc() {
     const products = await this.productService.findAllWithEbayStat();
     for (const product of products) {
-      const { minPrice, averagePrice, maxPrice, id } = product.ebayStat;
+      const { minPrice, averagePrice, maxPrice, id, minActivePrice } =
+        product.ebayStat;
       const webpageProduct = (
         await this.webpageService.findAllByProductStock(true, product.id)
       ).at(0);
@@ -40,7 +41,7 @@ export class EbayStatsService {
         minPrice,
         averagePrice,
         maxPrice,
-        10,
+        minActivePrice,
       );
 
       await this.update(id, {

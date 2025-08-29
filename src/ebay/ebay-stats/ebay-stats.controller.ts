@@ -29,6 +29,13 @@ export class EbayStatsController {
     return this.webpageService.nextProductToSell();
   }
 
+  @Post('price-points')
+  pricePoints() {
+    return this.ebayStatsService.bestWebpageToCalc();
+  }
+
+  @Post()
+
   @Get()
   findAll() {
     return this.ebayStatsService.findAll();
