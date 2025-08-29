@@ -550,8 +550,8 @@ export class WebpageService {
 
     console.log(roiProducts);
 
-    roiProducts.sort((a, b) => b.clearPriceRoi - a.clearPriceRoi);
-    // console.log(roiProducts);
+    roiProducts.sort((a, b) => b.maximisedPriceRoi - a.maximisedPriceRoi);
+    console.log(roiProducts);
 
     const highestRoi = roiProducts.at(0);
     console.log(highestRoi);
