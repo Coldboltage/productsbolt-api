@@ -16,9 +16,8 @@ import { Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AlertService } from '../alert/alert.service';
-import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class WebpageService {
@@ -29,8 +28,6 @@ export class WebpageService {
     private shopProductService: ShopProductService,
     private productService: ProductService,
     private alertService: AlertService,
-    private eventEmitter: EventEmitter2,
-    private scheduler: SchedulerRegistry,
   ) { }
 
   async onApplicationBootstrap() {
@@ -512,10 +509,6 @@ export class WebpageService {
     const products = await this.productService.findAllWithEbayStat();
 
     const roiCalc = (sellPrice: number, buyPrice: number) => {
-      // console.log({
-      //   sellPrice,
-      //   buyPrice,
-      // });
       return Math.round(((sellPrice - buyPrice) / buyPrice) * 100);
     };
     const roiProducts: {
@@ -527,11 +520,9 @@ export class WebpageService {
     for (const product of products) {
       if (!product.ebayStat) continue;
 
-      // console.log(product.name);
-
       const webpages = await this.findAllByProductStock(true, product.id);
 
-      console.log(webpages)
+      console.log(webpages);
       const cheapestWebpage = webpages.at(0);
 
       console.log({
@@ -544,13 +535,6 @@ export class WebpageService {
       const clearPriceRoi = roiCalc(clearPrice, cheapestWebpage.price);
       const jitPriceeRoi = roiCalc(jitPrice, cheapestWebpage.price);
       const maximisedPriceRoi = roiCalc(maximisedPrice, cheapestWebpage.price);
-
-      // console.log({
-      //   name: product.name,
-      //   clearPriceRoi,
-      //   jitPriceeRoi,
-      //   maximisedPriceRoi,
-      // });
 
       roiProducts.push({
         name: product.name,

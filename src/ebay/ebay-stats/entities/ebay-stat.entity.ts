@@ -25,6 +25,9 @@ export class EbayStat {
   @Column('decimal', { nullable: true })
   maxPrice: number;
 
+  @Column('decimal', { nullable: true })
+  minActivePrice: number;
+
   // cached strategy prices (optional)
   @Column('decimal', { nullable: true })
   jitPrice: number;

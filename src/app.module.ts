@@ -18,7 +18,7 @@ import { SitemapModule } from './sitemap/sitemap.module';
 import 'dotenv/config';
 import { McpModule } from '@rekog/mcp-nest';
 import { DiscordModule } from './discord/discord.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 
 
 @Module({

@@ -27,6 +27,41 @@ export class EbayStatsService {
     });
   }
 
+  async bestWebpageToCalc() {
+    const products = await this.productService.findAllWithEbayStat();
+    for (const product of products) {
+      const { minPrice, averagePrice, maxPrice, id } = product.ebayStat;
+      const webpageProduct = (
+        await this.webpageService.findAllByProductStock(true, product.id)
+      ).at(0);
+
+      const calculatedPrices = this.calculateCost(
+        webpageProduct.price,
+        minPrice,
+        averagePrice,
+        maxPrice,
+        10,
+      );
+
+      await this.update(id, {
+        ...calculatedPrices,
+      });
+    }
+  }
+
+  calculateCost(
+    cost: number,
+    minSold: number,
+    avgSold: number,
+    maxSold: number,
+    minActive: number,
+  ) {
+    const clearPrice = Math.max(cost, minSold, minActive ?? -Infinity);
+    const jitPrice = Math.min(Math.max(avgSold, clearPrice), maxSold);
+    const maximisedPrice = maxSold;
+    return { clearPrice, jitPrice, maximisedPrice };
+  }
+
   findAll() {
     return `This action returns all ebayStats`;
   }
