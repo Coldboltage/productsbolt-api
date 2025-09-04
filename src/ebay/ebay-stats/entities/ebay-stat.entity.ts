@@ -38,3 +38,17 @@ export class EbayStat {
   @Column('decimal', { nullable: true })
   maximisedPrice: number;
 }
+
+export interface PricePoints {
+  name: string;
+  webpage: string;
+  price: number;
+  clearPriceRoi: WebsitePriceRoi;
+  jitPriceeRoi: WebsitePriceRoi;
+  maximisedPriceRoi: WebsitePriceRoi;
+}
+
+export interface WebsitePriceRoi {
+  price: number;
+  roi: number;
+}

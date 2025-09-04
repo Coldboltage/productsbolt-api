@@ -49,7 +49,7 @@ export class AlertService {
       isWebpageCheaper &&
       webpage.inStock === true &&
       webpage.price > 0.01 &&
-      webpage.shopProduct.product.priority === true &&
+      // webpage.shopProduct.product.priority === true &&
       webpage.disable === false
     ) {
       alert.alerted = true;

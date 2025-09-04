@@ -18,6 +18,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
 import { AlertService } from '../alert/alert.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { PricePoints } from 'src/ebay/ebay-stats/entities/ebay-stat.entity';
 
 @Injectable()
 export class WebpageService {
@@ -511,14 +512,7 @@ export class WebpageService {
     const roiCalc = (sellPrice: number, buyPrice: number) => {
       return Math.round(((sellPrice - buyPrice) / buyPrice) * 100);
     };
-    const roiProducts: {
-      name: string;
-      webpage: string;
-      price: number;
-      clearPriceRoi: number;
-      jitPriceeRoi: number;
-      maximisedPriceRoi: number;
-    }[] = [];
+    const roiProducts: PricePoints[] = [];
     for (const product of products) {
       if (!product.ebayStat) continue;
 
@@ -542,15 +536,24 @@ export class WebpageService {
         name: product.name,
         webpage: cheapestWebpage.url,
         price: cheapestWebpage.price,
-        clearPriceRoi,
-        jitPriceeRoi,
-        maximisedPriceRoi,
+        clearPriceRoi: {
+          price: clearPrice,
+          roi: clearPriceRoi,
+        },
+        jitPriceeRoi: {
+          price: jitPrice,
+          roi: jitPriceeRoi,
+        },
+        maximisedPriceRoi: {
+          price: maximisedPrice,
+          roi: maximisedPriceRoi,
+        }
       });
     }
 
     console.log(roiProducts);
 
-    roiProducts.sort((a, b) => b.maximisedPriceRoi - a.maximisedPriceRoi);
+    roiProducts.sort((a, b) => b.maximisedPriceRoi.price - a.maximisedPriceRoi.price);
     console.log(roiProducts);
 
     const highestRoi = roiProducts.at(0);
