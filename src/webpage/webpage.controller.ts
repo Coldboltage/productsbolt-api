@@ -88,6 +88,11 @@ export class WebpageController {
     return this.webpageService.update(id, updateWebpageDto);
   }
 
+  @Patch('update-single-page-and-cache/:webpageId')
+  updatePageAndCXache(@Param('webpageId') webpageId: string, @Body() updateWebpageDto: UpdateWebpageDto) {
+    return this.webpageService.updateWebpageAndCache(webpageId, updateWebpageDto);
+  }
+
   @Delete('/delete-and-update-shop-product-page/:id')
   removeWebpage(@Param('id') id: string) {
     console.log(id);

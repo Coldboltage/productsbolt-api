@@ -8,6 +8,7 @@ import { CreateWebpageDto } from './dto/create-webpage.dto';
 import { UpdateWebpageDto } from './dto/update-webpage.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  CheckPageDto,
   StrippedWebpage,
   StrippedWebpageSlim,
   Webpage,
@@ -134,6 +135,7 @@ export class WebpageService {
           product: true,
           shop: true,
         },
+        webpageCache: true,
       },
     });
   }
@@ -341,24 +343,22 @@ export class WebpageService {
     console.log(webPages.length);
     for (const page of webPages) {
       console.log(page);
+      const updatePageDto: CheckPageDto = {
+        url: page.url,
+        query: page.shopProduct.name,
+        type: page.shopProduct.product.type,
+        shopWebsite: page.shopProduct.shop.name,
+        webPageId: page.id,
+        shopifySite: page.shopProduct.shop.isShopifySite,
+        hash: page.webpageCache.hash,
+        confirmed: page.webpageCache.confirmed,
+        count: page.webpageCache.count
+      }
       if (page.shopProduct.shop.isShopifySite === true) {
-        this.headlessClient.emit('updatePage', {
-          url: page.url,
-          query: page.shopProduct.name,
-          type: page.shopProduct.product.type,
-          shopWebsite: page.shopProduct.shop.name,
-          webPageId: page.id,
-          shopifySite: page.shopProduct.shop.isShopifySite,
-        });
+      
+        this.headlessClient.emit('updatePage', updatePageDto);
       } else {
-        this.headfulClient.emit('updatePage', {
-          url: page.url,
-          query: page.shopProduct.name,
-          type: page.shopProduct.product.type,
-          shopWebsite: page.shopProduct.shop.name,
-          webPageId: page.id,
-          shopifySite: page.shopProduct.shop.isShopifySite,
-        });
+        this.headfulClient.emit('updatePage', updatePageDto);
       }
     }
     return webPages;
@@ -371,24 +371,21 @@ export class WebpageService {
     const webPages = await this.findAllHighPriority();
     console.log(webPages.length);
     for (const page of webPages) {
+      const updatePageDto: CheckPageDto = {
+        url: page.url,
+        query: page.shopProduct.name,
+        type: page.shopProduct.product.type,
+        shopWebsite: page.shopProduct.shop.name,
+        webPageId: page.id,
+        shopifySite: page.shopProduct.shop.isShopifySite,
+        hash: page.webpageCache.hash,
+        confirmed: page.webpageCache.confirmed,
+        count: page.webpageCache.count
+      }
       if (page.shopProduct.shop.isShopifySite === true) {
-        this.headlessClient.emit('updatePage', {
-          url: page.url,
-          query: page.shopProduct.name,
-          type: page.shopProduct.product.type,
-          shopWebsite: page.shopProduct.shop.name,
-          webPageId: page.id,
-          shopifySite: page.shopProduct.shop.isShopifySite,
-        });
+        this.headlessClient.emit('updatePage', updatePageDto);
       } else {
-        this.headfulClient.emit('updatePage', {
-          url: page.url,
-          query: page.shopProduct.name,
-          type: page.shopProduct.product.type,
-          shopWebsite: page.shopProduct.shop.name,
-          webPageId: page.id,
-          shopifySite: page.shopProduct.shop.isShopifySite,
-        });
+        this.headfulClient.emit('updatePage', updatePageDto);
       }
     }
     console.log(process.env.ENABLE_JOBS === 'true' ? false : true);
@@ -398,26 +395,22 @@ export class WebpageService {
 
   async updatePage(webpageId) {
     const page = await this.findOne(webpageId);
-
+    const updatePageDto: CheckPageDto = {
+      url: page.url,
+      query: page.shopProduct.name,
+      type: page.shopProduct.product.type,
+      shopWebsite: page.shopProduct.shop.name,
+      webPageId: page.id,
+      shopifySite: page.shopProduct.shop.isShopifySite,
+      hash: page.webpageCache.hash,
+      confirmed: page.webpageCache.confirmed,
+      count: page.webpageCache.count
+    }
     console.log(page);
     if (page.shopProduct.shop.isShopifySite === true) {
-      this.headlessClient.emit('updatePage', {
-        url: page.url,
-        query: page.shopProduct.name,
-        type: page.shopProduct.product.type,
-        shopWebsite: page.shopProduct.shop.name,
-        webPageId: page.id,
-        shopifySite: page.shopProduct.shop.isShopifySite,
-      });
+      this.headlessClient.emit('updatePage', updatePageDto);
     } else {
-      this.headfulClient.emit('updatePage', {
-        url: page.url,
-        query: page.shopProduct.name,
-        type: page.shopProduct.product.type,
-        shopWebsite: page.shopProduct.shop.name,
-        webPageId: page.id,
-        shopifySite: page.shopProduct.shop.isShopifySite,
-      });
+      this.headfulClient.emit('updatePage', updatePageDto);
     }
 
     return page;
@@ -430,7 +423,7 @@ export class WebpageService {
         shopProduct: {
           shop: true,
           product: true,
-        },
+        }, webpageCache: true,
       },
     });
   }
@@ -463,6 +456,39 @@ export class WebpageService {
     }
 
     return this.findOne(id);
+  }
+
+  async updateWebpageAndCache(id: string, updateWebpageDto: UpdateWebpageDto) {
+    // What's going to come from this?
+    // We're going to get the answer. If the answer is the same as before, we're going to add count++. If this becomes over 5+, then it'll be considered confirmed
+    
+    const webpageEntity = await this.findOne(id)
+    let count = webpageEntity.webpageCache.count
+    webpageEntity.webpageCache.date = new Date()
+
+    if (webpageEntity.inStock === updateWebpageDto.inStock && webpageEntity.price === updateWebpageDto.price) {
+      count++
+    }
+    
+    // if scenarios
+    // 1) if hash is different, reset
+    // 2) if hash is the same - count is below 3, still not enough confirmations
+    // 3) If hass is the same - count is above 4, 
+
+    if (webpageEntity.webpageCache.hash !== updateWebpageDto.hash) {
+      webpageEntity.webpageCache.hash = updateWebpageDto.hash
+      webpageEntity.webpageCache.count = 1
+      webpageEntity.webpageCache.confirmed = false
+    } else if (webpageEntity.webpageCache.hash === updateWebpageDto.hash && count < 5) {
+      webpageEntity.webpageCache.count  = count
+    } else if (webpageEntity.webpageCache.hash === updateWebpageDto.hash && count > 5 && !webpageEntity.webpageCache.confirmed)   {
+      webpageEntity.webpageCache.confirmed = true
+    } 
+
+    // The Webpage will update as per normal
+    await this.webpagesRepository.save(webpageEntity)
+    await this.update(id, {...updateWebpageDto, })
+   
   }
 
   async removeAllWebPages() {

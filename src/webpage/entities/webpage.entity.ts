@@ -2,10 +2,13 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
 import { ShopProduct } from '../../shop-product/entities/shop-product.entity';
+import { WebpageCache } from '../webpage-cache/entities/webpage-cache.entity';
+import { ProductType } from 'src/product/entities/product.entity';
 
 @Entity()
 @Unique(['url'])
@@ -39,6 +42,9 @@ export class Webpage {
 
   @Column({ default: 0 })
   alertCount: number;
+
+  @OneToOne(() => WebpageCache, (webpageCache) => webpageCache.webpage)
+  webpageCache: WebpageCache
 }
 
 export interface StrippedWebpage {
@@ -56,4 +62,16 @@ export interface StrippedWebpageSlim {
   inStock: boolean;
   price: number;
   currencyCode: string;
+}
+
+export class CheckPageDto {
+  url: string;
+  query: string
+  type: ProductType
+  shopWebsite: string
+  webPageId: string
+  shopifySite: boolean
+  hash: string
+  confirmed: boolean
+  count: number
 }
