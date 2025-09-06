@@ -1,7 +1,7 @@
 import { Webpage } from "src/webpage/entities/webpage.entity";
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
-Entity()
+@Entity()
 export class WebpageCache {
   @PrimaryGeneratedColumn('uuid')
   id: string
@@ -9,7 +9,7 @@ export class WebpageCache {
   @Column({default: false})
   confirmed: boolean;
 
-  @Column({default: ""})
+  @Column({default: "abc"})
   hash: string;
 
   // When this hits 3, no more counting until new hash has emerged
@@ -19,7 +19,8 @@ export class WebpageCache {
   @Column({type: 'date'})
   date: Date
 
-  @OneToOne(() => Webpage, (webpage) => webpage.webpageCache, {cascade: ['insert', 'update']})
+  @OneToOne(() => Webpage, (webpage) => webpage.webpageCache, {cascade: ['insert', 'update'],  onDelete: 'CASCADE',
+  })
   @JoinColumn()
   webpage: Webpage
 }

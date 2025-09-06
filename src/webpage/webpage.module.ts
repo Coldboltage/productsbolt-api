@@ -8,7 +8,6 @@ import { ClientsModule } from '@nestjs/microservices';
 import { ProductModule } from '../product/product.module';
 import { AlertModule } from '../alert/alert.module';
 import { WebpageTools } from './webpage.tools';
-import { WebpageCacheModule } from './webpage-cache/webpage-cache.module';
 
 @Module({
   imports: [
@@ -17,7 +16,6 @@ import { WebpageCacheModule } from './webpage-cache/webpage-cache.module';
     ClientsModule,
     ProductModule,
     AlertModule,
-    WebpageCacheModule,
   ],
   controllers: [WebpageController],
   providers: [WebpageService, WebpageTools],

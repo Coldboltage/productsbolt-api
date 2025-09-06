@@ -6,4 +6,5 @@ export class UpdateWebpageDto extends PartialType(CreateWebpageDto) {
   disable?: boolean;
   count?: number;
   hash?: string;
+  shopifySite?: boolean;
 }

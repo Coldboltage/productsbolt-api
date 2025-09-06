@@ -55,7 +55,7 @@ export class WebpageService {
     console.log('Client queueOptions:', client.options.queueOptions);
 
     // Testing area
-    await this.nextProductToSell();
+    // await this.nextProductToSell();
   }
 
   async create(createWebpageDto: CreateWebpageDto) {
@@ -175,6 +175,7 @@ export class WebpageService {
           product: true,
           shop: true,
         },
+        webpageCache: true
       },
       order: {
         price: 'ASC',
@@ -423,7 +424,8 @@ export class WebpageService {
         shopProduct: {
           shop: true,
           product: true,
-        }, webpageCache: true,
+        }, 
+        webpageCache: true,
       },
     });
   }
@@ -456,39 +458,6 @@ export class WebpageService {
     }
 
     return this.findOne(id);
-  }
-
-  async updateWebpageAndCache(id: string, updateWebpageDto: UpdateWebpageDto) {
-    // What's going to come from this?
-    // We're going to get the answer. If the answer is the same as before, we're going to add count++. If this becomes over 5+, then it'll be considered confirmed
-    
-    const webpageEntity = await this.findOne(id)
-    let count = webpageEntity.webpageCache.count
-    webpageEntity.webpageCache.date = new Date()
-
-    if (webpageEntity.inStock === updateWebpageDto.inStock && webpageEntity.price === updateWebpageDto.price) {
-      count++
-    }
-    
-    // if scenarios
-    // 1) if hash is different, reset
-    // 2) if hash is the same - count is below 3, still not enough confirmations
-    // 3) If hass is the same - count is above 4, 
-
-    if (webpageEntity.webpageCache.hash !== updateWebpageDto.hash) {
-      webpageEntity.webpageCache.hash = updateWebpageDto.hash
-      webpageEntity.webpageCache.count = 1
-      webpageEntity.webpageCache.confirmed = false
-    } else if (webpageEntity.webpageCache.hash === updateWebpageDto.hash && count < 5) {
-      webpageEntity.webpageCache.count  = count
-    } else if (webpageEntity.webpageCache.hash === updateWebpageDto.hash && count > 5 && !webpageEntity.webpageCache.confirmed)   {
-      webpageEntity.webpageCache.confirmed = true
-    } 
-
-    // The Webpage will update as per normal
-    await this.webpagesRepository.save(webpageEntity)
-    await this.update(id, {...updateWebpageDto, })
-   
   }
 
   async removeAllWebPages() {
@@ -543,9 +512,11 @@ export class WebpageService {
       if (!product.ebayStat) continue;
 
       const webpages = await this.findAllByProductStock(true, product.id);
-
+      if (webpages.length === 0) continue
       console.log(webpages);
-      const cheapestWebpage = webpages.at(0);
+      const cheapestWebpage = webpages.at(0)
+
+      console.log(cheapestWebpage)
 
       console.log({
         name: cheapestWebpage.url,

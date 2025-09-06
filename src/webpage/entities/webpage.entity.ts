@@ -7,7 +7,7 @@ import {
   Unique,
 } from 'typeorm';
 import { ShopProduct } from '../../shop-product/entities/shop-product.entity';
-import { WebpageCache } from '../webpage-cache/entities/webpage-cache.entity';
+import { WebpageCache } from '../../webpage-cache/entities/webpage-cache.entity';
 import { ProductType } from 'src/product/entities/product.entity';
 
 @Entity()

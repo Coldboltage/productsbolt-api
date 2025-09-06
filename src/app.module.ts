@@ -19,6 +19,7 @@ import 'dotenv/config';
 import { McpModule } from '@rekog/mcp-nest';
 import { DiscordModule } from './discord/discord.module';
 import { ConfigModule } from '@nestjs/config';
+import { WebpageCacheModule } from './webpage-cache/webpage-cache.module';
 
 
 @Module({
@@ -58,6 +59,7 @@ import { ConfigModule } from '@nestjs/config';
       // SSE endpoints: GET /sse (stream), POST /messages (calls)
     }),
     DiscordModule,
+    WebpageCacheModule
   ],
   controllers: [AppController],
   providers: [AppService],
