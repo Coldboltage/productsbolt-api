@@ -8,6 +8,7 @@ import { CreateWebpageDto } from './dto/create-webpage.dto';
 import { UpdateWebpageDto } from './dto/update-webpage.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  CheckPageDto,
   StrippedWebpage,
   StrippedWebpageSlim,
   Webpage,
@@ -18,6 +19,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
 import { AlertService } from '../alert/alert.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { PricePoints } from 'src/ebay/ebay-stats/entities/ebay-stat.entity';
 
 @Injectable()
 export class WebpageService {
@@ -53,7 +55,7 @@ export class WebpageService {
     console.log('Client queueOptions:', client.options.queueOptions);
 
     // Testing area
-    await this.nextProductToSell();
+    // await this.nextProductToSell();
   }
 
   async create(createWebpageDto: CreateWebpageDto) {
@@ -133,6 +135,7 @@ export class WebpageService {
           product: true,
           shop: true,
         },
+        webpageCache: true,
       },
     });
   }
@@ -172,6 +175,7 @@ export class WebpageService {
           product: true,
           shop: true,
         },
+        webpageCache: true
       },
       order: {
         price: 'ASC',
@@ -340,24 +344,22 @@ export class WebpageService {
     console.log(webPages.length);
     for (const page of webPages) {
       console.log(page);
+      const updatePageDto: CheckPageDto = {
+        url: page.url,
+        query: page.shopProduct.name,
+        type: page.shopProduct.product.type,
+        shopWebsite: page.shopProduct.shop.name,
+        webPageId: page.id,
+        shopifySite: page.shopProduct.shop.isShopifySite,
+        hash: page.webpageCache.hash,
+        confirmed: page.webpageCache.confirmed,
+        count: page.webpageCache.count
+      }
       if (page.shopProduct.shop.isShopifySite === true) {
-        this.headlessClient.emit('updatePage', {
-          url: page.url,
-          query: page.shopProduct.name,
-          type: page.shopProduct.product.type,
-          shopWebsite: page.shopProduct.shop.name,
-          webPageId: page.id,
-          shopifySite: page.shopProduct.shop.isShopifySite,
-        });
+      
+        this.headlessClient.emit('updatePage', updatePageDto);
       } else {
-        this.headfulClient.emit('updatePage', {
-          url: page.url,
-          query: page.shopProduct.name,
-          type: page.shopProduct.product.type,
-          shopWebsite: page.shopProduct.shop.name,
-          webPageId: page.id,
-          shopifySite: page.shopProduct.shop.isShopifySite,
-        });
+        this.headfulClient.emit('updatePage', updatePageDto);
       }
     }
     return webPages;
@@ -370,24 +372,21 @@ export class WebpageService {
     const webPages = await this.findAllHighPriority();
     console.log(webPages.length);
     for (const page of webPages) {
+      const updatePageDto: CheckPageDto = {
+        url: page.url,
+        query: page.shopProduct.name,
+        type: page.shopProduct.product.type,
+        shopWebsite: page.shopProduct.shop.name,
+        webPageId: page.id,
+        shopifySite: page.shopProduct.shop.isShopifySite,
+        hash: page.webpageCache.hash,
+        confirmed: page.webpageCache.confirmed,
+        count: page.webpageCache.count
+      }
       if (page.shopProduct.shop.isShopifySite === true) {
-        this.headlessClient.emit('updatePage', {
-          url: page.url,
-          query: page.shopProduct.name,
-          type: page.shopProduct.product.type,
-          shopWebsite: page.shopProduct.shop.name,
-          webPageId: page.id,
-          shopifySite: page.shopProduct.shop.isShopifySite,
-        });
+        this.headlessClient.emit('updatePage', updatePageDto);
       } else {
-        this.headfulClient.emit('updatePage', {
-          url: page.url,
-          query: page.shopProduct.name,
-          type: page.shopProduct.product.type,
-          shopWebsite: page.shopProduct.shop.name,
-          webPageId: page.id,
-          shopifySite: page.shopProduct.shop.isShopifySite,
-        });
+        this.headfulClient.emit('updatePage', updatePageDto);
       }
     }
     console.log(process.env.ENABLE_JOBS === 'true' ? false : true);
@@ -397,26 +396,22 @@ export class WebpageService {
 
   async updatePage(webpageId) {
     const page = await this.findOne(webpageId);
-
+    const updatePageDto: CheckPageDto = {
+      url: page.url,
+      query: page.shopProduct.name,
+      type: page.shopProduct.product.type,
+      shopWebsite: page.shopProduct.shop.name,
+      webPageId: page.id,
+      shopifySite: page.shopProduct.shop.isShopifySite,
+      hash: page.webpageCache.hash,
+      confirmed: page.webpageCache.confirmed,
+      count: page.webpageCache.count
+    }
     console.log(page);
     if (page.shopProduct.shop.isShopifySite === true) {
-      this.headlessClient.emit('updatePage', {
-        url: page.url,
-        query: page.shopProduct.name,
-        type: page.shopProduct.product.type,
-        shopWebsite: page.shopProduct.shop.name,
-        webPageId: page.id,
-        shopifySite: page.shopProduct.shop.isShopifySite,
-      });
+      this.headlessClient.emit('updatePage', updatePageDto);
     } else {
-      this.headfulClient.emit('updatePage', {
-        url: page.url,
-        query: page.shopProduct.name,
-        type: page.shopProduct.product.type,
-        shopWebsite: page.shopProduct.shop.name,
-        webPageId: page.id,
-        shopifySite: page.shopProduct.shop.isShopifySite,
-      });
+      this.headfulClient.emit('updatePage', updatePageDto);
     }
 
     return page;
@@ -429,7 +424,8 @@ export class WebpageService {
         shopProduct: {
           shop: true,
           product: true,
-        },
+        }, 
+        webpageCache: true,
       },
     });
   }
@@ -511,21 +507,16 @@ export class WebpageService {
     const roiCalc = (sellPrice: number, buyPrice: number) => {
       return Math.round(((sellPrice - buyPrice) / buyPrice) * 100);
     };
-    const roiProducts: {
-      name: string;
-      webpage: string;
-      price: number;
-      clearPriceRoi: number;
-      jitPriceeRoi: number;
-      maximisedPriceRoi: number;
-    }[] = [];
+    const roiProducts: PricePoints[] = [];
     for (const product of products) {
       if (!product.ebayStat) continue;
 
       const webpages = await this.findAllByProductStock(true, product.id);
-
+      if (webpages.length === 0) continue
       console.log(webpages);
-      const cheapestWebpage = webpages.at(0);
+      const cheapestWebpage = webpages.at(0)
+
+      console.log(cheapestWebpage)
 
       console.log({
         name: cheapestWebpage.url,
@@ -542,15 +533,24 @@ export class WebpageService {
         name: product.name,
         webpage: cheapestWebpage.url,
         price: cheapestWebpage.price,
-        clearPriceRoi,
-        jitPriceeRoi,
-        maximisedPriceRoi,
+        clearPriceRoi: {
+          price: clearPrice,
+          roi: clearPriceRoi,
+        },
+        jitPriceeRoi: {
+          price: jitPrice,
+          roi: jitPriceeRoi,
+        },
+        maximisedPriceRoi: {
+          price: maximisedPrice,
+          roi: maximisedPriceRoi,
+        }
       });
     }
 
     console.log(roiProducts);
 
-    roiProducts.sort((a, b) => b.maximisedPriceRoi - a.maximisedPriceRoi);
+    roiProducts.sort((a, b) => b.maximisedPriceRoi.price - a.maximisedPriceRoi.price);
     console.log(roiProducts);
 
     const highestRoi = roiProducts.at(0);

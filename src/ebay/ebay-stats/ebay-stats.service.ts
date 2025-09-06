@@ -37,6 +37,8 @@ export class EbayStatsService {
         await this.webpageService.findAllByProductStock(true, product.id)
       ).at(0);
 
+      if (!webpageProduct) continue
+
       const calculatedPrices = this.calculateCost(
         webpageProduct.price,
         minPrice,
