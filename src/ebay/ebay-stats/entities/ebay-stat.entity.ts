@@ -52,3 +52,9 @@ export interface WebsitePriceRoi {
   price: number;
   roi: number;
 }
+
+export interface CalculatedPricePoints {
+  clearPrice: number;
+  jitPrice: number;
+  maximisedPrice: number;
+}

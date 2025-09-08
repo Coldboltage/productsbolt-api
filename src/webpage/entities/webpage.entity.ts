@@ -75,3 +75,13 @@ export class CheckPageDto {
   confirmed: boolean
   count: number
 }
+
+export class ProductToWebpageInterface {
+  productName: string;
+  webPages: StrippedWebpage[];
+}
+
+export class ProductToWebpageSlimInterface {
+  productName: string;
+  webPages: StrippedWebpageSlim[];
+}

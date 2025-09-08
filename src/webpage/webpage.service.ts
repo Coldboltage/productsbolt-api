@@ -9,11 +9,13 @@ import { UpdateWebpageDto } from './dto/update-webpage.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CheckPageDto,
+  ProductToWebpageInterface,
+  ProductToWebpageSlimInterface,
   StrippedWebpage,
   StrippedWebpageSlim,
   Webpage,
 } from './entities/webpage.entity';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
@@ -58,7 +60,7 @@ export class WebpageService {
     // await this.nextProductToSell();
   }
 
-  async create(createWebpageDto: CreateWebpageDto) {
+  async create(createWebpageDto: CreateWebpageDto): Promise<Webpage> {
     const checkForExistanceEntity = await this.findOneByUrl(
       createWebpageDto.url,
     );
@@ -107,7 +109,7 @@ export class WebpageService {
         shopProductEntity.id,
       )
     ) {
-      console.error(`Page wasn't added ${createWebpageDto.url}`);
+      console.error(`Page wasn't added ${createWebpageDto.url} as it's blacklisted for this ShopProduct`);
       throw new ConflictException(
         'This webpage URL is blacklisted for the specified shop product.',
       );
@@ -124,7 +126,7 @@ export class WebpageService {
     return webpageEntity;
   }
 
-  async findAll() {
+  async findAll(): Promise<Webpage[]> {
     return this.webpagesRepository.find({
       order: {
         price: 'ASC',
@@ -140,7 +142,7 @@ export class WebpageService {
     });
   }
 
-  async findAllByProduct(productId: string) {
+  async findAllByProduct(productId: string): Promise<Webpage[]> {
     console.log(productId);
     return this.webpagesRepository.find({
       where: {
@@ -161,7 +163,7 @@ export class WebpageService {
     });
   }
 
-  async findAllHighPriority() {
+  async findAllHighPriority(): Promise<Webpage[]> {
     return this.webpagesRepository.find({
       where: {
         shopProduct: {
@@ -183,7 +185,7 @@ export class WebpageService {
     });
   }
 
-  async findAllByProductStock(state: boolean, productId: string) {
+  async findAllByProductStock(state: boolean, productId: string): Promise<Webpage[]> {
     return this.webpagesRepository.find({
       where: {
         shopProduct: {
@@ -206,7 +208,7 @@ export class WebpageService {
     });
   }
 
-  async findAllWebpagesDividedByProduct() {
+  async findAllWebpagesDividedByProduct(): Promise<ProductToWebpageInterface[]> {
     const products = await this.productService.findAll();
     const response: { productName: string; webPages: StrippedWebpage[] }[] = [];
     for (const product of products) {
@@ -230,7 +232,7 @@ export class WebpageService {
     return response;
   }
 
-  async findAllWebpagesDividedByProductsStockState(state: boolean) {
+  async findAllWebpagesDividedByProductsStockState(state: boolean): Promise<ProductToWebpageInterface[]> {
     const products = await this.productService.findAll();
     const response: { productName: string; webPages: StrippedWebpage[] }[] = [];
     for (const product of products) {
@@ -257,9 +259,7 @@ export class WebpageService {
 
   async showAllWebpagesForAlert(id: string): Promise<Webpage[]> {
     const alertEntity = await this.findOne(id);
-    const webPagesList = await this.findAllByProduct(alertEntity.id);
-    console.log(webPagesList);
-    return webPagesList;
+    return this.findAllByProduct(alertEntity.id);
   }
 
   async showProductsTrue(): Promise<StrippedWebpageSlim[]> {
@@ -284,7 +284,7 @@ export class WebpageService {
     return productWebpages;
   }
 
-  async findAllWebpagesDividedByProductsStockStateSlim(state: boolean) {
+  async findAllWebpagesDividedByProductsStockStateSlim(state: boolean): Promise<ProductToWebpageSlimInterface[]> {
     console.log('fired findAllWebpagesDividedByProductsStockStateSlim');
     const products = await this.productService.findAll();
     const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
@@ -311,7 +311,7 @@ export class WebpageService {
     return response;
   }
 
-  async findAllWebpagesDividedByProductSlim() {
+  async findAllWebpagesDividedByProductSlim(): Promise<ProductToWebpageSlimInterface[]> {
     const products = await this.productService.findAll();
     const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
       [];
@@ -339,7 +339,7 @@ export class WebpageService {
   @Cron(CronExpression.EVERY_HOUR, {
     name: 'updateAllPages',
   })
-  async updateAllPages() {
+  async updateAllPages(): Promise<void> {
     const webPages = await this.findAll();
     console.log(webPages.length);
     for (const page of webPages) {
@@ -362,13 +362,12 @@ export class WebpageService {
         this.headfulClient.emit('updatePage', updatePageDto);
       }
     }
-    return webPages;
   }
 
   @Cron(CronExpression.EVERY_5_MINUTES, {
     name: 'updateHighPriorityWebpages',
   })
-  async updateHighPriorityWebpages() {
+  async updateHighPriorityWebpages(): Promise<void> {
     const webPages = await this.findAllHighPriority();
     console.log(webPages.length);
     for (const page of webPages) {
@@ -389,12 +388,9 @@ export class WebpageService {
         this.headfulClient.emit('updatePage', updatePageDto);
       }
     }
-    console.log(process.env.ENABLE_JOBS === 'true' ? false : true);
-
-    return webPages;
   }
 
-  async updatePage(webpageId) {
+  async updatePage(webpageId: string): Promise<void> {
     const page = await this.findOne(webpageId);
     const updatePageDto: CheckPageDto = {
       url: page.url,
@@ -413,11 +409,9 @@ export class WebpageService {
     } else {
       this.headfulClient.emit('updatePage', updatePageDto);
     }
-
-    return page;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<Webpage> {
     return this.webpagesRepository.findOne({
       where: { id },
       relations: {
@@ -430,7 +424,7 @@ export class WebpageService {
     });
   }
 
-  async findOneByUrl(url: string) {
+  async findOneByUrl(url: string): Promise<Webpage> {
     const entity = await this.webpagesRepository.findOne({
       where: { url },
       relations: { shopProduct: true },
@@ -438,7 +432,7 @@ export class WebpageService {
     return entity;
   }
 
-  async update(id: string, updateWebpageDto: UpdateWebpageDto) {
+  async update(id: string, updateWebpageDto: UpdateWebpageDto): Promise<Webpage> {
     console.log(id);
     await this.webpagesRepository.update(id, {
       price: updateWebpageDto.price ? updateWebpageDto.price : 0,
@@ -460,14 +454,14 @@ export class WebpageService {
     return this.findOne(id);
   }
 
-  async removeAllWebPages() {
+  async removeAllWebPages(): Promise<void> {
     const allWebpages = await this.findAll();
     for (const webpage of allWebpages) {
       await this.removeWebpage(webpage.id);
     }
   }
 
-  async removeWebpage(id: string) {
+  async removeWebpage(id: string): Promise<boolean> {
     console.log(id);
     const webpage = await this.webpagesRepository.findOne({
       where: { id },
@@ -487,74 +481,17 @@ export class WebpageService {
     return true;
   }
 
-  async remove(id: string) {
-    return this.webpagesRepository.delete({ id });
+  async remove(id: string): Promise<Webpage> {
+    const webpageEntity = await this.findOne(id)
+    return this.webpagesRepository.remove(webpageEntity);
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_10AM)
-  async resetAlertCount() {
+  async resetAlertCount(): Promise<void> {
     const webpageEntities = await this.findAll();
     webpageEntities.forEach(
       (webpage) => ((webpage.alertCount = 0), (webpage.disable = false)),
     );
     await this.webpagesRepository.save(webpageEntities);
-  }
-
-  async nextProductToSell() {
-    console.log('nextProductToSell fired');
-    const products = await this.productService.findAllWithEbayStat();
-
-    const roiCalc = (sellPrice: number, buyPrice: number) => {
-      return Math.round(((sellPrice - buyPrice) / buyPrice) * 100);
-    };
-    const roiProducts: PricePoints[] = [];
-    for (const product of products) {
-      if (!product.ebayStat) continue;
-
-      const webpages = await this.findAllByProductStock(true, product.id);
-      if (webpages.length === 0) continue
-      console.log(webpages);
-      const cheapestWebpage = webpages.at(0)
-
-      console.log(cheapestWebpage)
-
-      console.log({
-        name: cheapestWebpage.url,
-        price: cheapestWebpage.price,
-      });
-
-      const { clearPrice, jitPrice, maximisedPrice } = product.ebayStat;
-
-      const clearPriceRoi = roiCalc(clearPrice, cheapestWebpage.price);
-      const jitPriceeRoi = roiCalc(jitPrice, cheapestWebpage.price);
-      const maximisedPriceRoi = roiCalc(maximisedPrice, cheapestWebpage.price);
-
-      roiProducts.push({
-        name: product.name,
-        webpage: cheapestWebpage.url,
-        price: cheapestWebpage.price,
-        clearPriceRoi: {
-          price: clearPrice,
-          roi: clearPriceRoi,
-        },
-        jitPriceeRoi: {
-          price: jitPrice,
-          roi: jitPriceeRoi,
-        },
-        maximisedPriceRoi: {
-          price: maximisedPrice,
-          roi: maximisedPriceRoi,
-        }
-      });
-    }
-
-    console.log(roiProducts);
-
-    roiProducts.sort((a, b) => b.maximisedPriceRoi.price - a.maximisedPriceRoi.price);
-    console.log(roiProducts);
-
-    const highestRoi = roiProducts.at(0);
-    console.log(highestRoi);
-    return roiProducts;
   }
 }

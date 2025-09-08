@@ -11,49 +11,50 @@ import { EbayStatsService } from './ebay-stats.service';
 import { CreateEbayStatDto } from './dto/create-ebay-stat.dto';
 import { UpdateEbayStatDto } from './dto/update-ebay-stat.dto';
 import { WebpageService } from '../../webpage/webpage.service';
+import { EbayStat, PricePoints } from './entities/ebay-stat.entity';
+import { UpdateResult } from 'typeorm';
 
 @Controller('ebay-stats')
 export class EbayStatsController {
   constructor(
     private readonly ebayStatsService: EbayStatsService,
-    private readonly webpageService: WebpageService,
   ) { }
 
   @Post()
-  create(@Body() createEbayStatDto: CreateEbayStatDto) {
+  create(@Body() createEbayStatDto: CreateEbayStatDto): Promise<EbayStat> {
     return this.ebayStatsService.create(createEbayStatDto);
   }
 
   @Post('next-product-to-sell')
-  nextProductToSell() {
-    return this.webpageService.nextProductToSell();
+  nextProductToSell(): Promise<PricePoints[]> {
+    return this.ebayStatsService.nextProductToSell();
   }
 
   @Post('price-points')
-  pricePoints() {
+  pricePoints(): Promise<void> {
     return this.ebayStatsService.bestWebpageToCalc();
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<EbayStat[]> {
     return this.ebayStatsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ebayStatsService.findOne(+id);
+  findOne(@Param('id') id: string): Promise<EbayStat> {
+    return this.ebayStatsService.findOne(id);
   }
 
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateEbayStatDto: UpdateEbayStatDto,
-  ) {
+  ): Promise<UpdateResult> {
     return this.ebayStatsService.update(id, updateEbayStatDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ebayStatsService.remove(+id);
+  remove(@Param('id') id: string): Promise<EbayStat> {
+    return this.ebayStatsService.remove(id);
   }
 }

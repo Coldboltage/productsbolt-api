@@ -3,7 +3,7 @@ import { CreateAlertDto } from './dto/create-alert.dto';
 import { UpdateAlertDto } from './dto/update-alert.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Alert } from './entities/alert.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { ProductService } from '../product/product.service';
 import { Webpage } from '../webpage/entities/webpage.entity';
 import { WebpageUtilsService } from '../webpage-utils/webpage-utils.service';
@@ -17,19 +17,18 @@ export class AlertService {
     private webpageUtilsService: WebpageUtilsService,
     private discordService: DiscordService,
   ) { }
-  async create(createAlertDto: CreateAlertDto) {
+  async create(createAlertDto: CreateAlertDto): Promise<Alert> {
     console.log(createAlertDto);
     const productEntity = await this.productService.findOne(
       createAlertDto.productId,
     );
     console.log(productEntity);
     try {
-      const alertEntity = await this.alertsRepository.save({
+      return this.alertsRepository.save({
         name: createAlertDto.name,
         price: createAlertDto.price,
         product: productEntity,
       });
-      return alertEntity;
     } catch (error) {
       console.log(error);
       throw new ConflictException('alert_already_made_for_user');
@@ -39,9 +38,6 @@ export class AlertService {
   async checkAlert(webpage: Webpage): Promise<boolean> {
     console.log('webpage-updated event fired');
 
-    // console.log('Alert Triggered');
-    // await this.discordService.sendAlert(`Test Triggered`, webpage.url);
-
     const alert = await this.findOneByProductId(webpage.shopProduct.product.id);
     if (!alert) return false;
     const isWebpageCheaper = webpage.price <= alert.price;
@@ -49,7 +45,6 @@ export class AlertService {
       isWebpageCheaper &&
       webpage.inStock === true &&
       webpage.price > 0.01 &&
-      // webpage.shopProduct.product.priority === true &&
       webpage.disable === false
     ) {
       alert.alerted = true;
@@ -77,26 +72,24 @@ export class AlertService {
     }
   }
 
-  async shallowUpdateAlerts() {
+  async shallowUpdateAlerts(): Promise<void> {
     const webpages = await this.webpageUtilsService.findAll();
     webpages.forEach(async (webpage) => {
       await this.checkAlert(webpage);
     });
-    return true;
   }
 
-  async resetAlerts() {
+  async resetAlerts(): Promise<Alert[]> {
     const alerts = await this.findAll();
     alerts.forEach((alert) => (alert.alerted = false));
-    const updatedAlerts = await this.alertsRepository.save(alerts);
-    return updatedAlerts;
+    return this.alertsRepository.save(alerts);
   }
 
-  async findAll() {
+  async findAll(): Promise<Alert[]> {
     return this.alertsRepository.find({});
   }
 
-  async findAllState(state: boolean) {
+  async findAllState(state: boolean): Promise<Alert[]> {
     return this.alertsRepository.find({
       where: {
         alerted: state,
@@ -107,7 +100,7 @@ export class AlertService {
     });
   }
 
-  findOne(id: string) {
+  async findOne(id: string): Promise<Alert> {
     return this.alertsRepository.findOne({
       where: {
         id,
@@ -115,7 +108,7 @@ export class AlertService {
     });
   }
 
-  async findOneByProductId(productId: string) {
+  async findOneByProductId(productId: string): Promise<Alert> {
     return this.alertsRepository.findOne({
       where: {
         product: {
@@ -125,11 +118,11 @@ export class AlertService {
     });
   }
 
-  update(id: number, updateAlertDto: UpdateAlertDto) {
-    return `This action updates a #${id} alert`;
+  async update(id: string, updateAlertDto: UpdateAlertDto): Promise<UpdateResult> {
+    return this.alertsRepository.update(id, updateAlertDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} alert`;
+  async remove(id: string): Promise<DeleteResult> {
+    return this.alertsRepository.delete(id)
   }
 }

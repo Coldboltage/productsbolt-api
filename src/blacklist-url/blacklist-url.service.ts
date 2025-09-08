@@ -3,7 +3,7 @@ import { CreateBlackListUrlDto } from './dto/create-blacklist-url.dto';
 import { UpdateBlackListUrlDto } from './dto/update-blacklist-url.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BlackListUrl } from './entities/blacklist-url.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, RemoveEvent, Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { WebpageService } from '../webpage/webpage.service';
 
@@ -15,7 +15,7 @@ export class BlackListUrlService {
     private shopProductsService: ShopProductService,
     private webPageService: WebpageService,
   ) { }
-  async create(createBlackListUrlDto: CreateBlackListUrlDto) {
+  async create(createBlackListUrlDto: CreateBlackListUrlDto): Promise<BlackListUrl> {
     const webpageEntity = await this.webPageService.findOneByUrl(
       createBlackListUrlDto.url,
     );
@@ -48,11 +48,13 @@ export class BlackListUrlService {
     return this.blackListRepository.save<BlackListUrl>(blackListEntity);
   }
 
-  findAll() {
-    return `This action returns all BlackListUrl`;
+  // Return all Blacklst Urls
+  async findAll(): Promise<BlackListUrl[]> {
+    return this.blackListRepository.find({})
   }
 
-  async findOne(id: string) {
+  // Find a specific Blacklist Url
+  async findOne(id: string): Promise<BlackListUrl> {
     return this.blackListRepository.findOne({
       where: {
         id,
@@ -60,7 +62,8 @@ export class BlackListUrlService {
     });
   }
 
-  async findOneByUrl(url: string) {
+  // Find one by URL. A url will always be tied to one Blacklist URL. 
+  async findOneByUrl(url: string): Promise<BlackListUrl> {
     return this.blackListRepository.findOne({
       where: {
         url,
@@ -69,11 +72,13 @@ export class BlackListUrlService {
     });
   }
 
-  update(id: number, updateBlackListUrlDto: UpdateBlackListUrlDto) {
-    return `This action updates a #${id} BlackListUrl`;
+  // Update a single Blacklist Url
+  async update(id: string, updateBlackListUrlDto: UpdateBlackListUrlDto) {
+    return this.blackListRepository.update(id, updateBlackListUrlDto)
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} BlackListUrl`;
+  // Remove a single Blacklist Url
+  async remove(id: string): Promise<DeleteResult> {
+    return this.blackListRepository.delete(id)
   }
 }

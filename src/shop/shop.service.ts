@@ -7,7 +7,7 @@ import {
 import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { Shop } from './entities/shop.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ClientProxy } from '@nestjs/microservices';
@@ -48,7 +48,7 @@ export class ShopService implements OnApplicationBootstrap {
     console.log('Client queueOptions:', client.options.queueOptions);
   }
 
-  async create(createShopDto: CreateShopDto) {
+  async create(createShopDto: CreateShopDto): Promise<Shop> {
     try {
       const entity = await this.shopsRepository.save({
         ...createShopDto,
@@ -65,21 +65,18 @@ export class ShopService implements OnApplicationBootstrap {
     }
   }
 
-  async findShop(name: string) {
+  async findShop(name: string): Promise<Shop> {
     return await this.shopsRepository.findOne({
       where: {
         name,
       },
-      // relations: {
-      //   webPages: true,
-      // },
     });
   }
 
   @Cron(CronExpression.EVERY_12_HOURS, {
     name: 'updateSitemap',
   })
-  async updateSitemap() {
+  async updateSitemap(): Promise<void> {
     const allActiveShops = await this.findAll();
     // Start a background task and don’t await it
 
@@ -104,7 +101,7 @@ export class ShopService implements OnApplicationBootstrap {
     }
   }
 
-  async fastSitemapAll() {
+  async fastSitemapAll(): Promise<void> {
     const allActiveShops = await this.findAll();
     for (const shop of allActiveShops) {
       shop.sitemapEntity.fast = true;
@@ -112,14 +109,14 @@ export class ShopService implements OnApplicationBootstrap {
     }
   }
 
-  async testShopifySiteCollection(shopId: string) {
+  async testShopifySiteCollection(shopId: string): Promise<void> {
     const shop = await this.findOne(shopId);
     if (shop.isShopifySite) {
       this.headlessClient.emit('shopifyCollectionsTest', shop);
     }
   }
 
-  async testShopifySiteCollectionAllShopify() {
+  async testShopifySiteCollectionAllShopify(): Promise<void> {
     const shops = await this.findAll();
     const shopifyShops = shops.filter((shop) => shop.isShopifySite === true);
     for (const shop of shopifyShops) {
@@ -127,7 +124,7 @@ export class ShopService implements OnApplicationBootstrap {
     }
   }
 
-  async updateSpecificShopSitemap(shopId: string) {
+  async updateSpecificShopSitemap(shopId: string): Promise<void> {
     const shop = await this.findOne(shopId);
     console.log(shop.sitemapEntity);
     if (
@@ -149,12 +146,12 @@ export class ShopService implements OnApplicationBootstrap {
     }
   }
 
-  async manuallyUpdateSitemap(shopId: string) {
+  async manuallyUpdateSitemap(shopId: string): Promise<void> {
     const shop = await this.findOne(shopId);
     this.headfulClient.emit('manualSitemapSearch', shop);
   }
 
-  checkShopsIfShopify = async () => {
+  async checkShopsIfShopify(): Promise<void> {
     const shopEntities = await this.findAll();
     for (const shop of shopEntities) {
       // Check if main site and it's content is shopify
@@ -163,38 +160,13 @@ export class ShopService implements OnApplicationBootstrap {
     }
   };
 
-  async checkIfShopIsShopify(shopId: string) {
+  async checkIfShopIsShopify(shopId: string): Promise<void> {
     const shop = await this.findOne(shopId);
     if (shop) this.headfulClient.emit('shopyifyCheck', shop);
   }
 
-  // @OnEvent('shop-product.created')
-  // async findShopsToUpdateProducts(shopProduct: ShopProduct) {
-  //   console.log(`Adding new product: ${shopProduct.product.name}`);
-  //   const createProcess: CreateProcessDto = {
-  //     sitemap: shopProduct.shop.sitemap,
-  //     url: shopProduct.shop.website,
-  //     category: shopProduct.shop.category,
-  //     name: shopProduct.product.name,
-  //     shopProductId: shopProduct.id,
-  //     shopWebsite: shopProduct.shop.name,
-  //     type: shopProduct.product.type,
-  //     context: shopProduct.product.context,
-  //     crawlAmount: 90,
-  //     sitemapUrls: shopProduct.shop.sitemapUrls,
-  //     productId: shopProduct.product.id,
-  //     shopId: shopProduct.shop.id,
-  //     shopifySite: shopProduct.shop.isShopifySite,
-  //     shopType: shopProduct.shop.uniqueShopType,
-  //   };
 
-  //   this.headfulClient.emit<CreateProcessDto>(
-  //     'webpageDiscovery',
-  //     createProcess,
-  //   );
-  // }
-
-  async findAll() {
+  async findAll(): Promise<Shop[]> {
     return this.shopsRepository.find({
       where: {
         active: true,
@@ -206,7 +178,7 @@ export class ShopService implements OnApplicationBootstrap {
     });
   }
 
-  async findAllRegardless() {
+  async findAllRegardless(): Promise<Shop[]> {
     return this.shopsRepository.find({
       where: {},
       relations: {
@@ -215,7 +187,7 @@ export class ShopService implements OnApplicationBootstrap {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<Shop>{
     return this.shopsRepository.findOne({
       where: {
         id,
@@ -226,7 +198,7 @@ export class ShopService implements OnApplicationBootstrap {
     });
   }
 
-  async update(id: string, updateShopDto: UpdateShopDto) {
+  async update(id: string, updateShopDto: UpdateShopDto): Promise<UpdateResult> {
     const updatedEntity = await this.shopsRepository.update(
       { id },
       updateShopDto,
@@ -236,11 +208,12 @@ export class ShopService implements OnApplicationBootstrap {
     return updatedEntity;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} shop`;
+  async remove(id: string): Promise<Shop> {
+    const shopEntity = await this.findOne(id);
+    return this.shopsRepository.remove(shopEntity)
   }
 
-  reduceSitemap(urls: string[], query: string) {
+  reduceSitemap(urls: string[], query: string): string[] {
     const extractKeywords = (rawUrl: string) => {
       const noQuery = rawUrl.split('?')[0].replace(/\/+$/, '');
       const name = decodeURIComponent(noQuery.split('/').pop() || '');

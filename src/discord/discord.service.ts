@@ -18,24 +18,4 @@ export class DiscordService {
       body: JSON.stringify(payload),
     });
   }
-
-  create(createDiscordDto: CreateDiscordDto) {
-    return 'This action adds a new discord';
-  }
-
-  findAll() {
-    return `This action returns all discord`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} discord`;
-  }
-
-  update(id: number, updateDiscordDto: UpdateDiscordDto) {
-    return `This action updates a #${id} discord`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} discord`;
-  }
 }

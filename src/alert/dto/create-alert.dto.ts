@@ -4,9 +4,6 @@ export class CreateAlertDto {
   @IsString()
   name: string;
 
-  // @IsEmail()
-  // email: string;
-
   @IsUUID()
   productId: string;
 

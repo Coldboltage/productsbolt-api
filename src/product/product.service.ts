@@ -2,7 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Not, Repository } from 'typeorm';
+import { IsNull, Not, Repository, UpdateResult } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
@@ -12,7 +12,7 @@ export class ProductService {
     @InjectRepository(Product) private productsRepository: Repository<Product>,
     private eventEmitter: EventEmitter2,
   ) { }
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto): Promise<Product> {
     let entity: Product;
     try {
       entity = await this.productsRepository.save(createProductDto);
@@ -23,7 +23,7 @@ export class ProductService {
     return entity;
   }
 
-  async findOneByProductName(productName: string) {
+  async findOneByProductName(productName: string): Promise<Product> {
     return this.productsRepository.findOne({
       where: {
         name: productName,
@@ -31,18 +31,18 @@ export class ProductService {
     });
   }
 
-  async findAll() {
+  async findAll(): Promise<Product[]> {
     const allProducts = await this.productsRepository.find({});
     return allProducts;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<Product> {
     return this.productsRepository.findOne({
       where: { id },
     });
   }
 
-  async findAllWithEbayStat() {
+  async findAllWithEbayStat(): Promise<Product[]> {
     return this.productsRepository.find({
       relations: {
         ebayStat: true,
@@ -51,7 +51,7 @@ export class ProductService {
     });
   }
 
-  async findOneWithEbayStat(id: string) {
+  async findOneWithEbayStat(id: string): Promise<Product> {
     return this.productsRepository.findOne({
       where: {
         id,
@@ -62,11 +62,12 @@ export class ProductService {
     });
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  update(id: string, updateProductDto: UpdateProductDto): Promise<UpdateResult> {
+    return this.productsRepository.update(id, updateProductDto)
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: string): Promise<Product> {
+    const productEntity = await this.findOne(id)
+    return this.productsRepository.remove(productEntity)
   }
 }

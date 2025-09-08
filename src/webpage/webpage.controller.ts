@@ -10,35 +10,37 @@ import {
 import { WebpageService } from './webpage.service';
 import { CreateWebpageDto } from './dto/create-webpage.dto';
 import { UpdateWebpageDto } from './dto/update-webpage.dto';
+import { ProductToWebpageInterface, ProductToWebpageSlimInterface, StrippedWebpageSlim, Webpage } from './entities/webpage.entity';
+import { UpdateResult } from 'typeorm';
 
 @Controller('webpage')
 export class WebpageController {
   constructor(private readonly webpageService: WebpageService) { }
 
   @Post()
-  create(@Body() createWebpageDto: CreateWebpageDto) {
+  create(@Body() createWebpageDto: CreateWebpageDto): Promise<Webpage> {
     return this.webpageService.create(createWebpageDto);
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<Webpage[]> {
     return this.webpageService.findAll();
   }
 
   @Get('find-all-divided-by-product')
-  findAllWebpagesDividedByProduct() {
+  findAllWebpagesDividedByProduct(): Promise<ProductToWebpageInterface[]> {
     return this.webpageService.findAllWebpagesDividedByProduct();
   }
 
   @Get('find-all-divided-by-product-slim')
-  findAllWebpagesDividedByProductSlim() {
+  findAllWebpagesDividedByProductSlim(): Promise<ProductToWebpageSlimInterface[]> {
     return this.webpageService.findAllWebpagesDividedByProductSlim();
   }
 
   @Get('find-all-divided-by-product/:stockState')
   findAllWebpagesDividedByProductsStockState(
     @Param('stockState') stockState: boolean,
-  ) {
+  ): Promise<ProductToWebpageInterface[]> {
     return this.webpageService.findAllWebpagesDividedByProductsStockState(
       stockState,
     );
@@ -47,61 +49,61 @@ export class WebpageController {
   @Get('find-all-divided-by-product-slim/:stockState')
   findAllWebpagesDividedByProductsStockStateSlim(
     @Param('stockState') stockState: boolean,
-  ) {
+  ): Promise<ProductToWebpageSlimInterface[]> {
     return this.webpageService.findAllWebpagesDividedByProductsStockStateSlim(
       stockState,
     );
   }
 
   @Get('find-all-by-product/:id')
-  findAllByProduct(@Param('id') id: string) {
+  findAllByProduct(@Param('id') id: string): Promise<Webpage[]> {
     return this.webpageService.findAllByProduct(id);
   }
 
   @Get('update-all-pages')
-  updateAllPages() {
+  updateAllPages(): Promise<void> {
     return this.webpageService.updateAllPages();
   }
 
   @Get('update-all-pages-high-priority')
-  updateHighPriorityWebpages() {
+  updateHighPriorityWebpages(): Promise<void>{
     return this.webpageService.updateHighPriorityWebpages();
   }
 
   @Get('update-single-page/:webpageId')
-  updatePage(@Param('webpageId') webpageId: string) {
+  updatePage(@Param('webpageId') webpageId: string): Promise<void> {
     return this.webpageService.updatePage(webpageId);
   }
 
   @Get('show-products-true')
-  showProductsTrue() {
+  showProductsTrue(): Promise<StrippedWebpageSlim[]> {
     return this.webpageService.showProductsTrue();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<Webpage> {
     return this.webpageService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWebpageDto: UpdateWebpageDto) {
+  update(@Param('id') id: string, @Body() updateWebpageDto: UpdateWebpageDto): Promise<Webpage> {
     return this.webpageService.update(id, updateWebpageDto);
   }
 
   @Delete('/delete-and-update-shop-product-page/:id')
-  removeWebpage(@Param('id') id: string) {
+  removeWebpage(@Param('id') id: string): Promise<boolean> {
     console.log(id);
     return this.webpageService.removeWebpage(id);
   }
 
   @Delete('/delete-and-update-shop-product-page-all')
-  removeAllWebPages(@Param('id') id: string) {
+  removeAllWebPages(@Param('id') id: string): Promise<void> {
     console.log(id);
     return this.webpageService.removeAllWebPages();
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: string): Promise<Webpage> {
     return this.webpageService.remove(id);
   }
 }

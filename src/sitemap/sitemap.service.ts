@@ -3,7 +3,7 @@ import { CreateSitemapDto } from './dto/create-sitemap.dto';
 import { UpdateSitemapDto } from './dto/update-sitemap.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Sitemap } from './entities/sitemap.entity';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { ShopService } from '../shop/shop.service';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class SitemapService {
     @InjectRepository(Sitemap) private sitemapRepository: Repository<Sitemap>,
     private shopService: ShopService,
   ) { }
-  async create(createSitemapDto: CreateSitemapDto) {
+  async create(createSitemapDto: CreateSitemapDto): Promise<Sitemap> {
     const sitemapExist = await this.sitemapRepository.exists({
       where: {
         shop: {
@@ -34,7 +34,7 @@ export class SitemapService {
     });
   }
 
-  async generateSitemapAllShops() {
+  async generateSitemapAllShops(): Promise<void> {
     const shops = await this.shopService.findAllRegardless();
     for (const shop of shops) {
       console.log(shop);
@@ -48,13 +48,13 @@ export class SitemapService {
     }
   }
 
-  async resetAllFastMode() {
+  async resetAllFastMode(): Promise<void> {
     const sitemaps = await this.findAll();
     sitemaps.forEach((sitemap) => (sitemap.fast = false));
-    return this.sitemapRepository.save(sitemaps);
+    await this.sitemapRepository.save(sitemaps);
   }
 
-  async findAll() {
+  async findAll(): Promise<Sitemap[]> {
     return this.sitemapRepository.find({
       relations: {
         shop: true,
@@ -62,7 +62,7 @@ export class SitemapService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<Sitemap> {
     return this.sitemapRepository.findOne({
       where: {
         id,
@@ -73,14 +73,12 @@ export class SitemapService {
     });
   }
 
-  async update(id: string, updateSitemapDto: UpdateSitemapDto) {
-    console.log(id);
-    const result = await this.sitemapRepository.update(id, updateSitemapDto);
-    console.log(result);
-    return result;
+  async update(id: string, updateSitemapDto: UpdateSitemapDto): Promise<UpdateResult> {
+    return this.sitemapRepository.update(id, updateSitemapDto);
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} sitemap`;
+  async remove(id: string): Promise<Sitemap> {
+    const sitemapEntity = await this.findOne(id)
+    return this.sitemapRepository.remove(sitemapEntity)
   }
 }

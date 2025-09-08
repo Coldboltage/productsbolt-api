@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateShopProductDto } from './dto/create-shop-product.dto';
 import { UpdateShopProductDto } from './dto/update-shop-product.dto';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ShopProduct } from './entities/shop-product.entity';
-import { IsNull, Not, Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { ShopService } from '../shop/shop.service';
 import { Product } from '../product/entities/product.entity';
 import { ClientProxy } from '@nestjs/microservices';
@@ -23,8 +23,6 @@ export class ShopProductService {
     private shopProductRepository: Repository<ShopProduct>,
     private shopService: ShopService,
     private productService: ProductService,
-    private eventEmitter: EventEmitter2,
-    private readonly scheduler: SchedulerRegistry,
   ) { }
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
@@ -50,7 +48,7 @@ export class ShopProductService {
   }
 
   @OnEvent('product.created')
-  async findShopsToUpdateProducts(product: Product) {
+  async findShopsToUpdateProducts(product: Product): Promise<ShopProduct[]> {
     const shopsEntities = await this.shopService.findAll();
     const shopProductsPromises = shopsEntities.map((shop) => {
       return this.shopProductRepository.save({
@@ -102,11 +100,11 @@ export class ShopProductService {
         );
       }
     }
-    console.log(shopProductResponses);
+    return shopProductResponses
   }
 
   @OnEvent('shop.created')
-  async newShopCreated(shop: Shop) {
+  async newShopCreated(shop: Shop): Promise<ShopProduct[]> {
     console.log(`Added Shop: ${shop.name}`);
     const productEntities = await this.productService.findAll();
     const shopProductsPromises = productEntities.map((product) => {
@@ -127,7 +125,7 @@ export class ShopProductService {
   @Cron(CronExpression.EVERY_2_HOURS, {
     name: 'manualUpdateAllShopProducts',
   })
-  async manualUpdateAllShopProducts() {
+  async manualUpdateAllShopProducts(): Promise<void> {
     const shopProductsOrphan = await this.shopProductRepository.find({
       where: {
         populated: false,
@@ -149,8 +147,6 @@ export class ShopProductService {
         shopProduct.shop.sitemapEntity.sitemapUrls,
         shopProduct.product.name,
       );
-
-      // console.log(reducedSitemap.length);
 
       if (reducedSitemap.length === 0) continue;
 
@@ -201,7 +197,7 @@ export class ShopProductService {
       await new Promise((r) => setTimeout(r, 100));
     }
   }
-  async manualFindShopsToUpdateProducts(productId: string) {
+  async manualFindShopsToUpdateProducts(productId: string): Promise<void> {
     const product = await this.productService.findOne(productId);
     console.log(`Adding new product: ${product.name}`);
 
@@ -299,7 +295,7 @@ export class ShopProductService {
   // }
 
   // Scrap for shopProductById (check for a product for a certain website manually for testing)
-  async checkForIndividualShopProduct(shopProductId: string) {
+  async checkForIndividualShopProduct(shopProductId: string): Promise<void> {
     const shopProduct = await this.shopProductRepository.findOne({
       where: {
         id: shopProductId,
@@ -355,7 +351,7 @@ export class ShopProductService {
   @Cron(CronExpression.EVERY_HOUR, {
     name: 'checkForIndividualShopProductPriority',
   })
-  async checkForIndividualShopProductPriority(shopProductId: string) {
+  async checkForIndividualShopProductPriority(shopProductId: string): Promise<void> {
     const shopProduct = await this.shopProductRepository.findOne({
       where: {
         id: shopProductId,
@@ -411,7 +407,7 @@ export class ShopProductService {
   }
 
   // Check all shopProducts for shop
-  async checkForAllShopProductsFromShop(shopId: string) {
+  async checkForAllShopProductsFromShop(shopId: string): Promise<void>{
     const shopProducts = await this.shopProductRepository.find({
       where: {
         shopId,
@@ -478,34 +474,15 @@ export class ShopProductService {
     }
   }
 
-  create(createShopProductDto: CreateShopProductDto) {
-    return 'This action adds a new shopProduct';
+  findAll(): Promise<ShopProduct[]> {
+    return this.shopProductRepository.find({})
   }
 
-  // async findOneWebPageFromShop() {
-  //   const shopProdctEntities = await this.shopProductRepository.find({
-  //    where: {
-  //       webPages: { id: Not(IsNull()) }, // only ShopProducts with at least one webpage
-
-  //    }
-  //   })
-  //   const filteredShopProductEntities = shopProdctEntities.filter(shopProduct => {
-  //     return shopProduct.webPages.find(webpage => {
-  //       return webpage.id
-  //    })
-  //   })
-  //   return filteredShopProductEntities
-  // }
-
-  findAll() {
-    return `This action returns all shopProduct`;
-  }
-
-  findOne(id: string) {
+  findOne(id: string): Promise<ShopProduct> {
     return this.shopProductRepository.findOne({ where: { id } });
   }
 
-  async isUrlBlacklistedForShopProduct(url: string, shopProductId: string) {
+  async isUrlBlacklistedForShopProduct(url: string, shopProductId: string): Promise<boolean> {
     return this.shopProductRepository.exists({
       where: {
         id: shopProductId,
@@ -517,7 +494,7 @@ export class ShopProductService {
     });
   }
 
-  async findOneByShopProductName(name: string) {
+  async findOneByShopProductName(name: string): Promise<ShopProduct> {
     console.log(name);
     return this.shopProductRepository.findOne({
       where: {
@@ -528,7 +505,7 @@ export class ShopProductService {
     });
   }
 
-  async findOneByProductId(productId: string, shopId: string) {
+  async findOneByProductId(productId: string, shopId: string): Promise<ShopProduct> {
     return this.shopProductRepository.findOne({
       where: {
         productId,
@@ -539,25 +516,13 @@ export class ShopProductService {
       },
     });
   }
-  // async findOneByShopName(name: string): Promise<ShopProduct> {
-  //   console.log(name);
-  //   return this.shopProductRepository.findOne({
-  //     where: {
-  //       shop: {
-  //         name,
-  //       },
-  //     },
-  //     relations: {
-  //       shop: true,
-  //     },
-  //   });
-  // }
 
-  async update(id: string, updateShopProductDto: UpdateShopProductDto) {
+  async update(id: string, updateShopProductDto: UpdateShopProductDto): Promise<UpdateResult> {
     return this.shopProductRepository.update({ id }, updateShopProductDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} shopProduct`;
+  async remove(id: string): Promise<ShopProduct> {
+    const shopProductEntity = await this.findOne(id);
+    return this.shopProductRepository.remove(shopProductEntity)
   }
 }
