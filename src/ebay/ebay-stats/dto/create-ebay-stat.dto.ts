@@ -1,18 +1,5 @@
-import { IsNumber, IsUUID } from 'class-validator';
+import { createZodDto } from "nestjs-zod";
+import { CreateEbayStatSchema } from "../ebay-stats-schema";
 
-export class CreateEbayStatDto {
-  @IsNumber()
-  minPrice: number;
 
-  @IsNumber()
-  averagePrice: number;
-
-  @IsNumber()
-  maxPrice: number;
-
-  @IsNumber()
-  minActivePrice: number;
-
-  @IsUUID('4')
-  productId: string;
-}
+export class CreateEbayStatDto extends createZodDto(CreateEbayStatSchema) {}

@@ -43,7 +43,7 @@ export class Webpage {
   @Column({ default: 0 })
   alertCount: number;
 
-  @OneToOne(() => WebpageCache, (webpageCache) => webpageCache.webpage)
+  @OneToOne(() => WebpageCache, (webpageCache) => webpageCache.webpage, {cascade: ['insert', 'update'],})
   webpageCache: WebpageCache
 }
 
