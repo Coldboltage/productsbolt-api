@@ -15,7 +15,7 @@ import {
   StrippedWebpageSlim,
   Webpage,
 } from './entities/webpage.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
@@ -345,6 +345,19 @@ export class WebpageService {
     }
     console.log(response[0].webPages.length);
     return response;
+  }
+
+  async findAllWithoutCache() {
+    return this.webpagesRepository.find({
+      relations: {
+        webpageCache: true,
+      },
+      where: {
+        webpageCache: {
+          id: IsNull(),
+        }
+      }
+    });
   }
 
   @Cron(CronExpression.EVERY_HOUR, {
