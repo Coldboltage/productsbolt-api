@@ -51,7 +51,7 @@ export class EbayStatsController {
     return this.ebayStatsService.update(id, updateEbayStatDto);
   }
 
-  @Patch('/patch-and-update-price-points')
+  @Patch('/patch-and-update-price-points/:id')
   patchAndUpdatePricePoints(
     @Param('id') id: string,
     @Body() updateEbayStatDto: UpdateEbayStatDto,
