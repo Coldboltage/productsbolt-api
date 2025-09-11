@@ -10,7 +10,12 @@ import {
 import { WebpageService } from './webpage.service';
 import { CreateWebpageDto } from './dto/create-webpage.dto';
 import { UpdateWebpageDto } from './dto/update-webpage.dto';
-import { ProductToWebpageInterface, ProductToWebpageSlimInterface, StrippedWebpageSlim, Webpage } from './entities/webpage.entity';
+import {
+  ProductToWebpageInterface,
+  ProductToWebpageSlimInterface,
+  StrippedWebpageSlim,
+  Webpage,
+} from './entities/webpage.entity';
 import { UpdateResult } from 'typeorm';
 
 @Controller('webpage')
@@ -33,7 +38,9 @@ export class WebpageController {
   }
 
   @Get('find-all-divided-by-product-slim')
-  findAllWebpagesDividedByProductSlim(): Promise<ProductToWebpageSlimInterface[]> {
+  findAllWebpagesDividedByProductSlim(): Promise<
+    ProductToWebpageSlimInterface[]
+  > {
     return this.webpageService.findAllWebpagesDividedByProductSlim();
   }
 
@@ -66,7 +73,7 @@ export class WebpageController {
   }
 
   @Get('update-all-pages-high-priority')
-  updateHighPriorityWebpages(): Promise<void>{
+  updateHighPriorityWebpages(): Promise<void> {
     return this.webpageService.updateHighPriorityWebpages();
   }
 
@@ -85,8 +92,16 @@ export class WebpageController {
     return this.webpageService.findOne(id);
   }
 
+  @Post('/reset-alert-and-enable')
+  resetAlertCount() {
+    return this.webpageService.resetAlertCount()
+  }
+
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWebpageDto: UpdateWebpageDto): Promise<Webpage> {
+  update(
+    @Param('id') id: string,
+    @Body() updateWebpageDto: UpdateWebpageDto,
+  ): Promise<Webpage> {
     return this.webpageService.update(id, updateWebpageDto);
   }
 
