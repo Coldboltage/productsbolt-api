@@ -15,14 +15,12 @@ import {
   StrippedWebpageSlim,
   Webpage,
 } from './entities/webpage.entity';
-import { Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
 import { AlertService } from '../alert/alert.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { PricePoints } from 'src/ebay/ebay-stats/entities/ebay-stat.entity';
-
 @Injectable()
 export class WebpageService {
   constructor(
@@ -109,7 +107,9 @@ export class WebpageService {
         shopProductEntity.id,
       )
     ) {
-      console.error(`Page wasn't added ${createWebpageDto.url} as it's blacklisted for this ShopProduct`);
+      console.error(
+        `Page wasn't added ${createWebpageDto.url} as it's blacklisted for this ShopProduct`,
+      );
       throw new ConflictException(
         'This webpage URL is blacklisted for the specified shop product.',
       );
@@ -177,7 +177,7 @@ export class WebpageService {
           product: true,
           shop: true,
         },
-        webpageCache: true
+        webpageCache: true,
       },
       order: {
         price: 'ASC',
@@ -185,7 +185,10 @@ export class WebpageService {
     });
   }
 
-  async findAllByProductStock(state: boolean, productId: string): Promise<Webpage[]> {
+  async findAllByProductStock(
+    state: boolean,
+    productId: string,
+  ): Promise<Webpage[]> {
     return this.webpagesRepository.find({
       where: {
         shopProduct: {
@@ -208,7 +211,9 @@ export class WebpageService {
     });
   }
 
-  async findAllWebpagesDividedByProduct(): Promise<ProductToWebpageInterface[]> {
+  async findAllWebpagesDividedByProduct(): Promise<
+    ProductToWebpageInterface[]
+  > {
     const products = await this.productService.findAll();
     const response: { productName: string; webPages: StrippedWebpage[] }[] = [];
     for (const product of products) {
@@ -232,7 +237,9 @@ export class WebpageService {
     return response;
   }
 
-  async findAllWebpagesDividedByProductsStockState(state: boolean): Promise<ProductToWebpageInterface[]> {
+  async findAllWebpagesDividedByProductsStockState(
+    state: boolean,
+  ): Promise<ProductToWebpageInterface[]> {
     const products = await this.productService.findAll();
     const response: { productName: string; webPages: StrippedWebpage[] }[] = [];
     for (const product of products) {
@@ -284,7 +291,9 @@ export class WebpageService {
     return productWebpages;
   }
 
-  async findAllWebpagesDividedByProductsStockStateSlim(state: boolean): Promise<ProductToWebpageSlimInterface[]> {
+  async findAllWebpagesDividedByProductsStockStateSlim(
+    state: boolean,
+  ): Promise<ProductToWebpageSlimInterface[]> {
     console.log('fired findAllWebpagesDividedByProductsStockStateSlim');
     const products = await this.productService.findAll();
     const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
@@ -311,7 +320,9 @@ export class WebpageService {
     return response;
   }
 
-  async findAllWebpagesDividedByProductSlim(): Promise<ProductToWebpageSlimInterface[]> {
+  async findAllWebpagesDividedByProductSlim(): Promise<
+    ProductToWebpageSlimInterface[]
+  > {
     const products = await this.productService.findAll();
     const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
       [];
@@ -353,10 +364,9 @@ export class WebpageService {
         shopifySite: page.shopProduct.shop.isShopifySite,
         hash: page.webpageCache.hash,
         confirmed: page.webpageCache.confirmed,
-        count: page.webpageCache.count
-      }
+        count: page.webpageCache.count,
+      };
       if (page.shopProduct.shop.isShopifySite === true) {
-      
         this.headlessClient.emit('updatePage', updatePageDto);
       } else {
         this.headfulClient.emit('updatePage', updatePageDto);
@@ -380,8 +390,8 @@ export class WebpageService {
         shopifySite: page.shopProduct.shop.isShopifySite,
         hash: page.webpageCache.hash,
         confirmed: page.webpageCache.confirmed,
-        count: page.webpageCache.count
-      }
+        count: page.webpageCache.count,
+      };
       if (page.shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
       } else {
@@ -401,8 +411,8 @@ export class WebpageService {
       shopifySite: page.shopProduct.shop.isShopifySite,
       hash: page.webpageCache.hash,
       confirmed: page.webpageCache.confirmed,
-      count: page.webpageCache.count
-    }
+      count: page.webpageCache.count,
+    };
     console.log(page);
     if (page.shopProduct.shop.isShopifySite === true) {
       this.headlessClient.emit('updatePage', updatePageDto);
@@ -418,7 +428,7 @@ export class WebpageService {
         shopProduct: {
           shop: true,
           product: true,
-        }, 
+        },
         webpageCache: true,
       },
     });
@@ -432,7 +442,10 @@ export class WebpageService {
     return entity;
   }
 
-  async update(id: string, updateWebpageDto: UpdateWebpageDto): Promise<Webpage> {
+  async update(
+    id: string,
+    updateWebpageDto: UpdateWebpageDto,
+  ): Promise<Webpage> {
     console.log(id);
     await this.webpagesRepository.update(id, {
       price: updateWebpageDto.price ? updateWebpageDto.price : 0,
@@ -482,7 +495,7 @@ export class WebpageService {
   }
 
   async remove(id: string): Promise<Webpage> {
-    const webpageEntity = await this.findOne(id)
+    const webpageEntity = await this.findOne(id);
     return this.webpagesRepository.remove(webpageEntity);
   }
 

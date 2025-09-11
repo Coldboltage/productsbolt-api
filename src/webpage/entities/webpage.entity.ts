@@ -43,8 +43,10 @@ export class Webpage {
   @Column({ default: 0 })
   alertCount: number;
 
-  @OneToOne(() => WebpageCache, (webpageCache) => webpageCache.webpage, {cascade: ['insert', 'update'],})
-  webpageCache: WebpageCache
+  @OneToOne(() => WebpageCache, (webpageCache) => webpageCache.webpage, {
+    cascade: ['insert', 'update'],
+  })
+  webpageCache: WebpageCache;
 }
 
 export interface StrippedWebpage {
@@ -66,14 +68,14 @@ export interface StrippedWebpageSlim {
 
 export class CheckPageDto {
   url: string;
-  query: string
-  type: ProductType
-  shopWebsite: string
-  webPageId: string
-  shopifySite: boolean
-  hash: string
-  confirmed: boolean
-  count: number
+  query: string;
+  type: ProductType;
+  shopWebsite: string;
+  webPageId: string;
+  shopifySite: boolean;
+  hash: string;
+  confirmed: boolean;
+  count: number;
 }
 
 export class ProductToWebpageInterface {
