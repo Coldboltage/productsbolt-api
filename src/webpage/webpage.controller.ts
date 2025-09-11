@@ -94,7 +94,7 @@ export class WebpageController {
 
   @Post('/reset-alert-and-enable')
   resetAlertCount() {
-    return this.webpageService.resetAlertCount()
+    return this.webpageService.resetAlertCount();
   }
 
   @Patch(':id')
