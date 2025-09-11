@@ -16,9 +16,7 @@ import { UpdateResult } from 'typeorm';
 
 @Controller('ebay-stats')
 export class EbayStatsController {
-  constructor(
-    private readonly ebayStatsService: EbayStatsService,
-  ) { }
+  constructor(private readonly ebayStatsService: EbayStatsService) { }
 
   @Post()
   create(@Body() createEbayStatDto: CreateEbayStatDto): Promise<EbayStat> {
@@ -51,6 +49,17 @@ export class EbayStatsController {
     @Body() updateEbayStatDto: UpdateEbayStatDto,
   ): Promise<UpdateResult> {
     return this.ebayStatsService.update(id, updateEbayStatDto);
+  }
+
+  @Patch('/patch-and-update-price-points')
+  patchAndUpdatePricePoints(
+    @Param('id') id: string,
+    @Body() updateEbayStatDto: UpdateEbayStatDto,
+  ) {
+    return this.ebayStatsService.patchAndUpdatePricePoints(
+      id,
+      updateEbayStatDto,
+    );
   }
 
   @Delete(':id')

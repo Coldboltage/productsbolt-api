@@ -2,8 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { CreateEbayStatDto } from './dto/create-ebay-stat.dto';
 import { UpdateEbayStatDto } from './dto/update-ebay-stat.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CalculatedPricePoints, EbayStat, PricePoints } from './entities/ebay-stat.entity';
-import { RemoveOptions, Repository } from 'typeorm';
+import {
+  CalculatedPricePoints,
+  EbayStat,
+  PricePoints,
+} from './entities/ebay-stat.entity';
+import { Repository } from 'typeorm';
 import { ProductService } from '../../product/product.service';
 import { WebpageService } from '../../webpage/webpage.service';
 
@@ -30,14 +34,14 @@ export class EbayStatsService {
   async bestWebpageToCalc(): Promise<void> {
     const products = await this.productService.findAllWithEbayStat();
     for (const product of products) {
-      console.log(product)
+      console.log(product);
       const { minPrice, averagePrice, maxPrice, id, minActivePrice } =
         product.ebayStat;
       const webpageProduct = (
         await this.webpageService.findAllByProductStock(true, product.id)
       ).at(0);
 
-      if (!webpageProduct) continue
+      if (!webpageProduct) continue;
 
       const calculatedPrices = this.calculateCost(
         webpageProduct.price,
@@ -68,7 +72,7 @@ export class EbayStatsService {
 
   async nextProductToSell(): Promise<PricePoints[]> {
     console.log('nextProductToSell fired');
-    await this.bestWebpageToCalc()
+    await this.bestWebpageToCalc();
 
     const products = await this.productService.findAllWithEbayStat();
 
@@ -79,12 +83,15 @@ export class EbayStatsService {
     for (const product of products) {
       if (!product.ebayStat) continue;
 
-      const webpages = await this.webpageService.findAllByProductStock(true, product.id);
-      if (webpages.length === 0) continue
+      const webpages = await this.webpageService.findAllByProductStock(
+        true,
+        product.id,
+      );
+      if (webpages.length === 0) continue;
       console.log(webpages);
-      const cheapestWebpage = webpages.at(0)
+      const cheapestWebpage = webpages.at(0);
 
-      console.log(cheapestWebpage)
+      console.log(cheapestWebpage);
 
       console.log({
         name: cheapestWebpage.url,
@@ -112,13 +119,15 @@ export class EbayStatsService {
         maximisedPriceRoi: {
           price: maximisedPrice,
           roi: maximisedPriceRoi,
-        }
+        },
       });
     }
 
     console.log(roiProducts);
 
-    roiProducts.sort((a, b) => b.maximisedPriceRoi.price - a.maximisedPriceRoi.price);
+    roiProducts.sort(
+      (a, b) => b.maximisedPriceRoi.price - a.maximisedPriceRoi.price,
+    );
     console.log(roiProducts);
 
     const highestRoi = roiProducts.at(0);
@@ -127,23 +136,38 @@ export class EbayStatsService {
   }
 
   async findAll(): Promise<EbayStat[]> {
-    return this.ebayStatRepository.find({})
+    return this.ebayStatRepository.find({
+      relations: {
+        product: true,
+      }
+    });
   }
 
   async findOne(id: string): Promise<EbayStat> {
     return this.ebayStatRepository.findOne({
       where: {
-        id
+        id,
+      },
+      relations: {
+        product: true,
       }
-    })
+    });
   }
 
   async update(id: string, updateEbayStatDto: UpdateEbayStatDto) {
     return this.ebayStatRepository.update(id, updateEbayStatDto);
   }
 
+  async patchAndUpdatePricePoints(
+    id: string,
+    updateEbayStatDto: UpdateEbayStatDto,
+  ) {
+    await this.update(id, updateEbayStatDto);
+    return this.nextProductToSell();
+  }
+
   async remove(id: string): Promise<EbayStat> {
-    const ebayStatEntity = await this.findOne(id)
-    return this.ebayStatRepository.remove(ebayStatEntity) 
+    const ebayStatEntity = await this.findOne(id);
+    return this.ebayStatRepository.remove(ebayStatEntity);
   }
 }
