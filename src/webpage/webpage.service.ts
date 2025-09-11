@@ -21,6 +21,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
 import { AlertService } from '../alert/alert.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
+
 @Injectable()
 export class WebpageService {
   constructor(
@@ -120,7 +121,10 @@ export class WebpageService {
       ...shopProductEntity,
     });
     entity.shopProduct = shopProductEntity;
-    const webpageEntity = await this.webpagesRepository.save(entity);
+    const webpageEntity = await this.webpagesRepository.save({
+      ...entity,
+      webpageCache: {},
+    });
     console.log(`Page being created: ${createWebpageDto.url}`);
     console.log(webpageEntity);
     return webpageEntity;
@@ -355,8 +359,8 @@ export class WebpageService {
       where: {
         webpageCache: {
           id: IsNull(),
-        }
-      }
+        },
+      },
     });
   }
 
