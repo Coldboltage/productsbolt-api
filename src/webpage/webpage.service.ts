@@ -364,7 +364,7 @@ export class WebpageService {
     });
   }
 
-  @Cron(CronExpression.EVERY_HOUR, {
+  @Cron(CronExpression.EVERY_2_HOURS, {
     name: 'updateAllPages',
   })
   async updateAllPages(): Promise<void> {
