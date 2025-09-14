@@ -145,14 +145,14 @@ export class EbayStatsService implements OnModuleInit {
     const products = await this.productService.findAll();
 
     for (const product of products) {
-      // if (!product.ebayStat) continue
+      if (!product.ebayStat) continue
 
-      if (!product.ebayStat) {
-        await this.ebayStatRepository.save({ product: product });
-      }
-      // console.log(product)
-      // this.headlessClient.emit('ebayPrices', product);
-      console.log(product.ebayStat)
+      // if (!product.ebayStat) {
+      //   await this.ebayStatRepository.save({ product: product });
+      // }
+      console.log(product)
+      this.headlessClient.emit('ebayPrices', product);
+      // console.log(product.ebayStat)
     }
   }
 
