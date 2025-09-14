@@ -34,7 +34,7 @@ export class EbayStatsService implements OnModuleInit {
   }
 
   async onModuleInit() {
-    await this.productEbayStatAutomatic();
+    // await this.productEbayStatAutomatic();
   }
 
   async bestWebpageToCalc(): Promise<void> {
@@ -132,7 +132,7 @@ export class EbayStatsService implements OnModuleInit {
     console.log(roiProducts);
 
     roiProducts.sort(
-      (a, b) => b.maximisedPriceRoi.price - a.maximisedPriceRoi.price,
+      (a, b) => b.maximisedPriceRoi.roi - a.maximisedPriceRoi.roi,
     );
     console.log(roiProducts);
 
