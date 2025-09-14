@@ -10,7 +10,6 @@ import {
 import { EbayStatsService } from './ebay-stats.service';
 import { CreateEbayStatDto } from './dto/create-ebay-stat.dto';
 import { UpdateEbayStatDto } from './dto/update-ebay-stat.dto';
-import { WebpageService } from '../../webpage/webpage.service';
 import { EbayStat, PricePoints } from './entities/ebay-stat.entity';
 import { UpdateResult } from 'typeorm';
 
@@ -36,6 +35,11 @@ export class EbayStatsController {
   @Post('product-ebay-stat-automatic/:productId')
   specificProductEbayStatAutomatic(@Param('productId') productId: string) {
     return this.ebayStatsService.specificProductEbayStatAutomatic(productId);
+  }
+
+  @Post('product-ebay-stat-automatic')
+  productEbayStatAutomatic() {
+    return this.ebayStatsService.productEbayStatAutomatic();
   }
 
   @Get()
