@@ -33,6 +33,11 @@ export class EbayStatsController {
     return this.ebayStatsService.bestWebpageToCalc();
   }
 
+  @Post('product-ebay-stat-automatic/:productId')
+  specificProductEbayStatAutomatic(@Param('productId') productId: string) {
+    return this.ebayStatsService.specificProductEbayStatAutomatic(productId);
+  }
+
   @Get()
   findAll(): Promise<EbayStat[]> {
     return this.ebayStatsService.findAll();

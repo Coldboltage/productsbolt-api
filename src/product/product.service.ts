@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Not, Repository, UpdateResult } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EbayStat } from '../ebay/ebay-stats/entities/ebay-stat.entity';
 
 @Injectable()
 export class ProductService {
@@ -32,13 +33,16 @@ export class ProductService {
   }
 
   async findAll(): Promise<Product[]> {
-    const allProducts = await this.productsRepository.find({});
+    const allProducts = await this.productsRepository.find({
+      relations: { ebayStat: true },
+    });
     return allProducts;
   }
 
   async findOne(id: string): Promise<Product> {
     return this.productsRepository.findOne({
       where: { id },
+      relations: { ebayStat: true }
     });
   }
 

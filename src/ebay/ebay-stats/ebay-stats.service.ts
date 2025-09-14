@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { CreateEbayStatDto } from './dto/create-ebay-stat.dto';
 import { UpdateEbayStatDto } from './dto/update-ebay-stat.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,14 +10,16 @@ import {
 import { Repository } from 'typeorm';
 import { ProductService } from '../../product/product.service';
 import { WebpageService } from '../../webpage/webpage.service';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
-export class EbayStatsService {
+export class EbayStatsService implements OnModuleInit {
   constructor(
     @InjectRepository(EbayStat)
     private ebayStatRepository: Repository<EbayStat>,
     private productService: ProductService,
     private webpageService: WebpageService,
+    @Inject('HEADLESS_CLIENT') private readonly headlessClient: ClientProxy,
   ) { }
   async create(createEbayStatDto: CreateEbayStatDto): Promise<EbayStat> {
     console.log(createEbayStatDto);
@@ -29,6 +31,10 @@ export class EbayStatsService {
       ...createEbayStatDto,
       product: productEntity,
     });
+  }
+
+  async onModuleInit() {
+    await this.productEbayStatAutomatic();
   }
 
   async bestWebpageToCalc(): Promise<void> {
@@ -135,11 +141,32 @@ export class EbayStatsService {
     return roiProducts;
   }
 
+  async productEbayStatAutomatic(): Promise<void> {
+    const products = await this.productService.findAll();
+
+    for (const product of products) {
+      // if (!product.ebayStat) continue
+
+      if (!product.ebayStat) {
+        await this.ebayStatRepository.save({ product: product });
+      }
+      // console.log(product)
+      // this.headlessClient.emit('ebayPrices', product);
+      console.log(product.ebayStat)
+    }
+  }
+
+  async specificProductEbayStatAutomatic(productId: string): Promise<void> {
+    const product = await this.productService.findOne(productId);
+
+    this.headlessClient.emit('ebayPrices', product);
+  }
+
   async findAll(): Promise<EbayStat[]> {
     return this.ebayStatRepository.find({
       relations: {
         product: true,
-      }
+      },
     });
   }
 
@@ -150,7 +177,7 @@ export class EbayStatsService {
       },
       relations: {
         product: true,
-      }
+      },
     });
   }
 
