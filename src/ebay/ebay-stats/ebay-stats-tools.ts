@@ -16,4 +16,13 @@ export class EbayStatsTools {
   create(createEbayStatDto: CreateEbayStatDto) {
     return this.ebayStatsServices.create(createEbayStatDto);
   }
+
+  @Tool({
+    name: 'ebayStats.nextProductToSell',
+    description:
+      'Retrieve current product arbitrage stats. Each product includes cheapest source, average sold price, 7-day sold velocity, and ROI tiers (clear, JIT, maximised). To choose the best product, calculate a simple score: score = jitPriceeRoi.roi * soldInfo.soldSevenDays. The product with the highest score is the recommended buy.',
+  })
+  nextProductToSell() {
+    return this.ebayStatsServices.nextProductToSell();
+  }
 }
