@@ -62,6 +62,7 @@ export interface PricePoints {
   clearPriceRoi: WebsitePriceRoi;
   jitPriceeRoi: WebsitePriceRoi;
   maximisedPriceRoi: WebsitePriceRoi;
+  score: number;
 }
 
 export interface WebsitePriceRoi {
