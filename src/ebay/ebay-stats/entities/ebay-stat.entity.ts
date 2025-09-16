@@ -37,6 +37,22 @@ export class EbayStat {
 
   @Column('decimal', { nullable: true })
   maximisedPrice: number;
+
+  @Column({ default: 0 })
+  soldSevenDays: number;
+
+  @Column('decimal', { default: 0 })
+  averageSoldPrice: number;
+
+  @Column('simple-json', { default: () => "'[]'" }) // Postgres JSON as default
+  ebayListings: EbayListings[];
+}
+
+export interface EbayListings {
+  name: string;
+  price: string;
+  dateCreatd: Date;
+  sales: number;
 }
 
 export interface PricePoints {
