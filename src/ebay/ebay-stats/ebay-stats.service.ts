@@ -112,8 +112,14 @@ export class EbayStatsService implements OnModuleInit {
 
       roiProducts.push({
         name: product.name,
-        webpage: cheapestWebpage.url,
-        price: cheapestWebpage.price,
+        cheapestWebpage: {
+          webpage: cheapestWebpage.url,
+          price: cheapestWebpage.price,
+        },
+        soldInfo: {
+          averageSoldPrice: product.ebayStat.averageSoldPrice,
+          soldSevenDays: product.ebayStat.soldSevenDays,
+        },
         clearPriceRoi: {
           price: clearPrice,
           roi: clearPriceRoi,

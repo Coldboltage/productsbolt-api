@@ -57,8 +57,8 @@ export interface EbayListings {
 
 export interface PricePoints {
   name: string;
-  webpage: string;
-  price: number;
+  cheapestWebpage: CheapestWebpage;
+  soldInfo: SoldInfo;
   clearPriceRoi: WebsitePriceRoi;
   jitPriceeRoi: WebsitePriceRoi;
   maximisedPriceRoi: WebsitePriceRoi;
@@ -73,4 +73,14 @@ export interface CalculatedPricePoints {
   clearPrice: number;
   jitPrice: number;
   maximisedPrice: number;
+}
+
+export interface CheapestWebpage {
+  webpage: string;
+  price: number;
+}
+
+export interface SoldInfo {
+  averageSoldPrice: number;
+  soldSevenDays: number;
 }
