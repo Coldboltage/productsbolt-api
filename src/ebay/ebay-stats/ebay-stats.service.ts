@@ -139,7 +139,8 @@ export class EbayStatsService implements OnModuleInit {
     console.log(roiProducts);
 
     roiProducts.sort(
-      (a, b) => b.maximisedPriceRoi.roi - a.maximisedPriceRoi.roi,
+      // (a, b) => b.maximisedPriceRoi.roi - a.maximisedPriceRoi.roi,
+      (a, b) => b.score - a.score,
     );
     console.log(roiProducts);
 
