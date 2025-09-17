@@ -19,7 +19,7 @@ export class EbayStatsService implements OnModuleInit {
     private ebayStatRepository: Repository<EbayStat>,
     private productService: ProductService,
     private webpageService: WebpageService,
-    @Inject('HEADLESS_CLIENT') private readonly headlessClient: ClientProxy,
+    @Inject('HEADFUL_CLIENT') private readonly headfulClient: ClientProxy,
   ) { }
   async create(createEbayStatDto: CreateEbayStatDto): Promise<EbayStat> {
     console.log(createEbayStatDto);
@@ -160,14 +160,14 @@ export class EbayStatsService implements OnModuleInit {
       //   await this.ebayStatRepository.save({ product: product });
       // }
       console.log(product);
-      this.headlessClient.emit('ebayPrices', product);
+      this.headfulClient.emit('ebayPrices', product);
       // console.log(product.ebayStat)
     }
   }
 
   async specificProductEbayStatAutomatic(productId: string): Promise<void> {
     const product = await this.productService.findOne(productId);
-    this.headlessClient.emit('ebayPrices', product);
+    this.headfulClient.emit('ebayPrices', product);
   }
 
   async findAll(): Promise<EbayStat[]> {
