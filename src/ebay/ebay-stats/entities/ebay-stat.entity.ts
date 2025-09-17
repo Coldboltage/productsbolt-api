@@ -44,6 +44,9 @@ export class EbayStat {
   @Column('decimal', { default: 0 })
   averageSoldPrice: number;
 
+  @Column('decimal', { default: 0 })
+  spreadScore: number;
+
   @Column('simple-json', { default: () => "'[]'" }) // Postgres JSON as default
   ebayListings: EbayListings[];
 }
@@ -63,6 +66,7 @@ export interface PricePoints {
   jitPriceeRoi: WebsitePriceRoi;
   maximisedPriceRoi: WebsitePriceRoi;
   score: number;
+  spreadScore: number;
 }
 
 export interface WebsitePriceRoi {

@@ -133,6 +133,7 @@ export class EbayStatsService implements OnModuleInit {
           roi: maximisedPriceRoi,
         },
         score: jitPriceeRoi * 0.7 + product.ebayStat.soldSevenDays * 0.3,
+        spreadScore: product.ebayStat.spreadScore,
       });
     }
 
