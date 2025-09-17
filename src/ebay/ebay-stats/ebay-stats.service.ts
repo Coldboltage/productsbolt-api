@@ -116,9 +116,15 @@ export class EbayStatsService implements OnModuleInit {
           webpage: cheapestWebpage.url,
           price: cheapestWebpage.price,
         },
-        soldInfo: {
-          averageSoldPrice: product.ebayStat.averageSoldPrice,
-          soldSevenDays: product.ebayStat.soldSevenDays,
+        sevenDaySoldInfo: {
+          sold: product.ebayStat.soldSevenDays,
+          averageSoldPrice: product.ebayStat.averageSevenDaysSoldPrice,
+          spreadScore: product.ebayStat.sevenDaySpreadScore,
+        },
+        twentyEightDaySoldInfo: {
+          sold: product.ebayStat.soldTwentyEightDays,
+          averageSoldPrice: product.ebayStat.averageTwentyEightDaysSoldPrice,
+          spreadScore: product.ebayStat.twentyEightDaysSpreadScore,
         },
         clearPriceRoi: {
           price: clearPrice,
@@ -133,7 +139,6 @@ export class EbayStatsService implements OnModuleInit {
           roi: maximisedPriceRoi,
         },
         score: jitPriceeRoi * 0.7 + product.ebayStat.soldSevenDays * 0.3,
-        spreadScore: product.ebayStat.spreadScore,
       });
     }
 

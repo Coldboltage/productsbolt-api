@@ -38,14 +38,29 @@ export class EbayStat {
   @Column('decimal', { nullable: true })
   maximisedPrice: number;
 
+  // 7 days
+
   @Column({ default: 0 })
   soldSevenDays: number;
 
   @Column('decimal', { default: 0 })
-  averageSoldPrice: number;
+  averageSevenDaysSoldPrice: number;
 
   @Column('decimal', { default: 0 })
-  spreadScore: number;
+  sevenDaySpreadScore: number;
+
+  // 28 days
+
+  @Column({ default: 0 })
+  soldTwentyEightDays: number;
+
+  @Column('decimal', { default: 0 })
+  averageTwentyEightDaysSoldPrice: number;
+
+  @Column('decimal', { default: 0 })
+  twentyEightDaysSpreadScore: number;
+
+  //
 
   @Column('simple-json', { default: () => "'[]'" }) // Postgres JSON as default
   ebayListings: EbayListings[];
@@ -61,11 +76,17 @@ export interface EbayListings {
 export interface PricePoints {
   name: string;
   cheapestWebpage: CheapestWebpage;
-  soldInfo: SoldInfo;
+  sevenDaySoldInfo: SoldInfo;
+  twentyEightDaySoldInfo: SoldInfo;
   clearPriceRoi: WebsitePriceRoi;
   jitPriceeRoi: WebsitePriceRoi;
   maximisedPriceRoi: WebsitePriceRoi;
   score: number;
+}
+
+export interface SoldInfo {
+  sold: number;
+  averageSoldPrice: number;
   spreadScore: number;
 }
 
@@ -85,7 +106,7 @@ export interface CheapestWebpage {
   price: number;
 }
 
-export interface SoldInfo {
-  averageSoldPrice: number;
-  soldSevenDays: number;
-}
+// export interface SoldInfo {
+//   averageSoldPrice: number;
+//   soldSevenDays: number;
+// }
