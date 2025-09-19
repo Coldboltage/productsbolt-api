@@ -122,7 +122,7 @@ export class ShopProductService {
     return response;
   }
 
-  @Cron(CronExpression.EVERY_2_HOURS, {
+  @Cron(CronExpression.EVERY_4_HOURS, {
     name: 'manualUpdateAllShopProducts',
   })
   async manualUpdateAllShopProducts(): Promise<void> {
