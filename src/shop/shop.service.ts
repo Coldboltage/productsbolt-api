@@ -239,7 +239,7 @@ export class ShopService implements OnApplicationBootstrap {
         url,
         keywords: extractKeywords(url),
       }));
-      const queryKeys = query.toLowerCase().split(' ').filter(Boolean);
+      const queryKeys = extractKeywords(query)
       const minMatches = requiredMatches(queryKeys.length);
       return products
         .filter((p) => countMatches(p.keywords, queryKeys) >= minMatches)

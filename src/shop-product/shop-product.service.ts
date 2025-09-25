@@ -407,7 +407,7 @@ export class ShopProductService {
   }
 
   // Check all shopProducts for shop
-  async checkForAllShopProductsFromShop(shopId: string): Promise<void>{
+  async checkForAllShopProductsFromShop(shopId: string): Promise<void> {
     const shopProducts = await this.shopProductRepository.find({
       where: {
         shopId,
