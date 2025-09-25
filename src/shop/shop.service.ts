@@ -187,7 +187,7 @@ export class ShopService implements OnApplicationBootstrap {
     });
   }
 
-  async findOne(id: string): Promise<Shop>{
+  async findOne(id: string): Promise<Shop> {
     return this.shopsRepository.findOne({
       where: {
         id,
@@ -229,7 +229,7 @@ export class ShopService implements OnApplicationBootstrap {
       return cleaned.split(/\s+/); // ['magic','the','gathering','assassins','creed','collector','booster','box']
     };
 
-    const requiredMatches = (n: number) => Math.max(1, Math.floor((2 / 5) * n));
+    const requiredMatches = (n: number) => Math.max(1, Math.floor((3 / 5) * n));
 
     const countMatches = (productKeys: string[], queryKeys: string[]) =>
       queryKeys.filter((k) => productKeys.includes(k)).length;
