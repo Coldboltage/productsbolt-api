@@ -28,7 +28,7 @@ export class ShopProductController {
   }
 
   @Post('manual-update-shops-all-products/')
-  manualUpdateAllShopProducts(): Promise<void> {
+  manualUpdateAllShopProducts(): Promise<string> {
     return this.shopProductService.manualUpdateAllShopProducts();
   }
 

@@ -100,7 +100,7 @@ export class ShopProductService {
         );
       }
     }
-    return shopProductResponses
+    return shopProductResponses;
   }
 
   @OnEvent('shop.created')
@@ -124,76 +124,101 @@ export class ShopProductService {
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   @Cron(CronExpression.EVERY_DAY_AT_11PM)
-  async manualUpdateAllShopProducts(): Promise<void> {
-    const shopProductsOrphan = await this.shopProductRepository.find({
-      where: {
-        populated: false,
-        shop: {
-          active: true,
+  async manualUpdateAllShopProducts(): Promise<string> {
+    this.manualUpdateAllShopProductsEvent();
+    return 'manualUpdateAllShopProductsEvent fired';
+  }
+
+  async manualUpdateAllShopProductsEvent(): Promise<void> {
+    const shopProductsOrphan = await (
+      await this.shopProductRepository.find({
+        where: {
+          populated: false,
+          shop: {
+            active: true,
+          },
         },
-      },
-      relations: {
-        product: true,
-        shop: {
-          sitemapEntity: true,
+        relations: {
+          product: true,
+          shop: {
+            sitemapEntity: true,
+          },
         },
-      },
-    });
+      })
+    ).sort(() => Math.random() - 5);
     console.log(shopProductsOrphan.length);
 
-    for (const shopProduct of shopProductsOrphan) {
-      const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrls,
-        shopProduct.product.name,
+    let index = 0;
+
+    while (index < shopProductsOrphan.length) {
+      const shopProductsOrphanSlice = shopProductsOrphan.slice(
+        index,
+        index + 40,
       );
 
-      if (reducedSitemap.length === 0) continue;
+      for (const shopProduct of shopProductsOrphanSlice) {
+        const reducedSitemap = this.shopService.reduceSitemap(
+          shopProduct.shop.sitemapEntity.sitemapUrls,
+          shopProduct.product.name,
+        );
 
-      const createProcess: CreateProcessDto = {
-        sitemap: shopProduct.shop.sitemap,
-        url: shopProduct.shop.website,
-        category: shopProduct.shop.category,
-        name: shopProduct.product.name,
-        shopProductId: shopProduct.id,
-        shopWebsite: shopProduct.shop.name,
-        type: shopProduct.product.type,
-        context: shopProduct.product.context,
-        crawlAmount: 90,
-        productId: shopProduct.productId,
-        shopId: shopProduct.shopId,
-        shopifySite: shopProduct.shop.isShopifySite,
-        shopType: shopProduct.shop.uniqueShopType,
-        sitemapEntity: {
-          ...shopProduct.shop.sitemapEntity,
-          sitemapUrls: reducedSitemap,
-          shopId: shopProduct.shop.id,
-        },
-      };
+        if (reducedSitemap.length === 0) continue;
 
-      if (
-        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
-        shopProduct.ebayProductDetail
-      ) {
-        createProcess.ebayProductDetail = {
-          ebayProductDetailId: shopProduct.ebayProductDetail.id,
-          productId: shopProduct.ebayProductDetail.productId,
+        const createProcess: CreateProcessDto = {
+          sitemap: shopProduct.shop.sitemap,
+          url: shopProduct.shop.website,
+          category: shopProduct.shop.category,
+          name: shopProduct.product.name,
+          shopProductId: shopProduct.id,
+          shopWebsite: shopProduct.shop.name,
+          type: shopProduct.product.type,
+          context: shopProduct.product.context,
+          crawlAmount: 90,
+          productId: shopProduct.productId,
+          shopId: shopProduct.shopId,
+          shopifySite: shopProduct.shop.isShopifySite,
+          shopType: shopProduct.shop.uniqueShopType,
+          sitemapEntity: {
+            ...shopProduct.shop.sitemapEntity,
+            sitemapUrls: reducedSitemap,
+            shopId: shopProduct.shop.id,
+          },
         };
+
+        if (
+          shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+          shopProduct.ebayProductDetail
+        ) {
+          createProcess.ebayProductDetail = {
+            ebayProductDetailId: shopProduct.ebayProductDetail.id,
+            productId: shopProduct.ebayProductDetail.productId,
+          };
+        }
+
+        if (shopProduct.shop.isShopifySite === true) {
+          console.log('shopifySiteFound');
+          this.headlessClient.emit<CreateProcessDto>(
+            'webpageDiscovery',
+            createProcess,
+          );
+        } else {
+          console.log('normal setup');
+          this.headfulClient.emit<CreateProcessDto>(
+            'webpageDiscovery',
+            createProcess,
+          );
+        }
+        await new Promise((r) => setTimeout(r, 100));
       }
 
-      if (shopProduct.shop.isShopifySite === true) {
-        console.log('shopifySiteFound');
-        this.headlessClient.emit<CreateProcessDto>(
-          'webpageDiscovery',
-          createProcess,
+      index += 40;
+
+      if (index < shopProductsOrphan.length) {
+        console.log(
+          `Stopped at Index: ${index} Waiting 5 minutes before next batch...`,
         );
-      } else {
-        console.log('normal setup');
-        this.headfulClient.emit<CreateProcessDto>(
-          'webpageDiscovery',
-          createProcess,
-        );
+        await new Promise((r) => setTimeout(r, 5 * 60 * 1000));
       }
-      await new Promise((r) => setTimeout(r, 100));
     }
   }
   async manualFindShopsToUpdateProducts(productId: string): Promise<void> {
@@ -350,7 +375,9 @@ export class ShopProductService {
   @Cron(CronExpression.EVERY_HOUR, {
     name: 'checkForIndividualShopProductPriority',
   })
-  async checkForIndividualShopProductPriority(shopProductId: string): Promise<void> {
+  async checkForIndividualShopProductPriority(
+    shopProductId: string,
+  ): Promise<void> {
     const shopProduct = await this.shopProductRepository.findOne({
       where: {
         id: shopProductId,
@@ -422,7 +449,6 @@ export class ShopProductService {
     console.log(shopProducts.length);
 
     for (const shopProduct of shopProducts) {
-
       const reducedSitemap = this.shopService.reduceSitemap(
         shopProduct.shop.sitemapEntity.sitemapUrls,
         shopProduct.product.name,
@@ -474,14 +500,17 @@ export class ShopProductService {
   }
 
   findAll(): Promise<ShopProduct[]> {
-    return this.shopProductRepository.find({})
+    return this.shopProductRepository.find({});
   }
 
   findOne(id: string): Promise<ShopProduct> {
     return this.shopProductRepository.findOne({ where: { id } });
   }
 
-  async isUrlBlacklistedForShopProduct(url: string, shopProductId: string): Promise<boolean> {
+  async isUrlBlacklistedForShopProduct(
+    url: string,
+    shopProductId: string,
+  ): Promise<boolean> {
     return this.shopProductRepository.exists({
       where: {
         id: shopProductId,
@@ -504,7 +533,10 @@ export class ShopProductService {
     });
   }
 
-  async findOneByProductId(productId: string, shopId: string): Promise<ShopProduct> {
+  async findOneByProductId(
+    productId: string,
+    shopId: string,
+  ): Promise<ShopProduct> {
     return this.shopProductRepository.findOne({
       where: {
         productId,
@@ -516,12 +548,15 @@ export class ShopProductService {
     });
   }
 
-  async update(id: string, updateShopProductDto: UpdateShopProductDto): Promise<UpdateResult> {
+  async update(
+    id: string,
+    updateShopProductDto: UpdateShopProductDto,
+  ): Promise<UpdateResult> {
     return this.shopProductRepository.update({ id }, updateShopProductDto);
   }
 
   async remove(id: string): Promise<ShopProduct> {
     const shopProductEntity = await this.findOne(id);
-    return this.shopProductRepository.remove(shopProductEntity)
+    return this.shopProductRepository.remove(shopProductEntity);
   }
 }
