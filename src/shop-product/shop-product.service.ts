@@ -122,9 +122,8 @@ export class ShopProductService {
     return response;
   }
 
-  @Cron(CronExpression.EVERY_4_HOURS, {
-    name: 'manualUpdateAllShopProducts',
-  })
+  @Cron(CronExpression.EVERY_DAY_AT_1AM)
+  @Cron(CronExpression.EVERY_DAY_AT_11PM)
   async manualUpdateAllShopProducts(): Promise<void> {
     const shopProductsOrphan = await this.shopProductRepository.find({
       where: {
