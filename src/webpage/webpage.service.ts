@@ -405,6 +405,7 @@ export class WebpageService {
         hash: page.webpageCache.hash,
         confirmed: page.webpageCache.confirmed,
         count: page.webpageCache.count,
+        cloudflare: page.shopProduct.shop.cloudflare,
       };
       if (page.shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
@@ -431,6 +432,7 @@ export class WebpageService {
         hash: page.webpageCache.hash,
         confirmed: page.webpageCache.confirmed,
         count: page.webpageCache.count,
+        cloudflare: page.shopProduct.shop.cloudflare,
       };
       if (page.shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
@@ -452,6 +454,7 @@ export class WebpageService {
       hash: page.webpageCache.hash,
       confirmed: page.webpageCache.confirmed,
       count: page.webpageCache.count,
+      cloudflare: page.shopProduct.shop.cloudflare,
     };
     console.log(page);
     if (page.shopProduct.shop.isShopifySite === true) {

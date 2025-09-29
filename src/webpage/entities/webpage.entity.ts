@@ -76,6 +76,7 @@ export class CheckPageDto {
   hash: string;
   confirmed: boolean;
   count: number;
+  cloudflare: boolean;
 }
 
 export class ProductToWebpageInterface {
