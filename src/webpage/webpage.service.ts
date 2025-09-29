@@ -520,9 +520,7 @@ export class WebpageService {
   async resetAlertCount(): Promise<void> {
     const webpageEntities = await this.findAll();
     webpageEntities.forEach(
-      (webpage) => (
-        (webpage.alertCount = webpage.alertCount - 2), (webpage.disable = false)
-      ),
+      (webpage) => ((webpage.alertCount = 3), (webpage.disable = false)),
     );
     await this.webpagesRepository.save(webpageEntities);
   }
