@@ -15,7 +15,7 @@ import { UpdateResult } from 'typeorm';
 
 @Controller('shop')
 export class ShopController {
-  constructor(private readonly shopService: ShopService) { }
+  constructor(private readonly shopService: ShopService) {}
 
   @Post()
   create(@Body() createShopDto: CreateShopDto): Promise<Shop> {
@@ -33,7 +33,9 @@ export class ShopController {
   }
 
   @Post('/test-shopify-site-collection/:shopId')
-  async testShopifySiteCollection(@Param('shopId') shopId: string): Promise<void> {
+  async testShopifySiteCollection(
+    @Param('shopId') shopId: string,
+  ): Promise<void> {
     return this.shopService.testShopifySiteCollection(shopId);
   }
 
@@ -43,7 +45,9 @@ export class ShopController {
   }
 
   @Post('/update-specific-shop-sitemap/:shopId')
-  async updateSpecificShopSitemap(@Param('shopId') shopId: string): Promise<void> {
+  async updateSpecificShopSitemap(
+    @Param('shopId') shopId: string,
+  ): Promise<void> {
     return this.shopService.updateSpecificShopSitemap(shopId);
   }
 
@@ -62,6 +66,16 @@ export class ShopController {
     return this.shopService.checkIfShopIsShopify(shopId);
   }
 
+  @Post('cloudflare-test')
+  async cloudflareTest(): Promise<void> {
+    return this.shopService.cloudflareTest();
+  }
+
+  @Post('cloudflare-test/:id')
+  async singleCloudflareTest(@Param('id') shopId: string): Promise<void> {
+    return this.shopService.singleCloudflareTest(shopId);
+  }
+
   @Get('find-shop/:website')
   findShop(@Param('website') website: string): Promise<Shop> {
     return this.shopService.findShop(website);
@@ -73,7 +87,10 @@ export class ShopController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateShopDto: UpdateShopDto): Promise<UpdateResult> {
+  update(
+    @Param('id') id: string,
+    @Body() updateShopDto: UpdateShopDto,
+  ): Promise<UpdateResult> {
     return this.shopService.update(id, updateShopDto);
   }
 

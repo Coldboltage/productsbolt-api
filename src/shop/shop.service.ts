@@ -175,6 +175,11 @@ export class ShopService implements OnApplicationBootstrap {
         shopProducts: true,
         sitemapEntity: true,
       },
+      order: {
+        sitemapEntity: {
+          isShopifySite: 'ASC',
+        },
+      },
     });
   }
 
@@ -252,7 +257,16 @@ export class ShopService implements OnApplicationBootstrap {
     return result;
   }
 
-  async SingleCloudflareTest(shopId: string) {
+  async cloudflareTest() {
+    const shopEntity = await this.findAll();
+    for (const shop of shopEntity) {
+      if (shop.sitemapEntity.isShopifySite === true) continue;
+
+      this.headlessClient.emit('cloudflare-test', shop);
+    }
+  }
+
+  async singleCloudflareTest(shopId: string) {
     const shopEntity = await this.findOne(shopId);
     if (shopEntity.sitemapEntity.isShopifySite === true) {
       throw new BadRequestException('shop_is_shopify');
