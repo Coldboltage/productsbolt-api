@@ -55,6 +55,9 @@ export class CreateProcessDto {
   @IsEnum(UniqueShopType)
   shopType: UniqueShopType;
 
+  @IsBoolean()
+  cloudflare: boolean;
+
   @ValidateNested()
   @Type(() => EbayProductDetailDto)
   @IsOptional()

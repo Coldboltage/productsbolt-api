@@ -81,6 +81,7 @@ export class ShopProductService {
         shopId: shopProduct.shop.id,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
+        cloudflare: shopProduct.shop.cloudflare,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           shopId: shopProduct.shop.id,
@@ -178,6 +179,7 @@ export class ShopProductService {
           shopId: shopProduct.shopId,
           shopifySite: shopProduct.shop.isShopifySite,
           shopType: shopProduct.shop.uniqueShopType,
+          cloudflare: shopProduct.shop.cloudflare,
           sitemapEntity: {
             ...shopProduct.shop.sitemapEntity,
             sitemapUrls: reducedSitemap,
@@ -262,6 +264,7 @@ export class ShopProductService {
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
+        cloudflare: shopProduct.shop.cloudflare,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           sitemapUrls: reducedSitemap,
@@ -351,6 +354,7 @@ export class ShopProductService {
       shopId: shopProduct.shopId,
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
+      cloudflare: shopProduct.shop.cloudflare,
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
         shopId: shopProduct.shop.id,
@@ -412,6 +416,7 @@ export class ShopProductService {
       shopId: shopProduct.shopId,
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
+      cloudflare: shopProduct.shop.cloudflare,
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
         shopId: shopProduct.shop.id,
@@ -468,6 +473,7 @@ export class ShopProductService {
         shopId: shopProduct.shopId,
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
+        cloudflare: shopProduct.shop.cloudflare,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           shopId: shopProduct.shop.id,
