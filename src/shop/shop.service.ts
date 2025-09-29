@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Inject,
   Injectable,
@@ -25,7 +26,7 @@ export class ShopService implements OnApplicationBootstrap {
     private readonly slowSitemapClient: ClientProxy,
     private eventEmitter: EventEmitter2,
     private readonly scheduler: SchedulerRegistry,
-  ) { }
+  ) {}
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
     await this.headfulClient.connect();
@@ -158,13 +159,12 @@ export class ShopService implements OnApplicationBootstrap {
       // / true or false
       this.headfulClient.emit('shopyifyCheck', shop);
     }
-  };
+  }
 
   async checkIfShopIsShopify(shopId: string): Promise<void> {
     const shop = await this.findOne(shopId);
     if (shop) this.headfulClient.emit('shopyifyCheck', shop);
   }
-
 
   async findAll(): Promise<Shop[]> {
     return this.shopsRepository.find({
@@ -198,7 +198,10 @@ export class ShopService implements OnApplicationBootstrap {
     });
   }
 
-  async update(id: string, updateShopDto: UpdateShopDto): Promise<UpdateResult> {
+  async update(
+    id: string,
+    updateShopDto: UpdateShopDto,
+  ): Promise<UpdateResult> {
     const updatedEntity = await this.shopsRepository.update(
       { id },
       updateShopDto,
@@ -210,7 +213,7 @@ export class ShopService implements OnApplicationBootstrap {
 
   async remove(id: string): Promise<Shop> {
     const shopEntity = await this.findOne(id);
-    return this.shopsRepository.remove(shopEntity)
+    return this.shopsRepository.remove(shopEntity);
   }
 
   reduceSitemap(urls: string[], query: string): string[] {
@@ -239,7 +242,7 @@ export class ShopService implements OnApplicationBootstrap {
         url,
         keywords: extractKeywords(url),
       }));
-      const queryKeys = extractKeywords(query)
+      const queryKeys = extractKeywords(query);
       const minMatches = requiredMatches(queryKeys.length);
       return products
         .filter((p) => countMatches(p.keywords, queryKeys) >= minMatches)
@@ -247,5 +250,14 @@ export class ShopService implements OnApplicationBootstrap {
     };
     const result = filterProducts(urls, query);
     return result;
+  }
+
+  async SingleCloudflareTest(shopId: string) {
+    const shopEntity = await this.findOne(shopId);
+    if (shopEntity.sitemapEntity.isShopifySite === true) {
+      throw new BadRequestException('shop_is_shopify');
+    }
+
+    this.headlessClient.emit('cloudflare-test', shopEntity);
   }
 }
