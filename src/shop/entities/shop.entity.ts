@@ -48,6 +48,9 @@ export class Shop {
   @Column({ default: 0 })
   etagCount: number;
 
+  @Column({ default: false })
+  cloudflare: boolean;
+
   @Column({ enum: UniqueShopType, nullable: true })
   uniqueShopType: UniqueShopType;
 
