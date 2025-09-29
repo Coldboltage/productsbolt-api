@@ -410,7 +410,7 @@ export class WebpageService {
       if (page.shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.cloudflare === true) {
-        this.headlessClient.emit('updatePage', updatePageDto);
+        this.headfulClient.emit('updatePage', updatePageDto);
       } else {
         this.headfulClient.emit('updatePage', updatePageDto);
       }
@@ -439,7 +439,7 @@ export class WebpageService {
       if (page.shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.cloudflare === true) {
-        this.headlessClient.emit('updatePage', updatePageDto);
+        this.headfulClient.emit('updatePage', updatePageDto);
       } else {
         this.headfulClient.emit('updatePage', updatePageDto);
       }
