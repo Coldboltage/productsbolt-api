@@ -23,7 +23,7 @@ export class ShopProductService {
     private shopProductRepository: Repository<ShopProduct>,
     private shopService: ShopService,
     private productService: ProductService,
-  ) { }
+  ) {}
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
     await this.headfulClient.connect();

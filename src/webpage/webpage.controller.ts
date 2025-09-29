@@ -20,7 +20,7 @@ import { UpdateResult } from 'typeorm';
 
 @Controller('webpage')
 export class WebpageController {
-  constructor(private readonly webpageService: WebpageService) { }
+  constructor(private readonly webpageService: WebpageService) {}
 
   @Post()
   create(@Body() createWebpageDto: CreateWebpageDto): Promise<Webpage> {
@@ -89,7 +89,7 @@ export class WebpageController {
 
   @Get('cache-not-found')
   findAllWithoutCache() {
-    return this.webpageService.findAllWithoutCache()
+    return this.webpageService.findAllWithoutCache();
   }
 
   @Get(':id')

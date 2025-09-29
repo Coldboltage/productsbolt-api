@@ -189,6 +189,28 @@ export class WebpageService {
     });
   }
 
+  async findAllNonHighPriority(): Promise<Webpage[]> {
+    return this.webpagesRepository.find({
+      where: {
+        shopProduct: {
+          product: {
+            priority: false,
+          },
+        },
+      },
+      relations: {
+        shopProduct: {
+          product: true,
+          shop: true,
+        },
+        webpageCache: true,
+      },
+      order: {
+        price: 'ASC',
+      },
+    });
+  }
+
   async findAllByProductStock(
     state: boolean,
     productId: string,
@@ -368,7 +390,8 @@ export class WebpageService {
     name: 'updateAllPages',
   })
   async updateAllPages(): Promise<void> {
-    const webPages = await this.findAll();
+    // Already doing high priority every 5 minutes
+    const webPages = await this.findAllNonHighPriority();
     console.log(webPages.length);
     for (const page of webPages) {
       console.log(page);
@@ -520,7 +543,7 @@ export class WebpageService {
   async resetAlertCount(): Promise<void> {
     const webpageEntities = await this.findAll();
     webpageEntities.forEach(
-      (webpage) => ((webpage.alertCount = 5), (webpage.disable = false)),
+      (webpage) => ((webpage.alertCount = 3), (webpage.disable = false)),
     );
     await this.webpagesRepository.save(webpageEntities);
   }
