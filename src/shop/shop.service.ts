@@ -222,19 +222,37 @@ export class ShopService implements OnApplicationBootstrap {
   }
 
   reduceSitemap(urls: string[], query: string): string[] {
-    const extractKeywords = (rawUrl: string) => {
-      const noQuery = rawUrl.split('?')[0].replace(/\/+$/, '');
-      const name = decodeURIComponent(noQuery.split('/').pop() || '');
+    console.log(urls);
+    console.log(query);
+    const extractKeywords = (rawUrl: string): string[] => {
+      const noQuery = rawUrl.split(/[?#]/)[0].replace(/\/+$/, '');
+      const parts = noQuery.split('/').filter(Boolean);
+
+      // grab last non-ID segment (slug)
+      let name = decodeURIComponent(parts.pop() || '');
+      const looksLikeId = (s: string) =>
+        /^[0-9]+$/.test(s) || // numeric
+        /^[a-f0-9]{24}$/i.test(s) || // Mongo ObjectId
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+          s,
+        ) || // UUID
+        (!s.includes('-') && /^[A-Za-z0-9_]{6,64}$/.test(s)); // opaque hash-like
+
+      while (name && looksLikeId(name) && parts.length) {
+        name = decodeURIComponent(parts.pop() || '');
+      }
+
+      if (!name) return [];
 
       const cleaned = name
         .toLowerCase()
-        .normalize('NFKD') // normalize accents
-        .replace(/[\u0300-\u036f]/g, '') // strip accent marks
-        .replace(/[’'`]/g, '') // drop apostrophes (smart + straight)
-        .replace(/[^a-z0-9]+/g, ' ') // everything non-alnum -> space
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[’'`]/g, '')
+        .replace(/[^a-z0-9]+/g, ' ')
         .trim();
 
-      return cleaned.split(/\s+/); // ['magic','the','gathering','assassins','creed','collector','booster','box']
+      return cleaned ? cleaned.split(/\s+/) : [];
     };
 
     const requiredMatches = (n: number) => Math.max(1, Math.floor((4 / 5) * n));

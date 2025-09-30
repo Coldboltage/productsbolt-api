@@ -340,6 +340,8 @@ export class ShopProductService {
       shopProduct.product.name,
     );
 
+    console.log(reducedSitemap);
+
     const createProcess: CreateProcessDto = {
       sitemap: shopProduct.shop.sitemap,
       url: shopProduct.shop.website,
