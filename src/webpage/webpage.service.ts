@@ -21,6 +21,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
 import { AlertService } from '../alert/alert.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { populate } from 'dotenv';
 
 @Injectable()
 export class WebpageService {
@@ -521,6 +522,34 @@ export class WebpageService {
     }
   }
 
+  async removeProductWebpages(productId: string): Promise<boolean> {
+    console.log(productId);
+    const webpages = await this.webpagesRepository.find({
+      where: {
+        shopProduct: { product: { id: productId } },
+      },
+      relations: {
+        shopProduct: {
+          product: true,
+        },
+      },
+    });
+
+    console.log(webpages);
+    throw new Error('Test error');
+
+    // Update associated shopProduct
+    for (const webpage of webpages) {
+      if (webpage.shopProduct) {
+        await this.shopProductService.update(webpage.shopProduct.id, {
+          populated: false,
+        });
+      }
+      await this.remove(webpage.id);
+    }
+    return true;
+  }
+
   async removeShopProductWebpages(shopProductId: string): Promise<boolean> {
     console.log(shopProductId);
     const webpages = await this.webpagesRepository.find({
@@ -530,23 +559,16 @@ export class WebpageService {
       relations: ['shopProduct'],
     });
 
-    console.log(webpages);
-
-    throw new NotFoundException('Not implemented yet');
-
+    // Update associated shopProduct
     for (const webpage of webpages) {
       if (webpage.shopProduct) {
-        webpage.shopProduct.populated = false;
-        await this.shopProductService.update(
-          webpage.shopProduct.id,
-          webpage.shopProduct,
-        );
+        await this.shopProductService.update(webpage.shopProduct.id, {
+          populated: false,
+        });
       }
       await this.remove(webpage.id);
-      return true;
     }
-
-    // Update associated shopProduct
+    return true;
   }
 
   async removeWebpage(id: string): Promise<boolean> {
