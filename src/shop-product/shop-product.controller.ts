@@ -8,14 +8,13 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ShopProductService } from './shop-product.service';
-import { CreateShopProductDto } from './dto/create-shop-product.dto';
 import { UpdateShopProductDto } from './dto/update-shop-product.dto';
 import { ShopProduct } from './entities/shop-product.entity';
 import { UpdateResult } from 'typeorm';
 
 @Controller('shop-product')
 export class ShopProductController {
-  constructor(private readonly shopProductService: ShopProductService) { }
+  constructor(private readonly shopProductService: ShopProductService) {}
 
   @Post('scan-shop-product-individual/:id')
   checkForIndividualShopProduct(@Param('id') id: string): Promise<void> {
@@ -23,7 +22,9 @@ export class ShopProductController {
   }
 
   @Post('scan-for-individual-shop/:shopId')
-  checkForAllShopProductsFromShop(@Param('shopId') shopId: string): Promise<void> {
+  checkForAllShopProductsFromShop(
+    @Param('shopId') shopId: string,
+  ): Promise<void> {
     return this.shopProductService.checkForAllShopProductsFromShop(shopId);
   }
 
@@ -33,7 +34,9 @@ export class ShopProductController {
   }
 
   @Post('manual-update-shops/:productId')
-  manualFindShopsToUpdateProducts(@Param('productId') productId: string): Promise<void> {
+  manualFindShopsToUpdateProducts(
+    @Param('productId') productId: string,
+  ): Promise<void> {
     return this.shopProductService.manualFindShopsToUpdateProducts(productId);
   }
 
