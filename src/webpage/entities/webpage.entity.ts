@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -31,10 +32,8 @@ export class Webpage {
   @Column()
   reason: string;
 
-  @ManyToOne(() => ShopProduct, (shopProduct) => shopProduct.webPages, {
-    onDelete: 'CASCADE',
-    cascade: ['update'],
-  })
+  @OneToOne(() => ShopProduct, (shopProduct) => shopProduct.webPage)
+  @JoinColumn()
   shopProduct: ShopProduct;
 
   @Column({ default: false })

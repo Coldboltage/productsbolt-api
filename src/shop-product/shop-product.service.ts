@@ -65,7 +65,10 @@ export class ShopProductService {
         shopProduct.product.name,
       );
 
-      const limitedUrls = this.filteredLimitedUrls(shopProduct, reducedSitemap);
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        reducedSitemap,
+      );
 
       if (limitedUrls.length === 0) {
         console.log(
@@ -152,7 +155,7 @@ export class ShopProductService {
           shop: {
             sitemapEntity: true,
           },
-          webPages: true,
+          webPage: true,
           blacklistUrls: true,
         },
       })
@@ -175,7 +178,7 @@ export class ShopProductService {
 
         if (reducedSitemap.length === 0) continue;
 
-        const limitedUrls = this.filteredLimitedUrls(
+        const limitedUrls = await this.filteredLimitedUrls(
           shopProduct,
           reducedSitemap,
         );
@@ -245,16 +248,31 @@ export class ShopProductService {
       }
     }
   }
-  filteredLimitedUrls(shopProduct: ShopProduct, reducedSitemap: string[]) {
+  async filteredLimitedUrls(
+    shopProduct: ShopProduct,
+    reducedSitemap: string[],
+  ) {
     const blackListUrls = shopProduct.blacklistUrls.map(
       (blacklist) => blacklist.url,
     );
 
-    const shopProductUrlList = shopProduct.webPages.map(
-      (webpage) => webpage.url,
-    );
+    const shopEntity = await this.shopService.findOne(shopProduct.shopId);
+
+    const shopProductUrlList = shopEntity.shopProducts
+      .filter((shopProduct) => {
+        if (shopProduct.webPage) return shopProduct.webPage.url;
+      })
+      .map((shopProduct) => shopProduct.webPage.url);
 
     const restrictedUrls = [...blackListUrls, ...shopProductUrlList];
+
+    console.log(
+      shopProductUrlList.includes(
+        'https://tabletopdominion.com/products/magic-the-gathering-final-fantasy-collector-booster-single-pack',
+      ),
+    );
+
+    console.log(shopProductUrlList);
 
     const limitedUrls = reducedSitemap.filter((url: string) => {
       return !restrictedUrls.includes(url);
@@ -279,7 +297,7 @@ export class ShopProductService {
         shop: {
           sitemapEntity: true,
         },
-        webPages: true,
+        webPage: true,
         blacklistUrls: true,
         product: true,
       },
@@ -293,7 +311,10 @@ export class ShopProductService {
         shopProduct.product.name,
       );
 
-      const limitedUrls = this.filteredLimitedUrls(shopProduct, reducedSitemap);
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        reducedSitemap,
+      );
 
       if (limitedUrls.length === 0) {
         console.log(
@@ -384,7 +405,7 @@ export class ShopProductService {
           sitemapEntity: true,
         },
         product: true,
-        webPages: true,
+        webPage: true,
         blacklistUrls: true,
       },
     });
@@ -396,7 +417,10 @@ export class ShopProductService {
       shopProduct.product.name,
     );
 
-    const limitedUrls = this.filteredLimitedUrls(shopProduct, reducedSitemap);
+    const limitedUrls = await this.filteredLimitedUrls(
+      shopProduct,
+      reducedSitemap,
+    );
 
     if (limitedUrls.length === 0) {
       console.log(
@@ -460,7 +484,7 @@ export class ShopProductService {
           sitemapEntity: true,
         },
         product: true,
-        webPages: true,
+        webPage: true,
         blacklistUrls: true,
       },
     });
@@ -470,7 +494,10 @@ export class ShopProductService {
       shopProduct.product.name,
     );
 
-    const limitedUrls = this.filteredLimitedUrls(shopProduct, reducedSitemap);
+    const limitedUrls = await this.filteredLimitedUrls(
+      shopProduct,
+      reducedSitemap,
+    );
 
     if (limitedUrls.length === 0) {
       console.log(
@@ -525,7 +552,7 @@ export class ShopProductService {
           sitemapEntity: true,
         },
         product: true,
-        webPages: true,
+        webPage: true,
         blacklistUrls: true,
       },
     });
@@ -538,7 +565,10 @@ export class ShopProductService {
         shopProduct.product.name,
       );
 
-      const limitedUrls = this.filteredLimitedUrls(shopProduct, reducedSitemap);
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        reducedSitemap,
+      );
 
       if (limitedUrls.length === 0) {
         console.log(

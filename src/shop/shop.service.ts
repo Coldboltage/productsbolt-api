@@ -173,7 +173,7 @@ export class ShopService implements OnApplicationBootstrap {
       },
       relations: {
         shopProducts: {
-          webPages: true,
+          webPage: true,
         },
         sitemapEntity: true,
       },
@@ -201,6 +201,9 @@ export class ShopService implements OnApplicationBootstrap {
       },
       relations: {
         sitemapEntity: true,
+        shopProducts: {
+          webPage: true,
+        },
       },
     });
   }

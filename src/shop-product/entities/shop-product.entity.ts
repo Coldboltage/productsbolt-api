@@ -46,10 +46,11 @@ export class ShopProduct {
   })
   blacklistUrls: BlackListUrl[];
 
-  @OneToMany(() => Webpage, (webPages) => webPages.shopProduct, {
+  @OneToOne(() => Webpage, (webPage) => webPage.shopProduct, {
+    cascade: true,
     onDelete: 'CASCADE',
   })
-  webPages: Webpage[];
+  webPage: Webpage;
 
   @OneToOne(
     () => EbayProductDetail,
