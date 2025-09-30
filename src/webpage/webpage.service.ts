@@ -530,6 +530,10 @@ export class WebpageService {
       relations: ['shopProduct'],
     });
 
+    console.log(webpages);
+
+    throw new NotFoundException('Not implemented yet');
+
     for (const webpage of webpages) {
       if (webpage.shopProduct) {
         webpage.shopProduct.populated = false;
