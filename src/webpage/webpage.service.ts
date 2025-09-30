@@ -521,6 +521,30 @@ export class WebpageService {
     }
   }
 
+  async removeShopProductWebpages(shopProductId: string): Promise<boolean> {
+    console.log(shopProductId);
+    const webpages = await this.webpagesRepository.find({
+      where: {
+        shopProduct: { id: shopProductId },
+      },
+      relations: ['shopProduct'],
+    });
+
+    for (const webpage of webpages) {
+      if (webpage.shopProduct) {
+        webpage.shopProduct.populated = false;
+        await this.shopProductService.update(
+          webpage.shopProduct.id,
+          webpage.shopProduct,
+        );
+      }
+      await this.remove(webpage.id);
+      return true;
+    }
+
+    // Update associated shopProduct
+  }
+
   async removeWebpage(id: string): Promise<boolean> {
     console.log(id);
     const webpage = await this.webpagesRepository.findOne({

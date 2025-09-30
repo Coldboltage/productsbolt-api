@@ -110,6 +110,14 @@ export class WebpageController {
     return this.webpageService.update(id, updateWebpageDto);
   }
 
+  @Delete('/delete-and-update-shop-product-page/:shopProductId')
+  removeShopProductWebpages(
+    @Param('shopProductId') id: string,
+  ): Promise<boolean> {
+    console.log(id);
+    return this.webpageService.removeShopProductWebpages(id);
+  }
+
   @Delete('/delete-and-update-shop-product-page/:id')
   removeWebpage(@Param('id') id: string): Promise<boolean> {
     console.log(id);
