@@ -367,6 +367,11 @@ export class ShopProductService {
         'webpageDiscovery',
         createProcess,
       );
+    } else if (shopProduct.shop.cloudflare === true) {
+      this.headlessClient.emit<CreateProcessDto>(
+        'webpageDiscovery',
+        createProcess,
+      );
     } else {
       this.headfulClient.emit<CreateProcessDto>(
         'webpageDiscovery',
