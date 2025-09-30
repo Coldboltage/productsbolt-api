@@ -3,7 +3,7 @@ import { CreateBlackListUrlDto } from './dto/create-blacklist-url.dto';
 import { UpdateBlackListUrlDto } from './dto/update-blacklist-url.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BlackListUrl } from './entities/blacklist-url.entity';
-import { DeleteResult, RemoveEvent, Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { WebpageService } from '../webpage/webpage.service';
 
@@ -14,8 +14,10 @@ export class BlackListUrlService {
     private blackListRepository: Repository<BlackListUrl>,
     private shopProductsService: ShopProductService,
     private webPageService: WebpageService,
-  ) { }
-  async create(createBlackListUrlDto: CreateBlackListUrlDto): Promise<BlackListUrl> {
+  ) {}
+  async create(
+    createBlackListUrlDto: CreateBlackListUrlDto,
+  ): Promise<BlackListUrl> {
     const webpageEntity = await this.webPageService.findOneByUrl(
       createBlackListUrlDto.url,
     );
@@ -23,10 +25,10 @@ export class BlackListUrlService {
     const urlExist = await this.findOneByUrl(createBlackListUrlDto.url);
     let blackListEntity: BlackListUrl;
 
-    if (!webpageEntity) throw new NotFoundException('webpage_does_not_exist')
+    if (!webpageEntity) throw new NotFoundException('webpage_does_not_exist');
 
     if (urlExist) {
-      console.log(urlExist)
+      console.log(urlExist);
       urlExist.shopProducts.push(webpageEntity.shopProduct);
       await this.blackListRepository.save(urlExist);
     } else {
@@ -50,7 +52,7 @@ export class BlackListUrlService {
 
   // Return all Blacklst Urls
   async findAll(): Promise<BlackListUrl[]> {
-    return this.blackListRepository.find({})
+    return this.blackListRepository.find({});
   }
 
   // Find a specific Blacklist Url
@@ -62,23 +64,33 @@ export class BlackListUrlService {
     });
   }
 
-  // Find one by URL. A url will always be tied to one Blacklist URL. 
+  // Find one by URL. A url will always be tied to one Blacklist URL.
   async findOneByUrl(url: string): Promise<BlackListUrl> {
     return this.blackListRepository.findOne({
       where: {
         url,
       },
-      relations: { shopProducts: true }
+      relations: { shopProducts: true },
+    });
+  }
+
+  async findByShopProduct(shopProductId: string): Promise<BlackListUrl[]> {
+    return this.blackListRepository.find({
+      where: {
+        shopProducts: {
+          id: shopProductId,
+        },
+      },
     });
   }
 
   // Update a single Blacklist Url
   async update(id: string, updateBlackListUrlDto: UpdateBlackListUrlDto) {
-    return this.blackListRepository.update(id, updateBlackListUrlDto)
+    return this.blackListRepository.update(id, updateBlackListUrlDto);
   }
 
   // Remove a single Blacklist Url
   async remove(id: string): Promise<DeleteResult> {
-    return this.blackListRepository.delete(id)
+    return this.blackListRepository.delete(id);
   }
 }

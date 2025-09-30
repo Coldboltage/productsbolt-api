@@ -1,5 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { CreateShopProductDto } from './dto/create-shop-product.dto';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateShopProductDto } from './dto/update-shop-product.dto';
 import { OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,7 +10,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
 import { CreateProcessDto } from '../shop/dto/create-process.dto';
 import { Shop, UniqueShopType } from '../shop/entities/shop.entity';
-import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class ShopProductService {
@@ -66,6 +65,15 @@ export class ShopProductService {
         shopProduct.product.name,
       );
 
+      const limitedUrls = this.filteredLimitedUrls(shopProduct, reducedSitemap);
+
+      if (limitedUrls.length === 0) {
+        console.log(
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
+
       console.log(`Adding new product: ${shopProduct.product.name}`);
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
@@ -85,7 +93,7 @@ export class ShopProductService {
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           shopId: shopProduct.shop.id,
-          sitemapUrls: reducedSitemap,
+          sitemapUrls: limitedUrls,
         },
       };
 
@@ -144,9 +152,11 @@ export class ShopProductService {
           shop: {
             sitemapEntity: true,
           },
+          webPages: true,
+          blacklistUrls: true,
         },
       })
-    ).sort(() => Math.random() - 5);
+    ).sort(() => Math.random() - 0.5);
     console.log(shopProductsOrphan.length);
 
     let index = 0;
@@ -165,6 +175,18 @@ export class ShopProductService {
 
         if (reducedSitemap.length === 0) continue;
 
+        const limitedUrls = this.filteredLimitedUrls(
+          shopProduct,
+          reducedSitemap,
+        );
+
+        if (limitedUrls.length === 0) {
+          console.log(
+            `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+          );
+          continue;
+        }
+
         const createProcess: CreateProcessDto = {
           sitemap: shopProduct.shop.sitemap,
           url: shopProduct.shop.website,
@@ -182,7 +204,7 @@ export class ShopProductService {
           cloudflare: shopProduct.shop.cloudflare,
           sitemapEntity: {
             ...shopProduct.shop.sitemapEntity,
-            sitemapUrls: reducedSitemap,
+            sitemapUrls: limitedUrls,
             shopId: shopProduct.shop.id,
           },
         };
@@ -223,6 +245,24 @@ export class ShopProductService {
       }
     }
   }
+  filteredLimitedUrls(shopProduct: ShopProduct, reducedSitemap: string[]) {
+    const blackListUrls = shopProduct.blacklistUrls.map(
+      (blacklist) => blacklist.url,
+    );
+
+    const shopProductUrlList = shopProduct.webPages.map(
+      (webpage) => webpage.url,
+    );
+
+    const restrictedUrls = [...blackListUrls, ...shopProductUrlList];
+
+    const limitedUrls = reducedSitemap.filter((url: string) => {
+      return !restrictedUrls.includes(url);
+    });
+
+    return limitedUrls;
+  }
+
   async manualFindShopsToUpdateProducts(productId: string): Promise<void> {
     const product = await this.productService.findOne(productId);
     console.log(`Adding new product: ${product.name}`);
@@ -239,6 +279,8 @@ export class ShopProductService {
         shop: {
           sitemapEntity: true,
         },
+        webPages: true,
+        blacklistUrls: true,
         product: true,
       },
     });
@@ -250,6 +292,16 @@ export class ShopProductService {
         shopProduct.shop.sitemapEntity.sitemapUrls,
         shopProduct.product.name,
       );
+
+      const limitedUrls = this.filteredLimitedUrls(shopProduct, reducedSitemap);
+
+      if (limitedUrls.length === 0) {
+        console.log(
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
+
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
         url: shopProduct.shop.website,
@@ -267,7 +319,7 @@ export class ShopProductService {
         cloudflare: shopProduct.shop.cloudflare,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
-          sitemapUrls: reducedSitemap,
+          sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
       };
@@ -332,15 +384,26 @@ export class ShopProductService {
           sitemapEntity: true,
         },
         product: true,
+        webPages: true,
+        blacklistUrls: true,
       },
     });
+
+    console.log(shopProduct.shop);
 
     const reducedSitemap = this.shopService.reduceSitemap(
       shopProduct.shop.sitemapEntity.sitemapUrls,
       shopProduct.product.name,
     );
 
-    console.log(reducedSitemap);
+    const limitedUrls = this.filteredLimitedUrls(shopProduct, reducedSitemap);
+
+    if (limitedUrls.length === 0) {
+      console.log(
+        `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+      );
+      throw new NotFoundException('no_urls_found_for_product');
+    }
 
     const createProcess: CreateProcessDto = {
       sitemap: shopProduct.shop.sitemap,
@@ -360,7 +423,7 @@ export class ShopProductService {
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
         shopId: shopProduct.shop.id,
-        sitemapUrls: reducedSitemap,
+        sitemapUrls: limitedUrls,
       },
     };
 
@@ -382,10 +445,6 @@ export class ShopProductService {
     }
   }
 
-  // Scan for shopProducts which are priority true
-  @Cron(CronExpression.EVERY_HOUR, {
-    name: 'checkForIndividualShopProductPriority',
-  })
   async checkForIndividualShopProductPriority(
     shopProductId: string,
   ): Promise<void> {
@@ -401,6 +460,8 @@ export class ShopProductService {
           sitemapEntity: true,
         },
         product: true,
+        webPages: true,
+        blacklistUrls: true,
       },
     });
 
@@ -408,6 +469,15 @@ export class ShopProductService {
       shopProduct.shop.sitemapEntity.sitemapUrls,
       shopProduct.product.name,
     );
+
+    const limitedUrls = this.filteredLimitedUrls(shopProduct, reducedSitemap);
+
+    if (limitedUrls.length === 0) {
+      console.log(
+        `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+      );
+      throw new NotFoundException('no_urls_found_for_product');
+    }
 
     const createProcess: CreateProcessDto = {
       sitemap: shopProduct.shop.sitemap,
@@ -427,7 +497,7 @@ export class ShopProductService {
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
         shopId: shopProduct.shop.id,
-        sitemapUrls: reducedSitemap,
+        sitemapUrls: limitedUrls,
       },
     };
 
@@ -455,6 +525,8 @@ export class ShopProductService {
           sitemapEntity: true,
         },
         product: true,
+        webPages: true,
+        blacklistUrls: true,
       },
     });
 
@@ -465,6 +537,15 @@ export class ShopProductService {
         shopProduct.shop.sitemapEntity.sitemapUrls,
         shopProduct.product.name,
       );
+
+      const limitedUrls = this.filteredLimitedUrls(shopProduct, reducedSitemap);
+
+      if (limitedUrls.length === 0) {
+        console.log(
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
 
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
@@ -484,7 +565,7 @@ export class ShopProductService {
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           shopId: shopProduct.shop.id,
-          sitemapUrls: reducedSitemap,
+          sitemapUrls: limitedUrls,
         },
       };
 
