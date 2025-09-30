@@ -535,9 +535,6 @@ export class WebpageService {
       },
     });
 
-    console.log(webpages);
-    throw new Error('Test error');
-
     // Update associated shopProduct
     for (const webpage of webpages) {
       if (webpage.shopProduct) {
