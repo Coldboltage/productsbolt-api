@@ -494,10 +494,13 @@ export class WebpageService {
     id: string,
     updateWebpageDto: UpdateWebpageDto,
   ): Promise<Webpage> {
-    console.log(id);
+
     await this.webpagesRepository.update(id, {
       price: updateWebpageDto.price ? updateWebpageDto.price : 0,
       inStock: updateWebpageDto.inStock,
+      pageAllText: updateWebpageDto.pageAllText,
+      pageTitle: updateWebpageDto.pageTitle,
+      lastScanned: updateWebpageDto.lastScanned,
     });
     const webpageEntity = await this.findOne(id);
     const result = await this.alertService.checkAlert(webpageEntity);

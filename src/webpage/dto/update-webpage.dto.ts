@@ -7,4 +7,7 @@ export class UpdateWebpageDto extends PartialType(CreateWebpageDto) {
   count?: number;
   hash?: string;
   shopifySite?: boolean;
+  pageAllText?: string;
+  pageTitle?: string;
+  lastScanned?: Date;
 }
