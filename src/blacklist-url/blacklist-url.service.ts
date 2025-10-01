@@ -47,7 +47,14 @@ export class BlackListUrlService {
     const response = await this.webPageService.removeWebpage(webpageEntity.id);
     if (!response) throw new Error('page might not have been deleted');
 
-    return this.blackListRepository.save<BlackListUrl>(blackListEntity);
+    blackListEntity =
+      await this.blackListRepository.save<BlackListUrl>(blackListEntity);
+
+    await this.shopProductsService.checkForIndividualShopProduct(
+      webpageEntity.shopProduct.id,
+    );
+
+    return blackListEntity;
   }
 
   // Return all Blacklst Urls
