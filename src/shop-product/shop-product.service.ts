@@ -141,6 +141,99 @@ export class ShopProductService {
     return 'manualUpdateAllShopProductsEvent fired';
   }
 
+  async manualUpdateAllShopProductsImmediate(): Promise<void> {
+    const shopProductsOrphan = await (
+      await this.shopProductRepository.find({
+        where: {
+          populated: false,
+          shop: {
+            active: true,
+          },
+        },
+        relations: {
+          product: true,
+          shop: {
+            sitemapEntity: true,
+          },
+          webPage: true,
+          blacklistUrls: true,
+        },
+      })
+    ).sort(() => Math.random() - 0.5);
+    console.log(shopProductsOrphan.length);
+
+
+    for (const shopProduct of shopProductsOrphan) {
+      const reducedSitemap = this.shopService.reduceSitemap(
+        shopProduct.shop.sitemapEntity.sitemapUrls,
+        shopProduct.product.name,
+      );
+
+      if (reducedSitemap.length === 0) continue;
+
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        reducedSitemap,
+      );
+
+      if (limitedUrls.length === 0) {
+        console.log(
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
+
+      const createProcess: CreateProcessDto = {
+        sitemap: shopProduct.shop.sitemap,
+        url: shopProduct.shop.website,
+        category: shopProduct.shop.category,
+        name: shopProduct.product.name,
+        shopProductId: shopProduct.id,
+        shopWebsite: shopProduct.shop.name,
+        type: shopProduct.product.type,
+        context: shopProduct.product.context,
+        crawlAmount: 90,
+        productId: shopProduct.productId,
+        shopId: shopProduct.shopId,
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType,
+        cloudflare: shopProduct.shop.cloudflare,
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          sitemapUrls: limitedUrls,
+          shopId: shopProduct.shop.id,
+        },
+      };
+
+      if (
+        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+        shopProduct.ebayProductDetail
+      ) {
+        createProcess.ebayProductDetail = {
+          ebayProductDetailId: shopProduct.ebayProductDetail.id,
+          productId: shopProduct.ebayProductDetail.productId,
+        };
+      }
+
+      if (shopProduct.shop.isShopifySite === true) {
+        console.log('shopifySiteFound');
+        this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else {
+        console.log('normal setup');
+        this.headfulClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      }
+      await new Promise((r) => setTimeout(r, 100));
+    }
+
+
+  }
+
   async manualUpdateAllShopProductsEvent(): Promise<void> {
     const shopProductsOrphan = await (
       await this.shopProductRepository.find({
