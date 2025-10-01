@@ -408,10 +408,6 @@ export class ShopProductService {
         continue;
       }
 
-      console.log(limitedUrls);
-
-      throw new Error('stop');
-
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
         url: shopProduct.shop.website,
