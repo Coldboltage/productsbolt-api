@@ -29,7 +29,7 @@ export class ShopProductController {
   }
 
   @Post('manual-update-shops-all-products/')
-  manualUpdateAllShopProductsImmediate(): Promise<string> {
+  manualUpdateAllShopProductsImmediate(): Promise<void> {
     return this.shopProductService.manualUpdateAllShopProductsImmediate();
   }
 
