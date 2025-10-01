@@ -359,14 +359,6 @@ export class ShopProductService {
 
     const restrictedUrls = [...blackListUrls, ...shopProductUrlList];
 
-    console.log(
-      shopProductUrlList.includes(
-        'https://tabletopdominion.com/products/magic-the-gathering-final-fantasy-collector-booster-single-pack',
-      ),
-    );
-
-    console.log(shopProductUrlList);
-
     const limitedUrls = reducedSitemap.filter((url: string) => {
       return !restrictedUrls.includes(url);
     });
@@ -415,6 +407,10 @@ export class ShopProductService {
         );
         continue;
       }
+
+      console.log(limitedUrls);
+
+      throw new Error('stop');
 
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
@@ -503,8 +499,6 @@ export class ShopProductService {
       },
     });
 
-    console.log(shopProduct.shop);
-
     const reducedSitemap = this.shopService.reduceSitemap(
       shopProduct.shop.sitemapEntity.sitemapUrls,
       shopProduct.product.name,
@@ -521,6 +515,7 @@ export class ShopProductService {
       );
       throw new NotFoundException('no_urls_found_for_product');
     }
+
 
     const createProcess: CreateProcessDto = {
       sitemap: shopProduct.shop.sitemap,
