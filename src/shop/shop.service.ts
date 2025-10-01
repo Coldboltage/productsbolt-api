@@ -227,8 +227,6 @@ export class ShopService implements OnApplicationBootstrap {
   }
 
   reduceSitemap(urls: string[], query: string): string[] {
-    console.log(urls);
-    console.log(query);
     const extractKeywords = (rawUrl: string): string[] => {
       const noQuery = rawUrl.split(/[?#]/)[0].replace(/\/+$/, '');
       const parts = noQuery.split('/').filter(Boolean);
@@ -277,6 +275,7 @@ export class ShopService implements OnApplicationBootstrap {
         .map((p) => p.url);
     };
     const result = filterProducts(urls, query);
+
     return result;
   }
 
