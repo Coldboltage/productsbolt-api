@@ -48,6 +48,9 @@ export class Sitemap {
   @Column({ type: 'simple-array', nullable: true })
   additionalSitemaps: string[];
 
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  scannedAt: Date;
+
   @OneToOne(() => Shop, (shop) => shop.sitemapEntity, {
     onDelete: 'CASCADE',
   })

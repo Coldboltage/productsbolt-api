@@ -318,6 +318,104 @@ export class ShopProductService {
     }
   }
 
+  async manualUpdateAllShopProductsForShopImmediateLinks(
+    shopId: string,
+    scanAll: boolean,
+  ): Promise<void> {
+    const whereClause: FindManyOptions<ShopProduct> = {
+      where: {
+        shop: {
+          id: shopId,
+          active: true,
+        },
+      },
+      relations: {
+        product: true,
+        shop: {
+          sitemapEntity: true,
+        },
+        webPage: true,
+        blacklistUrls: true,
+      },
+    };
+
+    if (!scanAll) {
+      whereClause.where['populated'] = false;
+    }
+
+    const shopProductsOrphan = await (
+      await this.shopProductRepository.find(whereClause)
+    ).sort(() => Math.random() - 0.5);
+    console.log(shopProductsOrphan.length);
+
+    for (const shopProduct of shopProductsOrphan) {
+      if (!shopProduct) continue;
+
+      const reducedSitemap = this.shopService.reduceSitemap(
+        shopProduct.shop.sitemapEntity.sitemapUrls,
+        shopProduct.product.name,
+      );
+
+      if (reducedSitemap.length === 0) continue;
+
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        reducedSitemap,
+      );
+
+      if (limitedUrls.length === 0) {
+        console.log(
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name} but was found in reduced sitemap: ${reducedSitemap}`,
+        );
+        continue;
+      }
+
+      const createProcess: CreateProcessDto = {
+        sitemap: shopProduct.shop.sitemap,
+        url: shopProduct.shop.website,
+        category: shopProduct.shop.category,
+        name: shopProduct.product.name,
+        shopProductId: shopProduct.id,
+        shopWebsite: shopProduct.shop.name,
+        type: shopProduct.product.type,
+        context: shopProduct.product.context,
+        crawlAmount: 90,
+        productId: shopProduct.productId,
+        shopId: shopProduct.shopId,
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType,
+        cloudflare: shopProduct.shop.cloudflare,
+        links: [],
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          sitemapUrls: limitedUrls,
+          shopId: shopProduct.shop.id,
+        },
+      };
+
+      if (
+        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+        shopProduct.ebayProductDetail
+      ) {
+        createProcess.ebayProductDetail = {
+          ebayProductDetailId: shopProduct.ebayProductDetail.id,
+          productId: shopProduct.ebayProductDetail.productId,
+        };
+      }
+
+      this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
+
+      // if (shopProduct.shop.isShopifySite === true) {
+      //   console.log('shopifySiteFound');
+      //   this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
+      // } else {
+      //   console.log('normal setup');
+      //   this.headfulClient.emit<CreateProcessDto>('findLinks', createProcess);
+      // }
+      await new Promise((r) => setTimeout(r, 1));
+    }
+  }
+
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   @Cron(CronExpression.EVERY_DAY_AT_11PM)
   async manualUpdateAllShopProducts(): Promise<string> {
@@ -621,6 +719,102 @@ export class ShopProductService {
         shopWebsite: shopProduct.shop.name,
         type: product.type,
         context: product.context,
+        crawlAmount: 90,
+        productId: shopProduct.productId,
+        shopId: shopProduct.shopId,
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType,
+        cloudflare: shopProduct.shop.cloudflare,
+        links: shopProduct.links,
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          sitemapUrls: limitedUrls,
+          shopId: shopProduct.shop.id,
+        },
+      };
+
+      if (
+        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+        shopProduct.ebayProductDetail
+      ) {
+        createProcess.ebayProductDetail = {
+          ebayProductDetailId: shopProduct.ebayProductDetail.id,
+          productId: shopProduct.ebayProductDetail.productId,
+        };
+      }
+
+      if (shopProduct.shop.sitemapEntity.isShopifySite === true) {
+        this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else {
+        this.headfulClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      }
+    }
+  }
+
+  async manuallyUpdateShopProductsByShopId(shopId: string): Promise<void> {
+    const shop = await this.shopService.findOne(shopId);
+    console.log(`Adding new product: ${shop.name}`);
+
+    const shopProductsOrphan = await this.shopProductRepository.find({
+      where: {
+        populated: false,
+        shop: {
+          active: true,
+          id: shopId,
+        },
+      },
+      relations: {
+        shop: {
+          sitemapEntity: true,
+        },
+        webPage: true,
+        blacklistUrls: true,
+        product: true,
+      },
+    });
+
+    console.log(shopProductsOrphan.length);
+
+    for (const shopProduct of shopProductsOrphan) {
+      const reducedSitemap = this.shopService.reduceSitemap(
+        shopProduct.shop.sitemapEntity.sitemapUrls,
+        shopProduct.product.name,
+      );
+
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        reducedSitemap,
+      );
+
+      if (limitedUrls.length === 0) {
+        console.log(
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
+
+      if (shopProduct.links.length === 0) {
+        console.log(
+          `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
+
+      const createProcess: CreateProcessDto = {
+        sitemap: shopProduct.shop.sitemap,
+        url: shopProduct.shop.website,
+        category: shopProduct.shop.category,
+        name: shopProduct.product.name,
+        shopProductId: shopProduct.id,
+        shopWebsite: shopProduct.shop.name,
+        type: shopProduct.product.type,
+        context: shopProduct.product.context,
         crawlAmount: 90,
         productId: shopProduct.productId,
         shopId: shopProduct.shopId,

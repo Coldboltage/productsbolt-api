@@ -62,7 +62,7 @@ export class ShopController {
   }
 
   @Post('/check-if-shop-is-shopify/:shopId')
-  async checkIfShopIsShopify(@Param('id') shopId: string): Promise<void> {
+  async checkIfShopIsShopify(@Param('shopId') shopId: string): Promise<void> {
     return this.shopService.checkIfShopIsShopify(shopId);
   }
 

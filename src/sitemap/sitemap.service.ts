@@ -5,13 +5,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Sitemap } from './entities/sitemap.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { ShopService } from '../shop/shop.service';
+import { ShopProductService } from 'src/shop-product/shop-product.service';
 
 @Injectable()
 export class SitemapService {
   constructor(
     @InjectRepository(Sitemap) private sitemapRepository: Repository<Sitemap>,
     private shopService: ShopService,
-  ) { }
+    private shopProductService: ShopProductService,
+  ) {}
   async create(createSitemapDto: CreateSitemapDto): Promise<Sitemap> {
     const sitemapExist = await this.sitemapRepository.exists({
       where: {
@@ -73,12 +75,23 @@ export class SitemapService {
     });
   }
 
-  async update(id: string, updateSitemapDto: UpdateSitemapDto): Promise<UpdateResult> {
-    return this.sitemapRepository.update(id, updateSitemapDto);
+  async update(
+    id: string,
+    updateSitemapDto: UpdateSitemapDto,
+  ): Promise<UpdateResult> {
+    const result = await this.sitemapRepository.update(id, updateSitemapDto);
+    console.log('updating shopProduct links');
+    const sitemapEntity = await this.findOne(id);
+    const shopEntity = sitemapEntity.shop;
+    await this.shopProductService.manualUpdateAllShopProductsForShopImmediateLinks(
+      shopEntity.id,
+      false,
+    );
+    return result;
   }
 
   async remove(id: string): Promise<Sitemap> {
-    const sitemapEntity = await this.findOne(id)
-    return this.sitemapRepository.remove(sitemapEntity)
+    const sitemapEntity = await this.findOne(id);
+    return this.sitemapRepository.remove(sitemapEntity);
   }
 }

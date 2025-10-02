@@ -162,7 +162,9 @@ export class ShopService implements OnApplicationBootstrap {
   }
 
   async checkIfShopIsShopify(shopId: string): Promise<void> {
+    console.log('checkIfShopIsShopify called with id:', shopId);
     const shop = await this.findOne(shopId);
+    console.log(shop.name);
     if (shop) this.headfulClient.emit('shopyifyCheck', shop);
   }
 

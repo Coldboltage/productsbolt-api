@@ -15,7 +15,7 @@ import { UpdateResult } from 'typeorm';
 
 @Controller('sitemap')
 export class SitemapController {
-  constructor(private readonly sitemapService: SitemapService) { }
+  constructor(private readonly sitemapService: SitemapService) {}
 
   @Post()
   create(@Body() createSitemapDto: CreateSitemapDto): Promise<Sitemap> {
@@ -43,8 +43,11 @@ export class SitemapController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSitemapDto: UpdateSitemapDto): Promise<UpdateResult> {
-    console.log("hello")
+  update(
+    @Param('id') id: string,
+    @Body() updateSitemapDto: UpdateSitemapDto,
+  ): Promise<UpdateResult> {
+    console.log('hello');
     return this.sitemapService.update(id, updateSitemapDto);
   }
 

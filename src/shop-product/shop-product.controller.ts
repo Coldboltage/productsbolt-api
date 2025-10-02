@@ -54,6 +54,24 @@ export class ShopProductController {
     return this.shopProductService.manualFindShopsToUpdateProducts(productId);
   }
 
+  @Post('find-all-links-for-shop-products-using-shop-id/:shopId/:scanAll')
+  manualUpdateAllShopProductsForShopImmediateLinks(
+    @Param('shopId') shopId: string,
+    @Param('scanAll', ParseBoolPipe) scanAll: boolean,
+  ): Promise<void> {
+    return this.shopProductService.manualUpdateAllShopProductsForShopImmediateLinks(
+      shopId,
+      scanAll,
+    );
+  }
+
+  @Post('manual-update-shop-products-by-shop-id/:shopId')
+  manuallyUpdateShopProductsByShopId(
+    @Param('shopId') shopId: string,
+  ): Promise<void> {
+    return this.shopProductService.manuallyUpdateShopProductsByShopId(shopId);
+  }
+
   // @Post()
   // create(@Body() createShopProductDto: CreateShopProductDto) {
   //   return this.shopProductService.create(createShopProductDto);
