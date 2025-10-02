@@ -4,7 +4,6 @@ import {
   JoinColumn,
   ManyToMany,
   ManyToOne,
-  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   Unique,
@@ -32,6 +31,9 @@ export class ShopProduct {
 
   @Column({ default: false })
   populated: boolean;
+
+  @Column({ default: '', type: 'simple-array' })
+  links: string[];
 
   @ManyToOne(() => Shop, (shop) => shop.shopProducts, {
     onDelete: 'CASCADE',

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { ShopProductService } from './shop-product.service';
 import { UpdateShopProductDto } from './dto/update-shop-product.dto';
@@ -21,11 +22,24 @@ export class ShopProductController {
     return this.shopProductService.checkForIndividualShopProduct(id);
   }
 
-  @Post('scan-for-individual-shop/:shopId')
-  checkForAllShopProductsFromShop(
-    @Param('shopId') shopId: string,
+  @Post('manual-update-specific-shop-product-links/:shopProductId/:bypass')
+  manualUpdateIndividualShopProductsImmediateLinks(
+    @Param('shopProductId') shopProductId: string,
+    @Param('bypass', ParseBoolPipe) bypass: boolean,
   ): Promise<void> {
-    return this.shopProductService.checkForAllShopProductsFromShop(shopId);
+    return this.shopProductService.manualUpdateIndividualShopProductsImmediateLinks(
+      shopProductId,
+      bypass,
+    );
+  }
+
+  @Post('manual-update-shops-all-products-links/:scanAll')
+  manualUpdateAllShopProductsImmediateLinks(
+    @Param('scanAll', ParseBoolPipe) scanAll: boolean,
+  ): Promise<void> {
+    return this.shopProductService.manualUpdateAllShopProductsImmediateLinks(
+      scanAll,
+    );
   }
 
   @Post('manual-update-shops-all-products/')

@@ -3,7 +3,7 @@ import { UpdateShopProductDto } from './dto/update-shop-product.dto';
 import { OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ShopProduct } from './entities/shop-product.entity';
-import { Repository, UpdateResult } from 'typeorm';
+import { FindManyOptions, Repository, UpdateResult } from 'typeorm';
 import { ShopService } from '../shop/shop.service';
 import { Product } from '../product/entities/product.entity';
 import { ClientProxy } from '@nestjs/microservices';
@@ -70,13 +70,6 @@ export class ShopProductService {
         reducedSitemap,
       );
 
-      if (limitedUrls.length === 0) {
-        console.log(
-          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-        );
-        continue;
-      }
-
       console.log(`Adding new product: ${shopProduct.product.name}`);
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
@@ -93,6 +86,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        links: [],
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           shopId: shopProduct.shop.id,
@@ -134,36 +128,131 @@ export class ShopProductService {
     return response;
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_1AM)
-  @Cron(CronExpression.EVERY_DAY_AT_11PM)
-  async manualUpdateAllShopProducts(): Promise<string> {
-    this.manualUpdateAllShopProductsEvent();
-    return 'manualUpdateAllShopProductsEvent fired';
+  // Individual get links
+  async manualUpdateIndividualShopProductsImmediateLinks(
+    shopProductId: string,
+    bypass: boolean,
+  ): Promise<void> {
+    const whereClause: FindManyOptions<ShopProduct> = {
+      where: {
+        id: shopProductId,
+        shop: {
+          active: true,
+        },
+      },
+      relations: {
+        product: true,
+        shop: {
+          sitemapEntity: true,
+        },
+        webPage: true,
+        blacklistUrls: true,
+      },
+    };
+
+    if (!bypass) {
+      whereClause.where['populated'] = false;
+    }
+
+    const shopProduct = await this.shopProductRepository.findOne(whereClause);
+
+    console.log(shopProduct);
+
+    if (!shopProduct)
+      throw new NotFoundException('shop_product_not_found_or_populated');
+
+    const reducedSitemap = this.shopService.reduceSitemap(
+      shopProduct.shop.sitemapEntity.sitemapUrls,
+      shopProduct.product.name,
+    );
+
+    console.log(shopProduct.product.name);
+
+    if (reducedSitemap.length === 0)
+      throw new Error('no_urls_found_for_product');
+
+    const limitedUrls = await this.filteredLimitedUrls(
+      shopProduct,
+      reducedSitemap,
+    );
+
+    const createProcess: CreateProcessDto = {
+      sitemap: shopProduct.shop.sitemap,
+      url: shopProduct.shop.website,
+      category: shopProduct.shop.category,
+      name: shopProduct.product.name,
+      shopProductId: shopProduct.id,
+      shopWebsite: shopProduct.shop.name,
+      type: shopProduct.product.type,
+      context: shopProduct.product.context,
+      crawlAmount: 90,
+      productId: shopProduct.productId,
+      shopId: shopProduct.shopId,
+      shopifySite: shopProduct.shop.isShopifySite,
+      shopType: shopProduct.shop.uniqueShopType,
+      cloudflare: shopProduct.shop.cloudflare,
+      links: [],
+      sitemapEntity: {
+        ...shopProduct.shop.sitemapEntity,
+        sitemapUrls: limitedUrls,
+        shopId: shopProduct.shop.id,
+      },
+    };
+
+    if (
+      shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+      shopProduct.ebayProductDetail
+    ) {
+      createProcess.ebayProductDetail = {
+        ebayProductDetailId: shopProduct.ebayProductDetail.id,
+        productId: shopProduct.ebayProductDetail.productId,
+      };
+    }
+
+    this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
+
+    // if (shopProduct.shop.isShopifySite === true) {
+    //   console.log('shopifySiteFound');
+    //   this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
+    // } else {
+    //   console.log('normal setup');
+    //   this.headfulClient.emit<CreateProcessDto>('findLinks', createProcess);
+    // }
+    await new Promise((r) => setTimeout(r, 100));
   }
 
-  async manualUpdateAllShopProductsImmediate(): Promise<void> {
+  // Get all the links
+  async manualUpdateAllShopProductsImmediateLinks(
+    scanAll: boolean,
+  ): Promise<void> {
+    const whereClause: FindManyOptions<ShopProduct> = {
+      where: {
+        shop: {
+          active: true,
+        },
+      },
+      relations: {
+        product: true,
+        shop: {
+          sitemapEntity: true,
+        },
+        webPage: true,
+        blacklistUrls: true,
+      },
+    };
+
+    if (!scanAll) {
+      whereClause.where['populated'] = false;
+    }
+
     const shopProductsOrphan = await (
-      await this.shopProductRepository.find({
-        where: {
-          populated: false,
-          shop: {
-            active: true,
-          },
-        },
-        relations: {
-          product: true,
-          shop: {
-            sitemapEntity: true,
-          },
-          webPage: true,
-          blacklistUrls: true,
-        },
-      })
+      await this.shopProductRepository.find(whereClause)
     ).sort(() => Math.random() - 0.5);
     console.log(shopProductsOrphan.length);
 
-
     for (const shopProduct of shopProductsOrphan) {
+      if (!shopProduct) continue;
+
       const reducedSitemap = this.shopService.reduceSitemap(
         shopProduct.shop.sitemapEntity.sitemapUrls,
         shopProduct.product.name,
@@ -198,6 +287,108 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        links: [],
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          sitemapUrls: limitedUrls,
+          shopId: shopProduct.shop.id,
+        },
+      };
+
+      if (
+        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+        shopProduct.ebayProductDetail
+      ) {
+        createProcess.ebayProductDetail = {
+          ebayProductDetailId: shopProduct.ebayProductDetail.id,
+          productId: shopProduct.ebayProductDetail.productId,
+        };
+      }
+
+      this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
+
+      // if (shopProduct.shop.isShopifySite === true) {
+      //   console.log('shopifySiteFound');
+      //   this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
+      // } else {
+      //   console.log('normal setup');
+      //   this.headfulClient.emit<CreateProcessDto>('findLinks', createProcess);
+      // }
+      await new Promise((r) => setTimeout(r, 1));
+    }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_1AM)
+  @Cron(CronExpression.EVERY_DAY_AT_11PM)
+  async manualUpdateAllShopProducts(): Promise<string> {
+    this.manualUpdateAllShopProductsEvent();
+    return 'manualUpdateAllShopProductsEvent fired';
+  }
+
+  async manualUpdateAllShopProductsImmediate(): Promise<void> {
+    const shopProductsOrphan = await (
+      await this.shopProductRepository.find({
+        where: {
+          populated: false,
+          shop: {
+            active: true,
+          },
+        },
+        relations: {
+          product: true,
+          shop: {
+            sitemapEntity: true,
+          },
+          webPage: true,
+          blacklistUrls: true,
+        },
+      })
+    ).sort(() => Math.random() - 0.5);
+    console.log(shopProductsOrphan.length);
+
+    for (const shopProduct of shopProductsOrphan) {
+      const reducedSitemap = this.shopService.reduceSitemap(
+        shopProduct.shop.sitemapEntity.sitemapUrls,
+        shopProduct.product.name,
+      );
+
+      if (reducedSitemap.length === 0) continue;
+
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        reducedSitemap,
+      );
+
+      if (limitedUrls.length === 0) {
+        console.log(
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
+
+      if (shopProduct.links.length === 0) {
+        console.log(
+          `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
+
+      const createProcess: CreateProcessDto = {
+        sitemap: shopProduct.shop.sitemap,
+        url: shopProduct.shop.website,
+        category: shopProduct.shop.category,
+        name: shopProduct.product.name,
+        shopProductId: shopProduct.id,
+        shopWebsite: shopProduct.shop.name,
+        type: shopProduct.product.type,
+        context: shopProduct.product.context,
+        crawlAmount: 90,
+        productId: shopProduct.productId,
+        shopId: shopProduct.shopId,
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType,
+        cloudflare: shopProduct.shop.cloudflare,
+        links: shopProduct.links,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           sitemapUrls: limitedUrls,
@@ -230,8 +421,6 @@ export class ShopProductService {
       }
       await new Promise((r) => setTimeout(r, 100));
     }
-
-
   }
 
   async manualUpdateAllShopProductsEvent(): Promise<void> {
@@ -283,6 +472,13 @@ export class ShopProductService {
           continue;
         }
 
+        if (shopProduct.links.length === 0) {
+          console.log(
+            `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+          );
+          continue;
+        }
+
         const createProcess: CreateProcessDto = {
           sitemap: shopProduct.shop.sitemap,
           url: shopProduct.shop.website,
@@ -298,6 +494,7 @@ export class ShopProductService {
           shopifySite: shopProduct.shop.isShopifySite,
           shopType: shopProduct.shop.uniqueShopType,
           cloudflare: shopProduct.shop.cloudflare,
+          links: shopProduct.links,
           sitemapEntity: {
             ...shopProduct.shop.sitemapEntity,
             sitemapUrls: limitedUrls,
@@ -359,14 +556,6 @@ export class ShopProductService {
 
     const restrictedUrls = [...blackListUrls, ...shopProductUrlList];
 
-    console.log(
-      shopProductUrlList.includes(
-        'https://tabletopdominion.com/products/magic-the-gathering-final-fantasy-collector-booster-single-pack',
-      ),
-    );
-
-    console.log(shopProductUrlList);
-
     const limitedUrls = reducedSitemap.filter((url: string) => {
       return !restrictedUrls.includes(url);
     });
@@ -416,6 +605,13 @@ export class ShopProductService {
         continue;
       }
 
+      if (shopProduct.links.length === 0) {
+        console.log(
+          `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
+
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
         url: shopProduct.shop.website,
@@ -431,6 +627,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        links: shopProduct.links,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           sitemapUrls: limitedUrls,
@@ -503,8 +700,6 @@ export class ShopProductService {
       },
     });
 
-    console.log(shopProduct.shop);
-
     const reducedSitemap = this.shopService.reduceSitemap(
       shopProduct.shop.sitemapEntity.sitemapUrls,
       shopProduct.product.name,
@@ -515,12 +710,17 @@ export class ShopProductService {
       reducedSitemap,
     );
 
+    console.log(limitedUrls);
+
     if (limitedUrls.length === 0) {
       console.log(
         `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
       );
       throw new NotFoundException('no_urls_found_for_product');
     }
+
+    if (shopProduct.links.length === 0)
+      throw new NotFoundException('no_links_found');
 
     const createProcess: CreateProcessDto = {
       sitemap: shopProduct.shop.sitemap,
@@ -537,6 +737,7 @@ export class ShopProductService {
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
       cloudflare: shopProduct.shop.cloudflare,
+      links: shopProduct.links,
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
         shopId: shopProduct.shop.id,
@@ -599,6 +800,9 @@ export class ShopProductService {
       throw new NotFoundException('no_urls_found_for_product');
     }
 
+    if (shopProduct.links.length === 0)
+      throw new NotFoundException('no_links_found');
+
     const createProcess: CreateProcessDto = {
       sitemap: shopProduct.shop.sitemap,
       url: shopProduct.shop.website,
@@ -614,6 +818,7 @@ export class ShopProductService {
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
       cloudflare: shopProduct.shop.cloudflare,
+      links: shopProduct.links,
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
         shopId: shopProduct.shop.id,
@@ -670,6 +875,13 @@ export class ShopProductService {
         continue;
       }
 
+      if (shopProduct.links.length === 0) {
+        console.log(
+          `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
+
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
         url: shopProduct.shop.website,
@@ -685,6 +897,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        links: shopProduct.links,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           shopId: shopProduct.shop.id,
@@ -769,6 +982,7 @@ export class ShopProductService {
     id: string,
     updateShopProductDto: UpdateShopProductDto,
   ): Promise<UpdateResult> {
+    console.log(updateShopProductDto);
     return this.shopProductRepository.update({ id }, updateShopProductDto);
   }
 

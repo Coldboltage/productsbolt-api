@@ -58,6 +58,10 @@ export class CreateProcessDto {
   @IsBoolean()
   cloudflare: boolean;
 
+  @IsArray()
+  @IsString()
+  links: string[];
+
   @ValidateNested()
   @Type(() => EbayProductDetailDto)
   @IsOptional()
