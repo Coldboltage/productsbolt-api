@@ -1180,6 +1180,19 @@ export class ShopProductService {
     return this.shopProductRepository.update({ id }, updateShopProductDto);
   }
 
+  async updateLinks(
+    id: string,
+    updateShopProductDto: UpdateShopProductDto,
+  ): Promise<UpdateResult> {
+    console.log(updateShopProductDto);
+    const updateResult = await this.shopProductRepository.update(
+      { id },
+      updateShopProductDto,
+    );
+    await this.checkForIndividualShopProduct(id);
+    return updateResult;
+  }
+
   async remove(id: string): Promise<ShopProduct> {
     const shopProductEntity = await this.findOne(id);
     return this.shopProductRepository.remove(shopProductEntity);

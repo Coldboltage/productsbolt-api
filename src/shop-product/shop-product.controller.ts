@@ -95,6 +95,14 @@ export class ShopProductController {
     return this.shopProductService.update(id, updateShopProductDto);
   }
 
+  @Patch('shop-product-links/:id')
+  updateLinks(
+    @Param('id') id: string,
+    @Body() updateShopProductDto: UpdateShopProductDto,
+  ): Promise<UpdateResult> {
+    return this.shopProductService.updateLinks(id, updateShopProductDto);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string): Promise<ShopProduct> {
     return this.shopProductService.remove(id);
