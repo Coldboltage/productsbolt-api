@@ -36,8 +36,8 @@ export class WebpageCacheService {
     webpageId: string,
     updateWebpageDto: UpdateWebpageDto,
   ) {
-    console.log(updateWebpageDto);
-    // What's going to come from this?
+    console.log('updateWebpageAndCache called');
+
     // We're going to get the answer. If the answer is the same as before, we're going to add count++. If this becomes over 5+, then it'll be considered confirmed
 
     const webpageEntity = await this.webpageService.findOne(webpageId);
