@@ -416,8 +416,7 @@ export class ShopProductService {
     }
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_1AM)
-  @Cron(CronExpression.EVERY_DAY_AT_11PM)
+  @Cron('0 1-23/2 * * *', { timeZone: 'Europe/London' })
   async manualUpdateAllShopProducts(): Promise<string> {
     this.manualUpdateAllShopProductsEvent();
     return 'manualUpdateAllShopProductsEvent fired';
