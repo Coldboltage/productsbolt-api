@@ -33,7 +33,10 @@ export class WebpageCache {
   @JoinColumn()
   webpage: Webpage;
 
-  @OneToOne(() => ScrappedPage, (scrappedPage) => scrappedPage.webpageCache)
+  @OneToOne(
+    () => ScrappedPage,
+    (scrappedPage) => scrappedPage.scrappedPageCache,
+  )
   @JoinColumn()
   scrappedPage: ScrappedPage;
 }

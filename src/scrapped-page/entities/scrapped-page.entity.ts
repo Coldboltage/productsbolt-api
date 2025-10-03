@@ -33,7 +33,7 @@ export class ScrappedPage {
   webpage: Webpage;
 
   @OneToOne(() => WebpageCache, (webpageCache) => webpageCache.scrappedPage)
-  webpageCache: WebpageCache;
+  scrappedPageCache: WebpageCache;
 
   @OneToOne(() => ShopProduct, (shopProduct) => shopProduct.scrappedPage)
   @JoinColumn()
