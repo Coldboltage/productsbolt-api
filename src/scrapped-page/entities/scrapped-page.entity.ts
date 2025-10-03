@@ -6,13 +6,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
 
 @Entity()
-@Unique(['url', 'shopProductId'])
+@Unique(['url'])
 export class ScrappedPage {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -26,19 +27,24 @@ export class ScrappedPage {
   @Column({ default: '' })
   pageAllText: string;
 
-  @Column({ type: 'uuid' })
-  shopProductId: string;
-
   @OneToOne(() => Webpage, (webpage) => webpage.scrappedPage)
   webpage: Webpage;
 
-  @OneToOne(() => WebpageCache, (webpageCache) => webpageCache.scrappedPage)
+  @OneToOne(() => WebpageCache, (webpageCache) => webpageCache.scrappedPage, {
+    cascade: ['insert', 'update'],
+  })
   scrappedPageCache: WebpageCache;
 
   @OneToOne(() => ShopProduct, (shopProduct) => shopProduct.scrappedPage)
   @JoinColumn()
   shopProduct: ShopProduct;
 
-  @ManyToOne(() => ShopProduct, (shopProduct) => shopProduct.unconfirmedPages)
-  unconfirmedPages: ShopProduct[];
+  @ManyToOne(
+    () => ShopProduct,
+    (shopProduct) => shopProduct.unconfirmedScappedPages,
+  )
+  unconfirmedScappedPages: ShopProduct[];
+
+  @OneToMany(() => Webpage, (webpage) => webpage.unconfirmedWebPages)
+  unconfirmedWebPages: Webpage[];
 }

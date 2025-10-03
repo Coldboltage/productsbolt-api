@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ScrappedPageService } from './scrapped-page.service';
 import { CreateScrappedPageDto } from './dto/create-scrapped-page.dto';
 import { UpdateScrappedPageDto } from './dto/update-scrapped-page.dto';
@@ -12,6 +20,11 @@ export class ScrappedPageController {
     return this.scrappedPageService.create(createScrappedPageDto);
   }
 
+  @Post('create-from-existing-shop-products')
+  createFromExistingShopProducts() {
+    return this.scrappedPageService.createFromExistingShopProducts();
+  }
+
   @Get()
   findAll() {
     return this.scrappedPageService.findAll();
@@ -19,11 +32,14 @@ export class ScrappedPageController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.scrappedPageService.findOne(+id);
+    return this.scrappedPageService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateScrappedPageDto: UpdateScrappedPageDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateScrappedPageDto: UpdateScrappedPageDto,
+  ) {
     return this.scrappedPageService.update(+id, updateScrappedPageDto);
   }
 

@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   Unique,
@@ -51,14 +52,15 @@ export class Webpage {
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   lastScanned: Date;
 
-  @OneToOne(() => WebpageCache, (webpageCache) => webpageCache.webpage, {
-    cascade: ['insert', 'update'],
-  })
-  webpageCache: WebpageCache;
-
   @OneToOne(() => ScrappedPage, (scrappedPage) => scrappedPage.webpage)
   @JoinColumn()
   scrappedPage: ScrappedPage;
+
+  @OneToMany(
+    () => ScrappedPage,
+    (scrappedPage) => scrappedPage.unconfirmedWebPages,
+  )
+  unconfirmedWebPages: ScrappedPage[];
 }
 
 export interface StrippedWebpage {

@@ -10,7 +10,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
 import { CreateProcessDto } from '../shop/dto/create-process.dto';
 import { Shop, UniqueShopType } from '../shop/entities/shop.entity';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class ShopProductService {
@@ -1125,15 +1125,20 @@ export class ShopProductService {
   findAll(): Promise<ShopProduct[]> {
     return this.shopProductRepository.find({
       relations: {
-        webPage: {
-          webpageCache: true,
+        scrappedPage: {
+          scrappedPageCache: true,
         },
       },
     });
   }
 
   findOne(id: string): Promise<ShopProduct> {
-    return this.shopProductRepository.findOne({ where: { id } });
+    return this.shopProductRepository.findOne({
+      where: { id },
+      relations: {
+        scrappedPage: true,
+      },
+    });
   }
 
   async isUrlBlacklistedForShopProduct(

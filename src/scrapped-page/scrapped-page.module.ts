@@ -9,5 +9,6 @@ import { ShopProductModule } from 'src/shop-product/shop-product.module';
   imports: [TypeOrmModule.forFeature([ScrappedPage]), ShopProductModule],
   controllers: [ScrappedPageController],
   providers: [ScrappedPageService],
+  exports: [ScrappedPageService],
 })
 export class ScrappedPageModule {}

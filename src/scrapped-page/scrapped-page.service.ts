@@ -22,7 +22,7 @@ export class ScrappedPageService {
     const scrappedPageEntity = this.scrappedPageRepository.create(
       createScrappedPageDto,
     );
-    scrappedPageEntity.unconfirmedPages.push(shopProductEntity);
+    scrappedPageEntity.unconfirmedScappedPages.push(shopProductEntity);
     const savedScrappedPageEntity =
       await this.scrappedPageRepository.save(scrappedPageEntity);
 
@@ -31,23 +31,25 @@ export class ScrappedPageService {
 
   // Bulk create from existing webpages
   async createFromExistingShopProducts() {
+    console.log('hello');
     const shopProducts = await this.shopProductService.findAll();
     const shopProductsWithWebsites = shopProducts.filter(
-      (shopProduct) => shopProduct.webPage,
+      (shopProduct) => shopProduct.scrappedPage.webpage,
     );
 
     for (const shopProduct of shopProductsWithWebsites) {
       const { url, pageTitle, pageAllText } = shopProduct.webPage;
+
       const scrappedPageEntity = await this.scrappedPageRepository.save({
         url,
         pageTitle,
         pageAllText,
-        shopProductId: shopProduct.id,
         webpage: shopProduct.webPage,
         shopProduct,
-        scrappedPageCache: shopProduct.webPage.webpageCache,
       });
-      return scrappedPageEntity;
+      console.log(scrappedPageEntity);
+
+      throw new Error('testing');
     }
   }
 
@@ -55,8 +57,11 @@ export class ScrappedPageService {
     return `This action returns all scrappedPage`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} scrappedPage`;
+  findOne(id: string) {
+    return this.scrappedPageRepository.findOne({
+      where: { id },
+      relations: { webpage: true },
+    });
   }
 
   async update(id: number, updateScrappedPageDto: UpdateScrappedPageDto) {

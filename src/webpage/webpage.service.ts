@@ -142,7 +142,9 @@ export class WebpageService {
           product: true,
           shop: true,
         },
-        webpageCache: true,
+        scrappedPage: {
+          scrappedPageCache: true,
+        },
       },
     });
   }
@@ -182,7 +184,9 @@ export class WebpageService {
           product: true,
           shop: true,
         },
-        webpageCache: true,
+        scrappedPage: {
+          scrappedPageCache: true,
+        },
       },
       order: {
         price: 'ASC',
@@ -204,7 +208,9 @@ export class WebpageService {
           product: true,
           shop: true,
         },
-        webpageCache: true,
+        scrappedPage: {
+          scrappedPageCache: true,
+        },
       },
       order: {
         price: 'ASC',
@@ -377,11 +383,15 @@ export class WebpageService {
   async findAllWithoutCache() {
     return this.webpagesRepository.find({
       relations: {
-        webpageCache: true,
+        scrappedPage: {
+          scrappedPageCache: true,
+        },
       },
       where: {
-        webpageCache: {
-          id: IsNull(),
+        scrappedPage: {
+          scrappedPageCache: {
+            id: IsNull(),
+          },
         },
       },
     });
@@ -403,9 +413,9 @@ export class WebpageService {
         shopWebsite: page.shopProduct.shop.name,
         webPageId: page.id,
         shopifySite: page.shopProduct.shop.isShopifySite,
-        hash: page.webpageCache.hash,
-        confirmed: page.webpageCache.confirmed,
-        count: page.webpageCache.count,
+        hash: page.scrappedPage.scrappedPageCache.hash,
+        confirmed: page.scrappedPage.scrappedPageCache.confirmed,
+        count: page.scrappedPage.scrappedPageCache.count,
         cloudflare: page.shopProduct.shop.cloudflare,
       };
       if (page.shopProduct.shop.isShopifySite === true) {
@@ -432,9 +442,9 @@ export class WebpageService {
         shopWebsite: page.shopProduct.shop.name,
         webPageId: page.id,
         shopifySite: page.shopProduct.shop.isShopifySite,
-        hash: page.webpageCache.hash,
-        confirmed: page.webpageCache.confirmed,
-        count: page.webpageCache.count,
+        hash: page.scrappedPage.scrappedPageCache.hash,
+        confirmed: page.scrappedPage.scrappedPageCache.confirmed,
+        count: page.scrappedPage.scrappedPageCache.count,
         cloudflare: page.shopProduct.shop.cloudflare,
       };
       if (page.shopProduct.shop.isShopifySite === true) {
@@ -456,9 +466,9 @@ export class WebpageService {
       shopWebsite: page.shopProduct.shop.name,
       webPageId: page.id,
       shopifySite: page.shopProduct.shop.isShopifySite,
-      hash: page.webpageCache.hash,
-      confirmed: page.webpageCache.confirmed,
-      count: page.webpageCache.count,
+      hash: page.scrappedPage.scrappedPageCache.hash,
+      confirmed: page.scrappedPage.scrappedPageCache.confirmed,
+      count: page.scrappedPage.scrappedPageCache.count,
       cloudflare: page.shopProduct.shop.cloudflare,
     };
     console.log(page);
@@ -477,7 +487,9 @@ export class WebpageService {
           shop: true,
           product: true,
         },
-        webpageCache: true,
+        scrappedPage: {
+          scrappedPageCache: true,
+        },
       },
     });
   }
@@ -494,7 +506,6 @@ export class WebpageService {
     id: string,
     updateWebpageDto: UpdateWebpageDto,
   ): Promise<Webpage> {
-
     await this.webpagesRepository.update(id, {
       price: updateWebpageDto.price ? updateWebpageDto.price : 0,
       inStock: updateWebpageDto.inStock,

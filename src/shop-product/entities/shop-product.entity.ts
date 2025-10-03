@@ -63,9 +63,11 @@ export class ShopProduct {
   ebayProductDetail: EbayProductDetail;
 
   @OneToOne(() => ScrappedPage, (scrappedPage) => scrappedPage.shopProduct)
-  @JoinColumn()
   scrappedPage: ScrappedPage;
 
-  @ManyToOne(() => ScrappedPage, (scrappedPages) => scrappedPages.shopProduct)
-  unconfirmedPages: ScrappedPage[];
+  @ManyToOne(
+    () => ScrappedPage,
+    (scrappedPages) => scrappedPages.unconfirmedScappedPages,
+  )
+  unconfirmedScappedPages: ScrappedPage[];
 }
