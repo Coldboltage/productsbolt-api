@@ -45,6 +45,7 @@ export class ScrappedPageService {
         shopProductId: shopProduct.id,
         webpage: shopProduct.webPage,
         shopProduct,
+        scrappedPageCache: shopProduct.webPage.webpageCache,
       });
       return scrappedPageEntity;
     }

@@ -1125,7 +1125,9 @@ export class ShopProductService {
   findAll(): Promise<ShopProduct[]> {
     return this.shopProductRepository.find({
       relations: {
-        webPage: true,
+        webPage: {
+          webpageCache: true,
+        },
       },
     });
   }
