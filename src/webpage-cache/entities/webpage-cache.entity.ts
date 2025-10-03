@@ -36,6 +36,10 @@ export class WebpageCache {
   @OneToOne(
     () => ScrappedPage,
     (scrappedPage) => scrappedPage.scrappedPageCache,
+    {
+      cascade: ['insert', 'update'],
+      onDelete: 'CASCADE',
+    },
   )
   @JoinColumn()
   scrappedPage: ScrappedPage;
