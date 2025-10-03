@@ -20,6 +20,7 @@ import { McpModule } from '@rekog/mcp-nest';
 import { DiscordModule } from './discord/discord.module';
 import { ConfigModule } from '@nestjs/config';
 import { WebpageCacheModule } from './webpage-cache/webpage-cache.module';
+import { ScrappedPageModule } from './scrapped-page/scrapped-page.module';
 
 
 @Module({
@@ -59,7 +60,8 @@ import { WebpageCacheModule } from './webpage-cache/webpage-cache.module';
       // SSE endpoints: GET /sse (stream), POST /messages (calls)
     }),
     DiscordModule,
-    WebpageCacheModule
+    WebpageCacheModule,
+    ScrappedPageModule
   ],
   controllers: [AppController],
   providers: [AppService],
