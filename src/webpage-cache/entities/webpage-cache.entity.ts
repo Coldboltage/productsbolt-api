@@ -1,3 +1,4 @@
+import { ScrappedPage } from 'src/scrapped-page/entities/scrapped-page.entity';
 import { Webpage } from 'src/webpage/entities/webpage.entity';
 import {
   Column,
@@ -31,4 +32,8 @@ export class WebpageCache {
   })
   @JoinColumn()
   webpage: Webpage;
+
+  @OneToOne(() => ScrappedPage, (scrappedPage) => scrappedPage.webpageCache)
+  @JoinColumn()
+  scrappedPage: ScrappedPage;
 }

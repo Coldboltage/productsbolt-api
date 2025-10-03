@@ -10,6 +10,7 @@ import {
 import { ShopProduct } from '../../shop-product/entities/shop-product.entity';
 import { WebpageCache } from '../../webpage-cache/entities/webpage-cache.entity';
 import { ProductType } from 'src/product/entities/product.entity';
+import { ScrappedPage } from 'src/scrapped-page/entities/scrapped-page.entity';
 
 @Entity()
 @Unique(['url'])
@@ -55,6 +56,10 @@ export class Webpage {
     cascade: ['insert', 'update'],
   })
   webpageCache: WebpageCache;
+
+  @OneToOne(() => ScrappedPage, (scrappedPage) => scrappedPage.webpage)
+  @JoinColumn()
+  scrappedPage: ScrappedPage;
 }
 
 export interface StrippedWebpage {
