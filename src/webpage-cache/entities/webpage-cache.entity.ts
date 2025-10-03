@@ -26,13 +26,6 @@ export class WebpageCache {
   @Column({ type: 'date', default: () => 'CURRENT_DATE' })
   date: Date;
 
-  @OneToOne(() => Webpage, (webpage) => webpage.webpageCache, {
-    cascade: ['insert', 'update'],
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn()
-  webpage: Webpage;
-
   @OneToOne(
     () => ScrappedPage,
     (scrappedPage) => scrappedPage.scrappedPageCache,
