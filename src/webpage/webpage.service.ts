@@ -494,7 +494,6 @@ export class WebpageService {
     id: string,
     updateWebpageDto: UpdateWebpageDto,
   ): Promise<Webpage> {
-
     await this.webpagesRepository.update(id, {
       price: updateWebpageDto.price ? updateWebpageDto.price : 0,
       inStock: updateWebpageDto.inStock,

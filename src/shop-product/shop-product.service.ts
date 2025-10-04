@@ -416,7 +416,7 @@ export class ShopProductService {
     }
   }
 
-  @Cron('0 1-23/2 * * *', { timeZone: 'Europe/London' })
+  @Cron('0 1,3,5,7,9,11,13,15,17,19,21,23 * * *', { timeZone: 'Europe/London' })
   async manualUpdateAllShopProducts(): Promise<string> {
     this.manualUpdateAllShopProductsEvent();
     return 'manualUpdateAllShopProductsEvent fired';
@@ -541,12 +541,14 @@ export class ShopProductService {
     ).sort(() => Math.random() - 0.5);
     console.log(shopProductsOrphan.length);
 
+    const increment = Math.ceil(shopProductsOrphan.length / 20);
+
     let index = 0;
 
     while (index < shopProductsOrphan.length) {
       const shopProductsOrphanSlice = shopProductsOrphan.slice(
         index,
-        index + 40,
+        index + increment,
       );
 
       for (const shopProduct of shopProductsOrphanSlice) {
@@ -625,7 +627,7 @@ export class ShopProductService {
         await new Promise((r) => setTimeout(r, 100));
       }
 
-      index += 40;
+      index += increment;
 
       if (index < shopProductsOrphan.length) {
         console.log(
