@@ -42,13 +42,13 @@ export class Webpage {
   @Column({ default: 0 })
   alertCount: number;
 
-  @Column({default: ""})
-  pageTitle: string; 
+  @Column({ default: '' })
+  pageTitle: string;
 
-  @Column({default: ""})
-  pageAllText: string; 
+  @Column({ default: '' })
+  pageAllText: string;
 
-  @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   lastScanned: Date;
 
   @OneToOne(() => WebpageCache, (webpageCache) => webpageCache.webpage, {
