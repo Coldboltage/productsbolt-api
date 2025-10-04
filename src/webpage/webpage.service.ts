@@ -128,6 +128,9 @@ export class WebpageService {
     });
     console.log(`Page being created: ${createWebpageDto.url}`);
     console.log(webpageEntity);
+    await this.shopProductService.removeCandidatePageFromShopProduct(
+      webpageEntity.url,
+    );
     return webpageEntity;
   }
 

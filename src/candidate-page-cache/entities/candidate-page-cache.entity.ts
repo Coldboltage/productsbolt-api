@@ -1,6 +1,13 @@
 import { CandidatePage } from 'src/candidate-page/entities/candidate-page.entity';
-import { PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  JoinColumn,
+  Entity,
+} from 'typeorm';
 
+@Entity()
 export class CandidatePageCache {
   @PrimaryGeneratedColumn('uuid')
   id: string;

@@ -5,9 +5,10 @@ import {
   Column,
   OneToOne,
   JoinColumn,
-  ManyToOne,
+  Entity,
 } from 'typeorm';
 
+@Entity()
 export class CandidatePage {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -27,7 +28,7 @@ export class CandidatePage {
   @Column()
   reason: string;
 
-  @ManyToOne(() => ShopProduct, (shopProduct) => shopProduct.candidatePages)
+  @OneToOne(() => ShopProduct, (shopProduct) => shopProduct.candidatePage)
   @JoinColumn()
   shopProduct: ShopProduct;
 

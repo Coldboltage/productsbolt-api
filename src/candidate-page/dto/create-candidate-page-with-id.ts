@@ -1,6 +1,9 @@
 import { IsUrl, IsBoolean, IsNumber, IsString, IsUUID } from 'class-validator';
 
-export class CreateCandidatePageDto {
+export class CreateCandidatePageWithIdDto {
+  @IsUUID()
+  id: string;
+
   @IsUrl()
   url: string;
 
@@ -39,10 +42,4 @@ export class CreateCandidatePageDto {
 
   @IsBoolean()
   shopifySite: boolean;
-
-  @IsString()
-  pageAllText: string;
-
-  @IsString()
-  pageTitle: string;
 }

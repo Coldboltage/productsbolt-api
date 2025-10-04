@@ -92,6 +92,10 @@ export class ShopProductService {
           shopId: shopProduct.shop.id,
           sitemapUrls: limitedUrls,
         },
+        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        confirmed:
+          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
       };
 
       if (shopProduct.shop.isShopifySite === true) {
@@ -147,6 +151,9 @@ export class ShopProductService {
         },
         webPage: true,
         blacklistUrls: true,
+        candidatePage: {
+          candidatePageCache: true,
+        },
       },
     };
 
@@ -197,6 +204,10 @@ export class ShopProductService {
         sitemapUrls: limitedUrls,
         shopId: shopProduct.shop.id,
       },
+      hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+      confirmed:
+        shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
+      count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
     };
 
     if (
@@ -238,6 +249,9 @@ export class ShopProductService {
         },
         webPage: true,
         blacklistUrls: true,
+        candidatePage: {
+          candidatePageCache: true,
+        },
       },
     };
 
@@ -293,6 +307,10 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
+        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        confirmed:
+          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
       };
 
       if (
@@ -336,6 +354,9 @@ export class ShopProductService {
         },
         webPage: true,
         blacklistUrls: true,
+        candidatePage: {
+          candidatePageCache: true,
+        },
       },
     };
 
@@ -391,6 +412,10 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
+        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        confirmed:
+          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
       };
 
       if (
@@ -438,6 +463,9 @@ export class ShopProductService {
           },
           webPage: true,
           blacklistUrls: true,
+          candidatePage: {
+            candidatePageCache: true,
+          },
         },
       })
     ).sort(() => Math.random() - 0.5);
@@ -491,6 +519,10 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
+        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        confirmed:
+          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
       };
 
       if (
@@ -536,6 +568,9 @@ export class ShopProductService {
           },
           webPage: true,
           blacklistUrls: true,
+          candidatePage: {
+            candidatePageCache: true,
+          },
         },
       })
     ).sort(() => Math.random() - 0.5);
@@ -599,6 +634,10 @@ export class ShopProductService {
             sitemapUrls: limitedUrls,
             shopId: shopProduct.shop.id,
           },
+          hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+          confirmed:
+            shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
+          count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
         };
 
         if (
@@ -681,6 +720,9 @@ export class ShopProductService {
         webPage: true,
         blacklistUrls: true,
         product: true,
+        candidatePage: {
+          candidatePageCache: true,
+        },
       },
     });
 
@@ -732,6 +774,10 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
+        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        confirmed:
+          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
       };
 
       if (
@@ -777,6 +823,9 @@ export class ShopProductService {
         webPage: true,
         blacklistUrls: true,
         product: true,
+        candidatePage: {
+          candidatePageCache: true,
+        },
       },
     });
 
@@ -828,6 +877,10 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
+        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        confirmed:
+          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
       };
 
       if (
@@ -892,6 +945,9 @@ export class ShopProductService {
         product: true,
         webPage: true,
         blacklistUrls: true,
+        candidatePage: {
+          candidatePageCache: true,
+        },
       },
     });
 
@@ -938,6 +994,10 @@ export class ShopProductService {
         shopId: shopProduct.shop.id,
         sitemapUrls: limitedUrls,
       },
+      hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+      confirmed:
+        shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
+      count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
     };
 
     if (shopProduct.shop.isShopifySite === true) {
@@ -975,6 +1035,9 @@ export class ShopProductService {
         product: true,
         webPage: true,
         blacklistUrls: true,
+        candidatePage: {
+          candidatePageCache: true,
+        },
       },
     });
 
@@ -1019,6 +1082,10 @@ export class ShopProductService {
         shopId: shopProduct.shop.id,
         sitemapUrls: limitedUrls,
       },
+      hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+      confirmed:
+        shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
+      count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
     };
 
     if (shopProduct.shop.isShopifySite === true) {
@@ -1047,6 +1114,9 @@ export class ShopProductService {
         product: true,
         webPage: true,
         blacklistUrls: true,
+        candidatePage: {
+          candidatePageCache: true,
+        },
       },
     });
 
@@ -1098,6 +1168,10 @@ export class ShopProductService {
           shopId: shopProduct.shop.id,
           sitemapUrls: limitedUrls,
         },
+        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        confirmed:
+          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
       };
 
       if (
@@ -1128,8 +1202,15 @@ export class ShopProductService {
     return this.shopProductRepository.find({});
   }
 
-  findOne(id: string): Promise<ShopProduct> {
-    return this.shopProductRepository.findOne({ where: { id } });
+  async findOne(id: string): Promise<ShopProduct> {
+    return this.shopProductRepository.findOne({
+      where: { id },
+      relations: {
+        webPage: {
+          webpageCache: true,
+        },
+      },
+    });
   }
 
   async isUrlBlacklistedForShopProduct(
@@ -1171,6 +1252,27 @@ export class ShopProductService {
         product: true,
       },
     });
+  }
+
+  async removeCandidatePageFromShopProduct(webpageUrl: string) {
+    console.log(webpageUrl);
+    const shopProductEntity = await this.shopProductRepository.findOne({
+      where: {
+        candidatePage: {
+          url: webpageUrl,
+        },
+      },
+      relations: {
+        candidatePage: true,
+      },
+    });
+
+    console.log(shopProductEntity);
+
+    if (shopProductEntity) {
+      shopProductEntity.candidatePage = null;
+      await this.shopProductRepository.save(shopProductEntity);
+    }
   }
 
   async update(
