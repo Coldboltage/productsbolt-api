@@ -58,8 +58,8 @@ export class CandidatePageCacheService {
       candidateWebpageEntity.inStock === createCandidatePageWithIdDto.inStock &&
       +candidateWebpageEntity.price === createCandidatePageWithIdDto.price &&
       candidateWebpageEntity.candidatePageCache.hash ===
-        createCandidatePageWithIdDto.hash &&
-      !createCandidatePageWithIdDto.shopifySite
+        createCandidatePageWithIdDto.hash
+      // && !createCandidatePageWithIdDto.shopifySite
     ) {
       console.log('count if activated');
       count++;
@@ -68,14 +68,16 @@ export class CandidatePageCacheService {
     // 1) if hash is different, reset
     // 2) if hash is the same - count is below 3, still not enough confirmations
     // 3) If hass is the same - count is above 4,
-    if (createCandidatePageWithIdDto.shopifySite) {
-      candidateWebpageEntity.candidatePageCache.count = 0;
-      candidateWebpageEntity.candidatePageCache.confirmed = false;
-    } else if (
+    // if (createCandidatePageWithIdDto.shopifySite) {
+    //   candidateWebpageEntity.candidatePageCache.count = 0;
+    //   candidateWebpageEntity.candidatePageCache.confirmed = false;
+    //   candidateWebpageEntity.candidatePageCache.hash = 'shopifySite';
+    // }
+    if (
       candidateWebpageEntity.candidatePageCache.hash !==
       createCandidatePageWithIdDto.hash
     ) {
-      console.log('if 1 activated');
+      console.log('if 1 activated (reset hash and row');
       console.log(createCandidatePageWithIdDto.hash);
       candidateWebpageEntity.candidatePageCache.hash =
         createCandidatePageWithIdDto.hash;
@@ -84,17 +86,17 @@ export class CandidatePageCacheService {
     } else if (
       candidateWebpageEntity.candidatePageCache.hash ===
         createCandidatePageWithIdDto.hash &&
-      candidateWebpageEntity.candidatePageCache.count < 5
+      candidateWebpageEntity.candidatePageCache.count < 3
     ) {
-      console.log('if 2 activated');
+      console.log('if 2 activated (everything is the same)');
       candidateWebpageEntity.candidatePageCache.count = count;
     } else if (
       candidateWebpageEntity.candidatePageCache.hash ===
         createCandidatePageWithIdDto.hash &&
-      count >= 4 &&
+      count === 3 &&
       !candidateWebpageEntity.candidatePageCache.confirmed
     ) {
-      console.log('if 3 activated');
+      console.log('if 3 activated (we have confirmed enough times)');
       candidateWebpageEntity.candidatePageCache.confirmed = true;
     }
 

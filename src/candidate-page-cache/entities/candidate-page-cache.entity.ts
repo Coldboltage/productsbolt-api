@@ -19,7 +19,7 @@ export class CandidatePageCache {
   hash: string;
 
   // When this hits 3, no more counting until new hash has emerged
-  @Column({ default: 0 })
+  @Column({ default: 1 })
   count: number;
 
   @Column({ type: 'date', default: () => 'CURRENT_DATE' })
