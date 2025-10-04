@@ -1,7 +1,12 @@
 import { CandidatePageCache } from 'src/candidate-page-cache/entities/candidate-page-cache.entity';
 import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
-import { WebpageCache } from 'src/webpage-cache/entities/webpage-cache.entity';
-import { PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 
 export class CandidatePage {
   @PrimaryGeneratedColumn('uuid')
@@ -22,7 +27,7 @@ export class CandidatePage {
   @Column()
   reason: string;
 
-  @OneToOne(() => ShopProduct, (shopProduct) => shopProduct.webPage)
+  @ManyToOne(() => ShopProduct, (shopProduct) => shopProduct.candidatePages)
   @JoinColumn()
   shopProduct: ShopProduct;
 
