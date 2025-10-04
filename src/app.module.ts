@@ -23,7 +23,6 @@ import { WebpageCacheModule } from './webpage-cache/webpage-cache.module';
 import { CandidatePageModule } from './candidate-page/candidate-page.module';
 import { CandidatePageCacheModule } from './candidate-page-cache/candidate-page-cache.module';
 
-
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -32,7 +31,7 @@ import { CandidatePageCacheModule } from './candidate-page-cache/candidate-page-
       port: 5432,
       username: process.env.TYPEORM_USERNAME,
       password: process.env.TYPEORM_PASSWORD,
-      database: 'test_productsbolt',
+      database: process.env.TYPEORM_DATABASE,
       autoLoadEntities: true,
       synchronize: true,
     }),
@@ -63,9 +62,9 @@ import { CandidatePageCacheModule } from './candidate-page-cache/candidate-page-
     DiscordModule,
     WebpageCacheModule,
     CandidatePageModule,
-    CandidatePageCacheModule
+    CandidatePageCacheModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
