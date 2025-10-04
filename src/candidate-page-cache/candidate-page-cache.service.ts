@@ -86,14 +86,14 @@ export class CandidatePageCacheService {
     } else if (
       candidateWebpageEntity.candidatePageCache.hash ===
         createCandidatePageWithIdDto.hash &&
-      candidateWebpageEntity.candidatePageCache.count < 3
+      candidateWebpageEntity.candidatePageCache.count < 4
     ) {
       console.log('if 2 activated (everything is the same)');
       candidateWebpageEntity.candidatePageCache.count = count;
     } else if (
       candidateWebpageEntity.candidatePageCache.hash ===
         createCandidatePageWithIdDto.hash &&
-      count === 3 &&
+      count >= 3 &&
       !candidateWebpageEntity.candidatePageCache.confirmed
     ) {
       console.log('if 3 activated (we have confirmed enough times)');

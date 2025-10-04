@@ -13,7 +13,7 @@ export class WebpageCacheService {
     @InjectRepository(WebpageCache)
     private webpageCacheRepository: Repository<WebpageCache>,
     private webpageService: WebpageService,
-  ) { }
+  ) {}
 
   create(createWebpageCacheDto: CreateWebpageCacheDto) {
     return 'This action adds a new webpageCache';
@@ -69,13 +69,13 @@ export class WebpageCacheService {
       webpageEntity.webpageCache.confirmed = false;
     } else if (
       webpageEntity.webpageCache.hash === updateWebpageDto.hash &&
-      webpageEntity.webpageCache.count < 5
+      webpageEntity.webpageCache.count < 4
     ) {
       console.log('if 2 activated');
       webpageEntity.webpageCache.count = count;
     } else if (
       webpageEntity.webpageCache.hash === updateWebpageDto.hash &&
-      count >= 4 &&
+      count >= 3 &&
       !webpageEntity.webpageCache.confirmed
     ) {
       console.log('if 3 activated');
