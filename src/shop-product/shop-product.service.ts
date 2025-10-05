@@ -1292,7 +1292,7 @@ export class ShopProductService {
       { id },
       updateShopProductDto,
     );
-    await this.checkForIndividualShopProduct(id);
+    // await this.checkForIndividualShopProduct(id);
     return updateResult;
   }
 
