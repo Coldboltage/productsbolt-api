@@ -163,7 +163,7 @@ export class ShopProductService {
 
     const shopProduct = await this.shopProductRepository.findOne(whereClause);
 
-    console.log(shopProduct);
+    // console.log(shopProduct);
 
     if (!shopProduct)
       throw new NotFoundException('shop_product_not_found_or_populated');
@@ -1287,12 +1287,12 @@ export class ShopProductService {
     id: string,
     updateShopProductDto: UpdateShopProductDto,
   ): Promise<UpdateResult> {
-    console.log(updateShopProductDto);
     const updateResult = await this.shopProductRepository.update(
       { id },
       updateShopProductDto,
     );
-    // await this.checkForIndividualShopProduct(id);
+    console.log('updateLinks called');
+    await this.checkForIndividualShopProduct(id);
     return updateResult;
   }
 
