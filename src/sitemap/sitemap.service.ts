@@ -83,11 +83,23 @@ export class SitemapService {
     console.log('checking sitemap urls');
     console.time('checkSites');
     const dbUrls = new Set(sitemapEntity.sitemapUrls);
+    let sameSites = true;
 
-    const sameSites = updateSitemapDto.sitemapUrls.every(async (url, index) => {
-      console.log(index, url);
-      return dbUrls.has(url);
-    });
+    for (let i = 0; i < updateSitemapDto.sitemapUrls.length; i++) {
+      const url = updateSitemapDto.sitemapUrls[i];
+
+      if (!dbUrls.has(url)) {
+        sameSites = false;
+        break;
+      }
+
+      if (i % 50_000 === 0 && i !== 0) {
+        console.log(`⏸ Pausing at ${i} URLs...`);
+        await new Promise((r) => setTimeout(r, 2000)); // actually waits 2s
+      }
+    }
+
+    console.log('✅ Done checking', sameSites);
     console.timeEnd('checkSites');
     console.log(sameSites);
     if (!sameSites) {
