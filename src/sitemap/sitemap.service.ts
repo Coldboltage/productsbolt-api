@@ -93,9 +93,9 @@ export class SitemapService {
         break;
       }
 
-      if (i % 50_000 === 0 && i !== 0) {
-        console.log(`⏸ Pausing at ${i} URLs...`);
-        await new Promise((r) => setTimeout(r, 2000)); // actually waits 2s
+      if ((i + 1) % 10_000 === 0) {
+        console.log(`⏸ Yielding at ${i + 1} URLs processed...`);
+        await new Promise((r) => setImmediate(r));
       }
     }
 
