@@ -1209,6 +1209,9 @@ export class ShopProductService {
         webPage: {
           webpageCache: true,
         },
+        candidatePage: {
+          candidatePageCache: true,
+        },
       },
     });
   }

@@ -62,17 +62,31 @@ export class CandidatePageService {
       );
       return this.findOne(candidatePageExists.id);
     } else {
-    }
+      let candidatePageEntity: CandidatePage;
+      if (shopProductEntity.candidatePage) {
+        await this.candidatePageRepository.delete(
+          shopProductEntity.candidatePage.id,
+        );
+        shopProductEntity.candidatePage = null;
+      }
+      try {
+        candidatePageEntity = await this.candidatePageRepository.save({
+          ...createCandidatePageDto,
+          shopProduct: shopProductEntity,
+          candidatePageCache: {},
+        });
+      } catch (error) {
+        console.error(error);
+        console.log('Error creating candidate page');
+        console.log(createCandidatePageDto);
+        throw new ConflictException('Error creating candidate page');
+      }
 
-    const candidatePageEntity = await this.candidatePageRepository.save({
-      ...createCandidatePageDto,
-      shopProduct: shopProductEntity,
-      candidatePageCache: {},
-    });
-    // console.log(candidatePageEntity);#
-    console.log(createCandidatePageDto);
-    console.log('Candidate page created');
-    return candidatePageEntity;
+      // console.log(candidatePageEntity);#
+      console.log(createCandidatePageDto);
+      console.log('Candidate page created');
+      return candidatePageEntity;
+    }
   }
 
   async checkPage(candidatePageId: string): Promise<void> {
