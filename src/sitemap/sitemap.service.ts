@@ -80,9 +80,15 @@ export class SitemapService {
     updateSitemapDto: UpdateSitemapDto,
   ): Promise<void> {
     const sitemapEntity = await this.findOne(id);
-    const sameSites = sitemapEntity.sitemapUrls.every((url) => {
-      return updateSitemapDto.sitemapUrls.includes(url);
+    console.log('checking sitemap urls');
+    console.time('checkSites');
+    const dbUrls = new Set(sitemapEntity.sitemapUrls);
+
+    const sameSites = updateSitemapDto.sitemapUrls.every(async (url, index) => {
+      console.log(index, url);
+      return dbUrls.has(url);
     });
+    console.timeEnd('checkSites');
     console.log(sameSites);
     if (!sameSites) {
       await this.update(id, updateSitemapDto);
