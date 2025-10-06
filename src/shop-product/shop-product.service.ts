@@ -548,7 +548,7 @@ export class ShopProductService {
           createProcess,
         );
       }
-      await new Promise((r) => setTimeout(r, 100));
+      await new Promise((r) => setTimeout(r, 1));
     }
   }
 
