@@ -75,6 +75,23 @@ export class SitemapService {
     });
   }
 
+  async checkSiteMap(
+    id: string,
+    updateSitemapDto: UpdateSitemapDto,
+  ): Promise<void> {
+    const sitemapEntity = await this.findOne(id);
+    const sameSites = sitemapEntity.sitemapUrls.every((url) => {
+      return updateSitemapDto.sitemapUrls.includes(url);
+    });
+    console.log(sameSites);
+    if (!sameSites) {
+      await this.update(id, updateSitemapDto);
+      console.log('updating shopProduct links');
+    } else {
+      console.log('no need to update shopProduct links');
+    }
+  }
+
   async update(
     id: string,
     updateSitemapDto: UpdateSitemapDto,
