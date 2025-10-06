@@ -101,8 +101,14 @@ export class CandidatePageCacheService {
     }
 
     // The Webpage will update as per normal
-    await this.candidatePageCacheRepository.save(
-      candidateWebpageEntity.candidatePageCache,
+    await this.candidatePageCacheRepository.update(
+      candidateWebpageEntity.candidatePageCache.id,
+      {
+        count: candidateWebpageEntity.candidatePageCache.count,
+        confirmed: candidateWebpageEntity.candidatePageCache.confirmed,
+        hash: candidateWebpageEntity.candidatePageCache.hash,
+        date: new Date(),
+      },
     );
     // await this.candidatePageService.update(candidateWebpageEntity.id, {
     //   ...createCandidatePageWithIdDto,

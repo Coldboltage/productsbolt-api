@@ -75,22 +75,24 @@ export class SitemapService {
     });
   }
 
-  async checkSiteMap(
-    id: string,
+  async checkSiteMapLoop(
+    sitemapEntity: Sitemap,
     updateSitemapDto: UpdateSitemapDto,
-  ): Promise<void> {
-    const sitemapEntity = await this.findOne(id);
-    console.log('checking sitemap urls');
+  ): Promise<boolean> {
+    if (
+      sitemapEntity.sitemapUrls.length !== updateSitemapDto.sitemapUrls.length
+    )
+      return false;
     console.time('checkSites');
+
     const dbUrls = new Set(sitemapEntity.sitemapUrls);
-    let sameSites = true;
 
     for (let i = 0; i < updateSitemapDto.sitemapUrls.length; i++) {
       const url = updateSitemapDto.sitemapUrls[i];
 
       if (!dbUrls.has(url)) {
-        sameSites = false;
-        break;
+        console.timeEnd('checkSites');
+        return false;
       }
 
       if ((i + 1) % 10_000 === 0) {
@@ -99,9 +101,22 @@ export class SitemapService {
       }
     }
 
-    console.log('✅ Done checking', sameSites);
+    console.log('✅ Done checking, result is: ', true);
     console.timeEnd('checkSites');
-    console.log(sameSites);
+    return true;
+  }
+
+  async checkSiteMap(
+    id: string,
+    updateSitemapDto: UpdateSitemapDto,
+  ): Promise<void> {
+    const sitemapEntity = await this.findOne(id);
+    console.log('checking sitemap urls');
+    console.time('checkSites');
+    let sameSites = true;
+
+    sameSites = await this.checkSiteMapLoop(sitemapEntity, updateSitemapDto);
+
     if (!sameSites) {
       await this.update(id, updateSitemapDto);
       console.log('updating shopProduct links');
