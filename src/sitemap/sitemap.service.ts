@@ -75,6 +75,56 @@ export class SitemapService {
     });
   }
 
+  async checkSiteMapLoop(
+    sitemapEntity: Sitemap,
+    updateSitemapDto: UpdateSitemapDto,
+  ): Promise<boolean> {
+    if (
+      sitemapEntity.sitemapUrls.length !== updateSitemapDto.sitemapUrls.length
+    )
+      return false;
+    console.time('checkSites');
+
+    const dbUrls = new Set(sitemapEntity.sitemapUrls);
+
+    for (let i = 0; i < updateSitemapDto.sitemapUrls.length; i++) {
+      const url = updateSitemapDto.sitemapUrls[i];
+
+      if (!dbUrls.has(url)) {
+        console.timeEnd('checkSites');
+        return false;
+      }
+
+      if ((i + 1) % 10_000 === 0) {
+        console.log(`⏸ Yielding at ${i + 1} URLs processed...`);
+        await new Promise((r) => setImmediate(r));
+      }
+    }
+
+    console.log('✅ Done checking, result is: ', true);
+    console.timeEnd('checkSites');
+    return true;
+  }
+
+  async checkSiteMap(
+    id: string,
+    updateSitemapDto: UpdateSitemapDto,
+  ): Promise<void> {
+    const sitemapEntity = await this.findOne(id);
+    console.log('checking sitemap urls');
+    console.time('checkSites');
+    let sameSites = true;
+
+    sameSites = await this.checkSiteMapLoop(sitemapEntity, updateSitemapDto);
+
+    if (!sameSites) {
+      await this.update(id, updateSitemapDto);
+      console.log('updating shopProduct links');
+    } else {
+      console.log('no need to update shopProduct links');
+    }
+  }
+
   async update(
     id: string,
     updateSitemapDto: UpdateSitemapDto,

@@ -42,12 +42,20 @@ export class SitemapController {
     return this.sitemapService.findOne(id);
   }
 
+  @Patch('check-site-map/:id')
+  async checkSiteMap(
+    @Param('id') id: string,
+    @Body() updateSitemapDto: UpdateSitemapDto,
+  ): Promise<void> {
+    console.log('hello');
+    await this.sitemapService.checkSiteMap(id, updateSitemapDto);
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateSitemapDto: UpdateSitemapDto,
   ): Promise<UpdateResult> {
-    console.log('hello');
     return this.sitemapService.update(id, updateSitemapDto);
   }
 

@@ -260,7 +260,7 @@ export class ShopService implements OnApplicationBootstrap {
       return cleaned ? cleaned.split(/\s+/) : [];
     };
 
-    const requiredMatches = (n: number) => Math.max(1, Math.floor((4 / 5) * n));
+    const requiredMatches = (n: number) => Math.max(1, Math.floor(0.65 * n));
 
     const countMatches = (productKeys: string[], queryKeys: string[]) =>
       queryKeys.filter((k) => productKeys.includes(k)).length;

@@ -39,7 +39,7 @@ export class Webpage {
   @Column({ default: false })
   disable: boolean;
 
-  @Column({ default: 0 })
+  @Column({ default: 1 })
   alertCount: number;
 
   @Column({ default: '' })

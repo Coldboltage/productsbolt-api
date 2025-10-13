@@ -4,6 +4,7 @@ import {
   JoinColumn,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   Unique,
@@ -13,6 +14,7 @@ import { Product } from '../../product/entities/product.entity';
 import { Webpage } from '../../webpage/entities/webpage.entity';
 import { BlackListUrl } from '../../blacklist-url/entities/blacklist-url.entity';
 import { EbayProductDetail } from 'src/ebay/entities/ebay-product-detail.entity';
+import { CandidatePage } from 'src/candidate-page/entities/candidate-page.entity';
 
 @Entity()
 @Unique(['name', 'shopId', 'productId'])
@@ -60,4 +62,9 @@ export class ShopProduct {
   )
   @JoinColumn()
   ebayProductDetail: EbayProductDetail;
+
+  @OneToOne(() => CandidatePage, (candidatePage) => candidatePage.shopProduct, {
+    nullable: true,
+  })
+  candidatePage: CandidatePage;
 }

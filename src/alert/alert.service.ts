@@ -16,7 +16,7 @@ export class AlertService {
     private productService: ProductService,
     private webpageUtilsService: WebpageUtilsService,
     private discordService: DiscordService,
-  ) { }
+  ) {}
   async create(createAlertDto: CreateAlertDto): Promise<Alert> {
     console.log(createAlertDto);
     const productEntity = await this.productService.findOne(
@@ -58,10 +58,13 @@ export class AlertService {
 
       await this.alertsRepository.save(alert);
       console.log('Alert Triggered');
-      await this.discordService.sendAlert(
-        `${alert.name} Triggered`,
-        webpage.url,
-      );
+      if (process.env.DISCORD_ALERTS === 'true') {
+        await this.discordService.sendAlert(
+          `${alert.name} Triggered`,
+          webpage.url,
+        );
+      }
+
       return true;
     } else {
       console.log({
@@ -118,11 +121,14 @@ export class AlertService {
     });
   }
 
-  async update(id: string, updateAlertDto: UpdateAlertDto): Promise<UpdateResult> {
+  async update(
+    id: string,
+    updateAlertDto: UpdateAlertDto,
+  ): Promise<UpdateResult> {
     return this.alertsRepository.update(id, updateAlertDto);
   }
 
   async remove(id: string): Promise<DeleteResult> {
-    return this.alertsRepository.delete(id)
+    return this.alertsRepository.delete(id);
   }
 }

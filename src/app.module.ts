@@ -20,7 +20,8 @@ import { McpModule } from '@rekog/mcp-nest';
 import { DiscordModule } from './discord/discord.module';
 import { ConfigModule } from '@nestjs/config';
 import { WebpageCacheModule } from './webpage-cache/webpage-cache.module';
-
+import { CandidatePageModule } from './candidate-page/candidate-page.module';
+import { CandidatePageCacheModule } from './candidate-page-cache/candidate-page-cache.module';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { WebpageCacheModule } from './webpage-cache/webpage-cache.module';
       port: 5432,
       username: process.env.TYPEORM_USERNAME,
       password: process.env.TYPEORM_PASSWORD,
-      database: 'test_productsbolt',
+      database: process.env.TYPEORM_DATABASE,
       autoLoadEntities: true,
       synchronize: true,
     }),
@@ -59,9 +60,11 @@ import { WebpageCacheModule } from './webpage-cache/webpage-cache.module';
       // SSE endpoints: GET /sse (stream), POST /messages (calls)
     }),
     DiscordModule,
-    WebpageCacheModule
+    WebpageCacheModule,
+    CandidatePageModule,
+    CandidatePageCacheModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
