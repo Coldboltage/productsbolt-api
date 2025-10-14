@@ -16,7 +16,7 @@ export class ShopListingService {
     return `This action returns a #${id} shopListing`;
   }
 
-  update(id: number, updateShopListingDto: UpdateShopListingDto) {
+  update(id: string, updateShopListingDto: UpdateShopListingDto) {
     return `This action updates a #${id} shopListing`;
   }
 
