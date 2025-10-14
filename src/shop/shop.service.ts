@@ -14,6 +14,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ClientProxy } from '@nestjs/microservices';
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { Sitemap } from '../sitemap/entities/sitemap.entity';
+import { ProductListingsCheckInterface } from './dto/product-listings-check.dto';
 
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
@@ -298,4 +299,20 @@ export class ShopService implements OnApplicationBootstrap {
 
     this.headlessClient.emit('cloudflare-test', shopEntity);
   }
+
+  async checkShopProductListings(shopId: string): Promise<void> {
+    const shopEntity = await this.findOne(shopId);
+
+    const payload: ProductListingsCheckInterface = {
+      urls: [],
+      existingUrls: [],
+      selectors: {
+        listItemNameSelector: '',
+        listItemHrefSelector: '',
+        priceSelector: '',
+        listSelector: ''
+      },
+      shopId: '',
+      urlStructure: ''
+    }
 }
