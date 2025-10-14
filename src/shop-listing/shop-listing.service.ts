@@ -5,6 +5,7 @@ import { ShopListing } from './entities/shop-listing.entity';
 import { Repository } from 'typeorm';
 import { ShopService } from 'src/shop/shop.service';
 import { InjectRepository } from '@nestjs/typeorm';
+import { DiscordService } from 'src/discord/discord.service';
 
 @Injectable()
 export class ShopListingService {
@@ -12,6 +13,7 @@ export class ShopListingService {
     @InjectRepository(ShopListing)
     private shopListingRepository: Repository<ShopListing>,
     private shopService: ShopService,
+    private discordService: DiscordService,
   ) {}
   create(createShopListingDto: CreateShopListingDto) {
     return 'This action adds a new shopListing';
@@ -44,6 +46,13 @@ export class ShopListingService {
         price: listing.listingPrice,
         shop: shopEntity,
       });
+
+      if (process.env.DISCORD_ALERTS === 'true') {
+        await this.discordService.newProduct(
+          `A new product listing has been found: ${listing.listingName} for ${listing.linkListing}`,
+          listing.linkListing,
+        );
+      }
       console.log('Saved listing entity:', listingEntity);
     }
   }
