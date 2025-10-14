@@ -13,8 +13,14 @@ export class ShopListing {
   listingUrl: string;
 
   @Column()
-  price: number;
+  price: string;
 
   @ManyToOne(() => Shop, (shop) => shop.shopListings)
   shop: Shop;
+}
+
+export interface ShopListingInterface {
+  listingName: string;
+  linkListing: string;
+  listingPrice: string;
 }

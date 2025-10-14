@@ -63,6 +63,20 @@ export class Shop {
   })
   sitemapEntity: Sitemap;
 
+  @Column({ default: false })
+  shopListingCheck: boolean;
+
   @OneToMany(() => ShopListing, (shopListing) => shopListing.shop)
   shopListings: ShopListing[];
+
+  @Column({ type: 'simple-array', nullable: true })
+  productListingUrls: string[];
+
+  @Column({ type: 'jsonb', nullable: true })
+  selectors: {
+    listItemNameSelector: string;
+    listItemHrefSelector: string;
+    priceSelector: string;
+    listSelector: string;
+  };
 }

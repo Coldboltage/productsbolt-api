@@ -30,6 +30,14 @@ export class ShopListingController {
     return this.shopListingService.findOne(+id);
   }
 
+  @Patch('add-product-listing/:id')
+  addProductListing(
+    @Param('id') id: string,
+    @Body() updateShopListingDto: UpdateShopListingDto,
+  ) {
+    return this.shopListingService.addProductListing(id, updateShopListingDto);
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,

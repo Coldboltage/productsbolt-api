@@ -76,6 +76,11 @@ export class ShopController {
     return this.shopService.singleCloudflareTest(shopId);
   }
 
+  @Post('check-shop-product-listings/:id')
+  async checkShopProductListings(@Param('id') shopId: string): Promise<void> {
+    return this.shopService.checkShopProductListings(shopId);
+  }
+
   @Get('find-shop/:website')
   findShop(@Param('website') website: string): Promise<Shop> {
     return this.shopService.findShop(website);
