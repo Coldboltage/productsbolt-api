@@ -22,6 +22,7 @@ import { ConfigModule } from '@nestjs/config';
 import { WebpageCacheModule } from './webpage-cache/webpage-cache.module';
 import { CandidatePageModule } from './candidate-page/candidate-page.module';
 import { CandidatePageCacheModule } from './candidate-page-cache/candidate-page-cache.module';
+import { ShopListingModule } from './shop-listing/shop-listing.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { CandidatePageCacheModule } from './candidate-page-cache/candidate-page-
     WebpageCacheModule,
     CandidatePageModule,
     CandidatePageCacheModule,
+    ShopListingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
