@@ -49,7 +49,7 @@ export class ShopListingService {
 
       if (process.env.DISCORD_ALERTS === 'true') {
         await this.discordService.newProduct(
-          `A new product listing has been found: ${listing.listingName} for ${listing.linkListing}`,
+          `A new product listing has been found: ${listing.listingName}}`,
           listing.linkListing,
         );
       }

@@ -303,6 +303,7 @@ export class ShopService implements OnApplicationBootstrap {
 
   @Cron(CronExpression.EVERY_HOUR)
   async checkShopListingsCron() {
+    console.log('Running checkShopListingsCron job');
     const shopToCheck = await this.shopsRepository.find({
       where: {
         active: true,
@@ -310,6 +311,7 @@ export class ShopService implements OnApplicationBootstrap {
       },
     });
     for (const shop of shopToCheck) {
+      console.log(`Checking shop listings for shop: ${shop.name}`);
       this.checkShopProductListings(shop.id);
     }
   }
