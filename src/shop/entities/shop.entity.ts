@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { ShopProduct } from '../../shop-product/entities/shop-product.entity';
 import { Sitemap } from '../../sitemap/entities/sitemap.entity';
+import { ShopListing } from 'src/shop-listing/entities/shop-listing.entity';
 
 export enum UniqueShopType {
   TIKTOK = 'TIKTOK',
@@ -61,4 +62,21 @@ export class Shop {
     cascade: ['insert', 'update'],
   })
   sitemapEntity: Sitemap;
+
+  @Column({ default: false })
+  shopListingCheck: boolean;
+
+  @OneToMany(() => ShopListing, (shopListing) => shopListing.shop)
+  shopListings: ShopListing[];
+
+  @Column({ type: 'simple-array', nullable: true })
+  productListingUrls: string[];
+
+  @Column({ type: 'jsonb', nullable: true })
+  selectors: {
+    listItemNameSelector: string;
+    listItemHrefSelector: string;
+    priceSelector: string;
+    listSelector: string;
+  };
 }

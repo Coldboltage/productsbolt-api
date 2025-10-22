@@ -22,9 +22,32 @@ import { ConfigModule } from '@nestjs/config';
 import { WebpageCacheModule } from './webpage-cache/webpage-cache.module';
 import { CandidatePageModule } from './candidate-page/candidate-page.module';
 import { CandidatePageCacheModule } from './candidate-page-cache/candidate-page-cache.module';
+import { ShopListingModule } from './shop-listing/shop-listing.module';
+import databaseConfig from './config/database/database.config';
+import { databaseSchema } from './config/database/database.schema';
+import { databaseValidationSetup } from './config/validation';
+import { discordSchema } from './config/discord/discord.schema';
+import { utilsSchema } from './config/utils/utils.schema';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [databaseConfig],
+      validate: (config) => {
+        const validatedDatabase = databaseValidationSetup(
+          config,
+          databaseSchema,
+        );
+        const validatedDiscord = databaseValidationSetup(config, discordSchema);
+        const utilsValidated = databaseValidationSetup(config, utilsSchema);
+        return {
+          ...validatedDatabase,
+          ...validatedDiscord,
+          ...utilsValidated,
+        };
+      },
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -34,9 +57,6 @@ import { CandidatePageCacheModule } from './candidate-page-cache/candidate-page-
       database: process.env.TYPEORM_DATABASE,
       autoLoadEntities: true,
       synchronize: true,
-    }),
-    ConfigModule.forRoot({
-      isGlobal: true,
     }),
     ScheduleModule.forRoot({
       cronJobs: process.env.ENABLE_JOBS === 'true' ? true : false,
@@ -63,6 +83,7 @@ import { CandidatePageCacheModule } from './candidate-page-cache/candidate-page-
     WebpageCacheModule,
     CandidatePageModule,
     CandidatePageCacheModule,
+    ShopListingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

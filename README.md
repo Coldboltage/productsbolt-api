@@ -1,73 +1,36 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+## Why it's needed
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Productsbolt aims to releave the need to manually check for products constantly from shops while being able to alert the user the product is available from the shop as soon as it's in stock.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## What it is
 
-## Description
+A Nestjs API / microservice combo which aims to handle the relationship of a product and shops. AI workloads aim to generalise shops/websites, therefore manual investigation of shops aren't required.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## How we want to go about this.
 
-## Installation
+The following is going to be needed to be able to allow the worker microservice to execute it's task correctly while also being able to manage data for the future. This section focuses on the API. At a high level, this is what's required to make Productsbolt work.
 
-```bash
-$ npm install
-```
+- Product Registration (User generated)
+- Shop Registration and categorisation (User generated)
+- ShopProduct (API Generated)
+  - A ShopProduct is a state repersentation of how the shop handles the specific product
+- Webpage (API Generated)
+- WebpageCache (API Generated)
+- Sitemap (API Generated)
+- BlackListUrl (User Generated)
+- Discord Notification (API Generated)
 
-## Running the app
+### Predicted workflow
 
-```bash
-# development
-$ npm run start
+The user determines what product they are interested in. Shops of interest are added to see if the product exists in the shop. Whenever a shop finds a product, it will populate the ShopProduct, therefore allowing us to know we don't need to check for that shop for said product anymore. Sitemaps are used to identify the best links to attempt to find the product. A WebpageCache determines if we need to process the page further. BlackListUrl is a user generated record if a webpage has been incorrectly identified for the webpage, allowing the system to recheck the shop again for a better product.
 
-# watch mode
-$ npm run start:dev
+## What is deemed successful
 
-# production mode
-$ npm run start:prod
-```
+For this to be deemed a successful service, Productsbolt needs to remove the need for the user to have to go onto websites at all to check if a product is available. The need for a user to question if Productsbolt is working correctly, is a failure as this leads a user to have to revert to old workflows of manual checking. Productsbolt must be able to find the product if the shop sells the product, and alert the user. While some false positives will exist, excessive false postitives will lead to users ignoring notifications.
 
-## Test
+- Detection: Stock alert in the first available CRON job category.
+- Accuracy: 9/10 accurate.
 
-```bash
-# unit tests
-$ npm run test
+### Notes
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+21/10/2025: As of now, Productsbolt API is near completion. Tests are going to be added, state to know if a verification model has checked candidate/webpages and a workflow to identify selectors for webpages automatically will fallback.

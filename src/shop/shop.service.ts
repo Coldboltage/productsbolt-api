@@ -14,6 +14,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ClientProxy } from '@nestjs/microservices';
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { Sitemap } from '../sitemap/entities/sitemap.entity';
+import { ProductListingsCheckInterface } from './dto/product-listings-check.dto';
 
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
@@ -206,6 +207,7 @@ export class ShopService implements OnApplicationBootstrap {
         shopProducts: {
           webPage: true,
         },
+        shopListings: true,
       },
     });
   }
@@ -297,5 +299,37 @@ export class ShopService implements OnApplicationBootstrap {
     }
 
     this.headlessClient.emit('cloudflare-test', shopEntity);
+  }
+
+  @Cron(CronExpression.EVERY_HOUR)
+  async checkShopListingsCron() {
+    console.log('Running checkShopListingsCron job');
+    const shopToCheck = await this.shopsRepository.find({
+      where: {
+        active: true,
+        shopListingCheck: true,
+      },
+    });
+    for (const shop of shopToCheck) {
+      console.log(`Checking shop listings for shop: ${shop.name}`);
+      this.checkShopProductListings(shop.id);
+    }
+  }
+
+  async checkShopProductListings(shopId: string): Promise<void> {
+    const shopEntity = await this.findOne(shopId);
+
+    const payload: ProductListingsCheckInterface = {
+      urls: shopEntity.productListingUrls,
+      existingUrls: shopEntity.shopListings.map(
+        (listings) => listings.listingUrl,
+      ),
+      selectors: shopEntity.selectors,
+      shopId: shopEntity.id,
+      urlStructure: `${shopEntity.protocol}${shopEntity.website}`,
+    };
+
+    console.log('Emitting product-listings-check with payload:', payload);
+    this.headlessClient.emit('product-listings-check', payload);
   }
 }
