@@ -8,6 +8,7 @@ import { ProductService } from '../product/product.service';
 import { Webpage } from '../webpage/entities/webpage.entity';
 import { WebpageUtilsService } from '../webpage-utils/webpage-utils.service';
 import { DiscordService } from '../discord/discord.service';
+import { Span } from 'nestjs-otel';
 
 @Injectable()
 export class AlertService {
@@ -92,6 +93,7 @@ export class AlertService {
     return this.alertsRepository.find({});
   }
 
+  @Span('AlertService.findAllState')
   async findAllState(state: boolean): Promise<Alert[]> {
     return this.alertsRepository.find({
       where: {

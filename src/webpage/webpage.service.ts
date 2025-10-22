@@ -22,6 +22,7 @@ import { ProductService } from '../product/product.service';
 import { AlertService } from '../alert/alert.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { populate } from 'dotenv';
+import { Span } from 'nestjs-otel';
 
 @Injectable()
 export class WebpageService {
@@ -215,6 +216,7 @@ export class WebpageService {
     });
   }
 
+  @Span('WebpageService.findAllByProductStock')
   async findAllByProductStock(
     state: boolean,
     productId: string,
@@ -299,6 +301,7 @@ export class WebpageService {
     return this.findAllByProduct(alertEntity.id);
   }
 
+  @Span('WebpageService.showProductsTrue')
   async showProductsTrue(): Promise<StrippedWebpageSlim[]> {
     const alertsTriggered = await this.alertService.findAllState(true);
     // Alerts which are true are here. I can get the products now in question
