@@ -21,7 +21,6 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
 import { AlertService } from '../alert/alert.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { populate } from 'dotenv';
 import { Span } from 'nestjs-otel';
 
 @Injectable()

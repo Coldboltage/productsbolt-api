@@ -29,6 +29,8 @@ import { databaseValidationSetup } from './config/validation';
 import { discordSchema } from './config/discord/discord.schema';
 import { utilsSchema } from './config/utils/utils.schema';
 import { OpenTelemetryModule } from 'nestjs-otel';
+import { rabbitmqSchema } from './config/rabbitmq/rabbitmq.schema';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
   imports: [
@@ -42,12 +44,20 @@ import { OpenTelemetryModule } from 'nestjs-otel';
         );
         const validatedDiscord = databaseValidationSetup(config, discordSchema);
         const utilsValidated = databaseValidationSetup(config, utilsSchema);
+        const rabbitmqValidated = databaseValidationSetup(
+          config,
+          rabbitmqSchema,
+        );
         return {
           ...validatedDatabase,
           ...validatedDiscord,
           ...utilsValidated,
+          ...rabbitmqValidated,
         };
       },
+    }),
+    PrometheusModule.register({
+      defaultLabels: { app: 'productsbolt' },
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',

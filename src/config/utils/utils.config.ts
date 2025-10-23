@@ -8,4 +8,5 @@ export default registerAs('utils', () => ({
   serviceName: process.env.SERVICE_NAME,
   serviceVersion: process.env.SERVICE_VERSION,
   deploymentEnv: process.env.NODE_ENV,
+  grafanaPassword: process.env.GRAFANA_PASSWORD,
 }));

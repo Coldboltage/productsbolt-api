@@ -13,3 +13,9 @@ async function bootstrap() {
   await app.listen(3000, '0.0.0.0');
 }
 bootstrap();
+
+process.on('SIGINT', () => {
+  console.error('Received SIGINT (Ctrl+C) — shutting down gracefully');
+  process.report.writeReport(); // writes diagnostics/report.json
+  process.exit(130);
+});

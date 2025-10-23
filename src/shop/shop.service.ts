@@ -15,6 +15,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { Sitemap } from '../sitemap/entities/sitemap.entity';
 import { ProductListingsCheckInterface } from './dto/product-listings-check.dto';
+import { Span } from 'nestjs-otel/lib/tracing/decorators/span';
 
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
@@ -78,6 +79,7 @@ export class ShopService implements OnApplicationBootstrap {
   @Cron(CronExpression.EVERY_12_HOURS, {
     name: 'updateSitemap',
   })
+  @Span('ShopService.updateSitemap')
   async updateSitemap(): Promise<void> {
     const allActiveShops = await this.findAll();
     // Start a background task and don’t await it
@@ -169,6 +171,7 @@ export class ShopService implements OnApplicationBootstrap {
     if (shop) this.headfulClient.emit('shopyifyCheck', shop);
   }
 
+  @Span('ShopService.findAll')
   async findAll(): Promise<Shop[]> {
     return this.shopsRepository.find({
       where: {
