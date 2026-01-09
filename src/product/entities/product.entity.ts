@@ -65,7 +65,7 @@ export interface AnswerInterface {
   inStock: boolean;
   isMainProductPage: boolean;
   isNamedProduct: boolean;
-  productTypeMatchStrict: boolean;
+  packagingTypeMatch: boolean;
   price: number;
   currencyCode: string;
 }
