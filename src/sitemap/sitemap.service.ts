@@ -125,6 +125,24 @@ export class SitemapService {
     }
   }
 
+  async shopifyOrNot(
+    id: string,
+    updateSitemapDto: UpdateSitemapDto,
+  ): Promise<UpdateResult> {
+    const result = await this.sitemapRepository.update(id, updateSitemapDto);
+    console.log('updating shopProduct links');
+    const sitemapEntity = await this.findOne(id);
+    const shopEntity = sitemapEntity.shop;
+    console.log(`isShopifySite: ${updateSitemapDto.isShopifySite}`);
+    if (updateSitemapDto.isShopifySite === false) {
+      await this.shopService.singleCloudflareTest(shopEntity.id);
+    } else {
+      await this.shopService.testShopifySiteCollection(shopEntity.id);
+    }
+
+    return result;
+  }
+
   async update(
     id: string,
     updateSitemapDto: UpdateSitemapDto,
@@ -137,6 +155,21 @@ export class SitemapService {
       shopEntity.id,
       false,
     );
+    return result;
+  }
+
+  async updateFromShopifyCollectionsTest(
+    id: string,
+    updateSitemapDto: UpdateSitemapDto,
+  ): Promise<UpdateResult> {
+    const result = await this.sitemapRepository.update(id, updateSitemapDto);
+    // console.log('updating shopProduct links');
+    // const sitemapEntity = await this.findOne(id);
+    // const shopEntity = sitemapEntity.shop;
+    // await this.shopProductService.manualUpdateAllShopProductsForShopImmediateLinks(
+    //   shopEntity.id,
+    //   false,
+    // );
     return result;
   }
 
