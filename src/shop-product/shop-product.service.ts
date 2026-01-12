@@ -98,17 +98,19 @@ export class ShopProductService {
         count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
       };
 
-      if (shopProduct.shop.isShopifySite === true) {
-        this.headlessClient.emit<CreateProcessDto>(
-          'webpageDiscovery',
-          createProcess,
-        );
-      } else {
-        this.headfulClient.emit<CreateProcessDto>(
-          'webpageDiscovery',
-          createProcess,
-        );
-      }
+      this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
+
+      // if (shopProduct.shop.isShopifySite === true) {
+      //   this.headlessClient.emit<CreateProcessDto>(
+      //     'webpageDiscovery',
+      //     createProcess,
+      //   );
+      // } else {
+      //   this.headfulClient.emit<CreateProcessDto>(
+      //     'webpageDiscovery',
+      //     createProcess,
+      //   );
+      // }
     }
     return shopProductResponses;
   }
@@ -133,6 +135,7 @@ export class ShopProductService {
   }
 
   // Individual get links
+  @OnEvent('create-links')
   async manualUpdateIndividualShopProductsImmediateLinks(
     shopProductId: string,
     bypass: boolean,
@@ -230,6 +233,109 @@ export class ShopProductService {
     //   this.headfulClient.emit<CreateProcessDto>('findLinks', createProcess);
     // }
     await new Promise((r) => setTimeout(r, 100));
+  }
+
+  // Get all the links for product
+  async manuallyUpdateLinksForSpecificProduct(
+    productId: string,
+  ): Promise<void> {
+    const whereClause: FindManyOptions<ShopProduct> = {
+      where: {
+        shop: {
+          active: true,
+        },
+        product: {
+          id: productId,
+        },
+      },
+      relations: {
+        product: true,
+        shop: {
+          sitemapEntity: true,
+        },
+        webPage: true,
+        blacklistUrls: true,
+        candidatePage: {
+          candidatePageCache: true,
+        },
+      },
+    };
+
+    const shopProductsOrphan = await (
+      await this.shopProductRepository.find(whereClause)
+    ).sort(() => Math.random() - 0.5);
+    console.log(shopProductsOrphan.length);
+
+    for (const shopProduct of shopProductsOrphan) {
+      if (!shopProduct) continue;
+
+      const reducedSitemap = this.shopService.reduceSitemap(
+        shopProduct.shop.sitemapEntity.sitemapUrls,
+        shopProduct.product.name,
+      );
+
+      if (reducedSitemap.length === 0) continue;
+
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        reducedSitemap,
+      );
+
+      if (limitedUrls.length === 0) {
+        console.log(
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
+
+      const createProcess: CreateProcessDto = {
+        sitemap: shopProduct.shop.sitemap,
+        url: shopProduct.shop.website,
+        category: shopProduct.shop.category,
+        name: shopProduct.product.name,
+        shopProductId: shopProduct.id,
+        shopWebsite: shopProduct.shop.name,
+        type: shopProduct.product.type,
+        context: shopProduct.product.context,
+        crawlAmount: 90,
+        productId: shopProduct.productId,
+        shopId: shopProduct.shopId,
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType,
+        cloudflare: shopProduct.shop.cloudflare,
+        links: [],
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          sitemapUrls: limitedUrls,
+          shopId: shopProduct.shop.id,
+        },
+        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        confirmed:
+          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+      };
+
+      if (
+        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+        shopProduct.ebayProductDetail
+      ) {
+        createProcess.ebayProductDetail = {
+          ebayProductDetailId: shopProduct.ebayProductDetail.id,
+          productId: shopProduct.ebayProductDetail.productId,
+        };
+      }
+
+      this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
+
+      // if (shopProduct.shop.isShopifySite === true) {
+      //   console.log('shopifySiteFound');
+      //   this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
+      // } else {
+      //   console.log('normal setup');
+      //   this.headfulClient.emit<CreateProcessDto>('findLinks', createProcess);
+      // }
+      await new Promise((r) => setTimeout(r, 1));
+    }
   }
 
   // Get all the links
@@ -680,9 +786,13 @@ export class ShopProductService {
     shopProduct: ShopProduct,
     reducedSitemap: string[],
   ) {
-    const blackListUrls = shopProduct.blacklistUrls.map(
-      (blacklist) => blacklist.url,
-    );
+    let blackListUrls: string[] = [];
+
+    if (shopProduct.blacklistUrls) {
+      blackListUrls = shopProduct.blacklistUrls.map(
+        (blacklist) => blacklist.url,
+      );
+    }
 
     const shopEntity = await this.shopService.findOne(shopProduct.shopId);
 
