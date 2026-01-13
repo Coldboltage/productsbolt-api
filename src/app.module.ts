@@ -31,6 +31,7 @@ import { utilsSchema } from './config/utils/utils.schema';
 import { OpenTelemetryModule } from 'nestjs-otel';
 import { rabbitmqSchema } from './config/rabbitmq/rabbitmq.schema';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { ShopProductBacklistUrlModule } from './shop-product-backlist-url/shop-product-backlist-url.module';
 
 @Module({
   imports: [
@@ -96,6 +97,7 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
     CandidatePageCacheModule,
     ShopListingModule,
     OpenTelemetryModule.forRoot(),
+    ShopProductBacklistUrlModule,
   ],
   controllers: [AppController],
   providers: [AppService],

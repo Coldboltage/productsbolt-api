@@ -28,7 +28,9 @@ export class CandidatePage {
   @Column()
   reason: string;
 
-  @OneToOne(() => ShopProduct, (shopProduct) => shopProduct.candidatePage)
+  @OneToOne(() => ShopProduct, (shopProduct) => shopProduct.candidatePage, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   shopProduct: ShopProduct;
 

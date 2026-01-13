@@ -15,7 +15,9 @@ export class BlackListUrl {
   @Column()
   url: string;
 
-  @ManyToMany(() => ShopProduct, (shopProduct) => shopProduct.blacklistUrls)
+  @ManyToMany(() => ShopProduct, (shopProduct) => shopProduct.blacklistUrls, {
+    onDelete: 'CASCADE',
+  })
   @JoinTable() // Owning side
   shopProducts: ShopProduct[];
 }

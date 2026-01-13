@@ -42,18 +42,17 @@ export class ShopProduct {
   })
   shop: Shop;
 
-  @ManyToOne(() => Product, (product) => product.shopProducts)
+  @ManyToOne(() => Product, (product) => product.shopProducts, {
+    onDelete: 'CASCADE',
+  })
   product: Product;
 
   @ManyToMany(() => BlackListUrl, (blacklistUrl) => blacklistUrl.shopProducts, {
-    cascade: ['insert', 'update', 'remove'], // cascade changes on blacklist entries
+    cascade: ['insert', 'update'],
   })
   blacklistUrls: BlackListUrl[];
 
-  @OneToOne(() => Webpage, (webPage) => webPage.shopProduct, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
+  @OneToOne(() => Webpage, (webPage) => webPage.shopProduct)
   webPage: Webpage;
 
   @OneToOne(
