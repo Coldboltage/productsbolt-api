@@ -42,6 +42,15 @@ export class ShopProductController {
     );
   }
 
+  @Post('manual-update-links-for-specific-product/:productId')
+  manuallyUpdateLinksForSpecificProduct(
+    @Param('productId') productId: string,
+  ): Promise<void> {
+    return this.shopProductService.manuallyUpdateLinksForSpecificProduct(
+      productId,
+    );
+  }
+
   @Post('manual-update-shops-all-products/')
   manualUpdateAllShopProductsImmediate(): Promise<void> {
     return this.shopProductService.manualUpdateAllShopProductsImmediate();

@@ -59,6 +59,25 @@ export class SitemapController {
     return this.sitemapService.update(id, updateSitemapDto);
   }
 
+  @Patch('/shopify-or-not/:id')
+  shopifyOrNot(
+    @Param('id') id: string,
+    @Body() updateSitemapDto: UpdateSitemapDto,
+  ): Promise<UpdateResult> {
+    return this.sitemapService.shopifyOrNot(id, updateSitemapDto);
+  }
+
+  @Patch('/update-from-shopify-collection-test/:id')
+  updateFromShopifyCollectionsTest(
+    @Param('id') id: string,
+    @Body() updateSitemapDto: UpdateSitemapDto,
+  ): Promise<UpdateResult> {
+    return this.sitemapService.updateFromShopifyCollectionsTest(
+      id,
+      updateSitemapDto,
+    );
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string): Promise<Sitemap> {
     return this.sitemapService.remove(id);
