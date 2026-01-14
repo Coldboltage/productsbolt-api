@@ -6,6 +6,7 @@ import { BlackListUrl } from './entities/blacklist-url.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { WebpageService } from '../webpage/webpage.service';
+import { ShopProductBacklistUrlService } from 'src/shop-product-backlist-url/shop-product-backlist-url.service';
 
 @Injectable()
 export class BlackListUrlService {
@@ -14,6 +15,7 @@ export class BlackListUrlService {
     private blackListRepository: Repository<BlackListUrl>,
     private shopProductsService: ShopProductService,
     private webPageService: WebpageService,
+    private shopProductBacklistUrlService: ShopProductBacklistUrlService,
   ) {}
   async create(
     createBlackListUrlDto: CreateBlackListUrlDto,
@@ -29,12 +31,20 @@ export class BlackListUrlService {
 
     if (urlExist) {
       console.log(urlExist);
-      urlExist.shopProducts.push(webpageEntity.shopProduct);
-      await this.blackListRepository.save(urlExist);
+      blackListEntity = urlExist;
+
+      await this.shopProductBacklistUrlService.create({
+        shopProductId: webpageEntity.shopProduct.id,
+        blackListId: urlExist.id,
+      });
+      // urlExist.shopProducts.push(webpageEntity.shopProduct);
     } else {
-      blackListEntity = this.blackListRepository.create({
+      blackListEntity = await this.blackListRepository.save({
         url: webpageEntity.url,
-        shopProducts: [webpageEntity.shopProduct],
+      });
+      await this.shopProductBacklistUrlService.create({
+        shopProductId: webpageEntity.shopProduct.id,
+        blackListId: blackListEntity.id,
       });
     }
 
@@ -47,8 +57,8 @@ export class BlackListUrlService {
     const response = await this.webPageService.removeWebpage(webpageEntity.id);
     if (!response) throw new Error('page might not have been deleted');
 
-    blackListEntity =
-      await this.blackListRepository.save<BlackListUrl>(blackListEntity);
+    // blackListEntity =
+    //   await this.blackListRepository.save<BlackListUrl>(blackListEntity);
 
     await this.shopProductsService.checkForIndividualShopProduct(
       webpageEntity.shopProduct.id,
@@ -77,15 +87,17 @@ export class BlackListUrlService {
       where: {
         url,
       },
-      relations: { shopProducts: true },
+      relations: { shopProductBlacklistUrls: { blackListUrl: true } },
     });
   }
 
   async findByShopProduct(shopProductId: string): Promise<BlackListUrl[]> {
     return this.blackListRepository.find({
       where: {
-        shopProducts: {
-          id: shopProductId,
+        shopProductBlacklistUrls: {
+          shopProduct: {
+            id: shopProductId,
+          },
         },
       },
     });

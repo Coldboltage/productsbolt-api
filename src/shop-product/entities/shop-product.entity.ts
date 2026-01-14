@@ -2,7 +2,6 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -12,9 +11,9 @@ import {
 import { Shop } from '../../shop/entities/shop.entity';
 import { Product } from '../../product/entities/product.entity';
 import { Webpage } from '../../webpage/entities/webpage.entity';
-import { BlackListUrl } from '../../blacklist-url/entities/blacklist-url.entity';
 import { EbayProductDetail } from 'src/ebay/entities/ebay-product-detail.entity';
 import { CandidatePage } from 'src/candidate-page/entities/candidate-page.entity';
+import { shopProductBlacklistUrl } from 'src/shop-product-backlist-url/entities/shop-product-blacklist-url.entity';
 
 @Entity()
 @Unique(['name', 'shopId', 'productId'])
@@ -47,10 +46,14 @@ export class ShopProduct {
   })
   product: Product;
 
-  @ManyToMany(() => BlackListUrl, (blacklistUrl) => blacklistUrl.shopProducts, {
-    cascade: ['insert', 'update'],
-  })
-  blacklistUrls: BlackListUrl[];
+  @OneToMany(
+    () => shopProductBlacklistUrl,
+    (shopProductBlacklistUrls) => shopProductBlacklistUrls.shopProduct,
+    {
+      cascade: ['insert', 'update'],
+    },
+  )
+  shopProductBlacklistUrls: shopProductBlacklistUrl[];
 
   @OneToOne(() => Webpage, (webPage) => webPage.shopProduct)
   webPage: Webpage;

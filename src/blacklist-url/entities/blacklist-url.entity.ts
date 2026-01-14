@@ -1,11 +1,5 @@
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { ShopProduct } from '../../shop-product/entities/shop-product.entity';
+import { shopProductBlacklistUrl } from 'src/shop-product-backlist-url/entities/shop-product-blacklist-url.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class BlackListUrl {
@@ -15,9 +9,12 @@ export class BlackListUrl {
   @Column()
   url: string;
 
-  @ManyToMany(() => ShopProduct, (shopProduct) => shopProduct.blacklistUrls, {
-    onDelete: 'CASCADE',
-  })
-  @JoinTable() // Owning side
-  shopProducts: ShopProduct[];
+  @OneToMany(
+    () => shopProductBlacklistUrl,
+    (shopProductBlacklistUrls) => shopProductBlacklistUrls.blackListUrl,
+    {
+      onDelete: 'CASCADE',
+    },
+  )
+  shopProductBlacklistUrls: shopProductBlacklistUrl[];
 }
