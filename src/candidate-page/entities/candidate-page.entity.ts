@@ -6,6 +6,7 @@ import {
   OneToOne,
   JoinColumn,
   Entity,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity()
@@ -28,7 +29,7 @@ export class CandidatePage {
   @Column()
   reason: string;
 
-  @OneToOne(() => ShopProduct, (shopProduct) => shopProduct.candidatePage, {
+  @ManyToOne(() => ShopProduct, (shopProduct) => shopProduct.candidatePage, {
     onDelete: 'CASCADE',
   })
   @JoinColumn()

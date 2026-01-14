@@ -65,8 +65,12 @@ export class ShopProduct {
   @JoinColumn()
   ebayProductDetail: EbayProductDetail;
 
-  @OneToOne(() => CandidatePage, (candidatePage) => candidatePage.shopProduct, {
-    nullable: true,
-  })
-  candidatePage: CandidatePage;
+  @OneToMany(
+    () => CandidatePage,
+    (candidatePage) => candidatePage.shopProduct,
+    {
+      nullable: true,
+    },
+  )
+  candidatePages: CandidatePage[];
 }
