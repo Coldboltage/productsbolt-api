@@ -32,7 +32,9 @@ export class Webpage {
   @Column()
   reason: string;
 
-  @OneToOne(() => ShopProduct, (shopProduct) => shopProduct.webPage)
+  @OneToOne(() => ShopProduct, (shopProduct) => shopProduct.webPage, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   shopProduct: ShopProduct;
 

@@ -153,7 +153,9 @@ export class ShopProductService {
           sitemapEntity: true,
         },
         webPage: true,
-        blacklistUrls: true,
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
         candidatePage: {
           candidatePageCache: true,
         },
@@ -254,7 +256,9 @@ export class ShopProductService {
           sitemapEntity: true,
         },
         webPage: true,
-        blacklistUrls: true,
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
         candidatePage: {
           candidatePageCache: true,
         },
@@ -354,7 +358,9 @@ export class ShopProductService {
           sitemapEntity: true,
         },
         webPage: true,
-        blacklistUrls: true,
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
         candidatePage: {
           candidatePageCache: true,
         },
@@ -459,7 +465,9 @@ export class ShopProductService {
           sitemapEntity: true,
         },
         webPage: true,
-        blacklistUrls: true,
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
         candidatePage: {
           candidatePageCache: true,
         },
@@ -568,7 +576,9 @@ export class ShopProductService {
             sitemapEntity: true,
           },
           webPage: true,
-          blacklistUrls: true,
+          shopProductBlacklistUrls: {
+            blackListUrl: true,
+          },
           candidatePage: {
             candidatePageCache: true,
           },
@@ -673,7 +683,9 @@ export class ShopProductService {
             sitemapEntity: true,
           },
           webPage: true,
-          blacklistUrls: true,
+          shopProductBlacklistUrls: {
+            blackListUrl: true,
+          },
           candidatePage: {
             candidatePageCache: true,
           },
@@ -788,9 +800,9 @@ export class ShopProductService {
   ) {
     let blackListUrls: string[] = [];
 
-    if (shopProduct.blacklistUrls) {
-      blackListUrls = shopProduct.blacklistUrls.map(
-        (blacklist) => blacklist.url,
+    if (shopProduct.shopProductBlacklistUrls) {
+      blackListUrls = shopProduct.shopProductBlacklistUrls.map(
+        (shopProductBlacklistUrl) => shopProductBlacklistUrl.blackListUrl.url,
       );
     }
 
@@ -828,7 +840,9 @@ export class ShopProductService {
           sitemapEntity: true,
         },
         webPage: true,
-        blacklistUrls: true,
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
         product: true,
         candidatePage: {
           candidatePageCache: true,
@@ -931,7 +945,9 @@ export class ShopProductService {
           sitemapEntity: true,
         },
         webPage: true,
-        blacklistUrls: true,
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
         product: true,
         candidatePage: {
           candidatePageCache: true,
@@ -1054,7 +1070,9 @@ export class ShopProductService {
         },
         product: true,
         webPage: true,
-        blacklistUrls: true,
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
         candidatePage: {
           candidatePageCache: true,
         },
@@ -1144,7 +1162,9 @@ export class ShopProductService {
         },
         product: true,
         webPage: true,
-        blacklistUrls: true,
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
         candidatePage: {
           candidatePageCache: true,
         },
@@ -1223,7 +1243,9 @@ export class ShopProductService {
         },
         product: true,
         webPage: true,
-        blacklistUrls: true,
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
         candidatePage: {
           candidatePageCache: true,
         },
@@ -1333,11 +1355,17 @@ export class ShopProductService {
     return this.shopProductRepository.exists({
       where: {
         id: shopProductId,
-        blacklistUrls: {
-          url,
+        shopProductBlacklistUrls: {
+          blackListUrl: {
+            url,
+          },
         },
       },
-      relations: { blacklistUrls: true },
+      relations: {
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
+      },
     });
   }
 

@@ -490,7 +490,11 @@ export class WebpageService {
   async findOneByUrl(url: string): Promise<Webpage> {
     const entity = await this.webpagesRepository.findOne({
       where: { url },
-      relations: { shopProduct: true },
+      relations: {
+        shopProduct: {
+          shopProductBlacklistUrls: true,
+        },
+      },
     });
     return entity;
   }
