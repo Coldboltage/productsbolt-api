@@ -1006,7 +1006,7 @@ export class ShopProductService {
         createProcess,
       );
     } else if (shopProduct.shop.cloudflare === true) {
-      this.headlessClient.emit<CreateProcessDto>(
+      this.headfulClient.emit<CreateProcessDto>(
         'webpageDiscovery',
         createProcess,
       );
