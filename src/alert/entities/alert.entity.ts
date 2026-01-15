@@ -13,7 +13,9 @@ export class Alert {
   // @ManyToOne(() => User, (user) => user.alerts)
   // user: User;
 
-  @ManyToOne(() => Product, (product) => product.alerts)
+  @ManyToOne(() => Product, (product) => product.alerts, {
+    onDelete: 'CASCADE',
+  })
   product: Product;
 
   @Column()

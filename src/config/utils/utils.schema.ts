@@ -7,4 +7,5 @@ export const utilsSchema = z.object({
   SERVICE_NAME: z.string(),
   SERVICE_VERSION: z.string(),
   NODE_ENV: z.string(),
+  GRAFANA_PASSWORD: z.string(),
 });

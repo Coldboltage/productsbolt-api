@@ -12,7 +12,9 @@ export class EbayStat {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => Product, (product) => product.ebayStat)
+  @OneToOne(() => Product, (product) => product.ebayStat, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   product: Product;
 

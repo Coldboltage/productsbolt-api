@@ -15,6 +15,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { Sitemap } from '../sitemap/entities/sitemap.entity';
 import { ProductListingsCheckInterface } from './dto/product-listings-check.dto';
+import { Span } from 'nestjs-otel/lib/tracing/decorators/span';
 
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
@@ -59,8 +60,9 @@ export class ShopService implements OnApplicationBootstrap {
           manual: createShopDto.manual,
         } as Partial<Sitemap>,
       });
+      await this.updateSpecificShopSitemap(entity.id);
       this.eventEmitter.emit('shop.created', entity);
-      this.headfulClient.emit('shopyifyCheck', entity);
+      this.headfulClient.emit('shopifyCheck', entity);
       return entity;
     } catch (error) {
       throw new ConflictException('shop_already_created');
@@ -78,6 +80,7 @@ export class ShopService implements OnApplicationBootstrap {
   @Cron(CronExpression.EVERY_12_HOURS, {
     name: 'updateSitemap',
   })
+  @Span('ShopService.updateSitemap')
   async updateSitemap(): Promise<void> {
     const allActiveShops = await this.findAll();
     // Start a background task and don’t await it
@@ -113,14 +116,17 @@ export class ShopService implements OnApplicationBootstrap {
 
   async testShopifySiteCollection(shopId: string): Promise<void> {
     const shop = await this.findOne(shopId);
-    if (shop.isShopifySite) {
+    if (shop.sitemapEntity.isShopifySite) {
+      console.log('testShopifySiteCollection fired');
       this.headlessClient.emit('shopifyCollectionsTest', shop);
     }
   }
 
   async testShopifySiteCollectionAllShopify(): Promise<void> {
     const shops = await this.findAll();
-    const shopifyShops = shops.filter((shop) => shop.isShopifySite === true);
+    const shopifyShops = shops.filter(
+      (shop) => shop.sitemapEntity.isShopifySite === true,
+    );
     for (const shop of shopifyShops) {
       this.slowSitemapClient.emit('shopifyCollectionsTest', shop);
     }
@@ -158,7 +164,7 @@ export class ShopService implements OnApplicationBootstrap {
     for (const shop of shopEntities) {
       // Check if main site and it's content is shopify
       // / true or false
-      this.headfulClient.emit('shopyifyCheck', shop);
+      this.headfulClient.emit('shopifyCheck', shop);
     }
   }
 
@@ -166,9 +172,10 @@ export class ShopService implements OnApplicationBootstrap {
     console.log('checkIfShopIsShopify called with id:', shopId);
     const shop = await this.findOne(shopId);
     console.log(shop.name);
-    if (shop) this.headfulClient.emit('shopyifyCheck', shop);
+    if (shop) this.headfulClient.emit('shopifyCheck', shop);
   }
 
+  @Span('ShopService.findAll')
   async findAll(): Promise<Shop[]> {
     return this.shopsRepository.find({
       where: {

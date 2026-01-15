@@ -28,6 +28,10 @@ import { databaseSchema } from './config/database/database.schema';
 import { databaseValidationSetup } from './config/validation';
 import { discordSchema } from './config/discord/discord.schema';
 import { utilsSchema } from './config/utils/utils.schema';
+import { OpenTelemetryModule } from 'nestjs-otel';
+import { rabbitmqSchema } from './config/rabbitmq/rabbitmq.schema';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { ShopProductBacklistUrlModule } from './shop-product-backlist-url/shop-product-backlist-url.module';
 
 @Module({
   imports: [
@@ -41,12 +45,20 @@ import { utilsSchema } from './config/utils/utils.schema';
         );
         const validatedDiscord = databaseValidationSetup(config, discordSchema);
         const utilsValidated = databaseValidationSetup(config, utilsSchema);
+        const rabbitmqValidated = databaseValidationSetup(
+          config,
+          rabbitmqSchema,
+        );
         return {
           ...validatedDatabase,
           ...validatedDiscord,
           ...utilsValidated,
+          ...rabbitmqValidated,
         };
       },
+    }),
+    PrometheusModule.register({
+      defaultLabels: { app: 'productsbolt' },
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -84,6 +96,8 @@ import { utilsSchema } from './config/utils/utils.schema';
     CandidatePageModule,
     CandidatePageCacheModule,
     ShopListingModule,
+    OpenTelemetryModule.forRoot(),
+    ShopProductBacklistUrlModule,
   ],
   controllers: [AppController],
   providers: [AppService],
