@@ -92,10 +92,11 @@ export class ShopProductService {
           shopId: shopProduct.shop.id,
           sitemapUrls: limitedUrls,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
@@ -156,7 +157,7 @@ export class ShopProductService {
         shopProductBlacklistUrls: {
           blackListUrl: true,
         },
-        candidatePage: {
+        candidatePages: {
           candidatePageCache: true,
         },
       },
@@ -209,10 +210,11 @@ export class ShopProductService {
         sitemapUrls: limitedUrls,
         shopId: shopProduct.shop.id,
       },
-      hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+      hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
       confirmed:
-        shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-      count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+        shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+      count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+      candidatePages: shopProduct.candidatePages,
     };
 
     if (
@@ -259,7 +261,7 @@ export class ShopProductService {
         shopProductBlacklistUrls: {
           blackListUrl: true,
         },
-        candidatePage: {
+        candidatePages: {
           candidatePageCache: true,
         },
       },
@@ -313,10 +315,11 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       if (
@@ -361,7 +364,7 @@ export class ShopProductService {
         shopProductBlacklistUrls: {
           blackListUrl: true,
         },
-        candidatePage: {
+        candidatePages: {
           candidatePageCache: true,
         },
       },
@@ -419,10 +422,11 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       if (
@@ -468,7 +472,7 @@ export class ShopProductService {
         shopProductBlacklistUrls: {
           blackListUrl: true,
         },
-        candidatePage: {
+        candidatePages: {
           candidatePageCache: true,
         },
       },
@@ -526,10 +530,11 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       if (
@@ -579,7 +584,7 @@ export class ShopProductService {
           shopProductBlacklistUrls: {
             blackListUrl: true,
           },
-          candidatePage: {
+          candidatePages: {
             candidatePageCache: true,
           },
         },
@@ -635,10 +640,11 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       if (
@@ -686,7 +692,7 @@ export class ShopProductService {
           shopProductBlacklistUrls: {
             blackListUrl: true,
           },
-          candidatePage: {
+          candidatePages: {
             candidatePageCache: true,
           },
         },
@@ -752,10 +758,12 @@ export class ShopProductService {
             sitemapUrls: limitedUrls,
             shopId: shopProduct.shop.id,
           },
-          hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+          hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
           confirmed:
-            shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-          count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+            shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ??
+            false,
+          count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+          candidatePages: shopProduct.candidatePages,
         };
 
         if (
@@ -844,7 +852,7 @@ export class ShopProductService {
           blackListUrl: true,
         },
         product: true,
-        candidatePage: {
+        candidatePages: {
           candidatePageCache: true,
         },
       },
@@ -898,10 +906,11 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       if (
@@ -949,7 +958,7 @@ export class ShopProductService {
           blackListUrl: true,
         },
         product: true,
-        candidatePage: {
+        candidatePages: {
           candidatePageCache: true,
         },
       },
@@ -1003,10 +1012,11 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       if (
@@ -1073,7 +1083,7 @@ export class ShopProductService {
         shopProductBlacklistUrls: {
           blackListUrl: true,
         },
-        candidatePage: {
+        candidatePages: {
           candidatePageCache: true,
         },
       },
@@ -1122,10 +1132,11 @@ export class ShopProductService {
         shopId: shopProduct.shop.id,
         sitemapUrls: limitedUrls,
       },
-      hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+      hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
       confirmed:
-        shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-      count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+        shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+      count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+      candidatePages: shopProduct.candidatePages,
     };
 
     if (shopProduct.shop.isShopifySite === true) {
@@ -1165,7 +1176,7 @@ export class ShopProductService {
         shopProductBlacklistUrls: {
           blackListUrl: true,
         },
-        candidatePage: {
+        candidatePages: {
           candidatePageCache: true,
         },
       },
@@ -1212,10 +1223,11 @@ export class ShopProductService {
         shopId: shopProduct.shop.id,
         sitemapUrls: limitedUrls,
       },
-      hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+      hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
       confirmed:
-        shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-      count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+        shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+      count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+      candidatePages: shopProduct.candidatePages,
     };
 
     if (shopProduct.shop.isShopifySite === true) {
@@ -1246,7 +1258,7 @@ export class ShopProductService {
         shopProductBlacklistUrls: {
           blackListUrl: true,
         },
-        candidatePage: {
+        candidatePages: {
           candidatePageCache: true,
         },
       },
@@ -1300,10 +1312,11 @@ export class ShopProductService {
           shopId: shopProduct.shop.id,
           sitemapUrls: limitedUrls,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       if (
@@ -1341,7 +1354,7 @@ export class ShopProductService {
         webPage: {
           webpageCache: true,
         },
-        candidatePage: {
+        candidatePages: {
           candidatePageCache: true,
         },
       },
@@ -1399,19 +1412,19 @@ export class ShopProductService {
     console.log(webpageUrl);
     const shopProductEntity = await this.shopProductRepository.findOne({
       where: {
-        candidatePage: {
+        candidatePages: {
           url: webpageUrl,
         },
       },
       relations: {
-        candidatePage: true,
+        candidatePages: true,
       },
     });
 
     console.log(shopProductEntity);
 
     if (shopProductEntity) {
-      shopProductEntity.candidatePage = null;
+      shopProductEntity.candidatePages = null;
       await this.shopProductRepository.save(shopProductEntity);
     }
   }

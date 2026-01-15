@@ -14,6 +14,8 @@ import { UniqueShopType } from '../entities/shop.entity';
 import { EbayProductDetailDto } from 'src/ebay/dto/ebay-product-detail.dto';
 import { Type } from 'class-transformer';
 import { CreateSitemapDto } from '../../sitemap/dto/create-sitemap.dto';
+import { CandidatePage } from 'src/candidate-page/entities/candidate-page.entity';
+import { FullCandidatePageDto } from 'src/candidate-page/dto/full-candidate-page.dto';
 
 export class CreateProcessDto {
   @IsUrl()
@@ -79,4 +81,9 @@ export class CreateProcessDto {
   @ValidateNested()
   @Type(() => CreateSitemapDto)
   sitemapEntity: CreateSitemapDto;
+
+  @IsArray()
+  @ValidateNested()
+  @Type(() => FullCandidatePageDto)
+  candidatePages: FullCandidatePageDto[];
 }
