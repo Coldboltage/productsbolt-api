@@ -92,10 +92,11 @@ export class ShopProductService {
           shopId: shopProduct.shop.id,
           sitemapUrls: limitedUrls,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
@@ -209,10 +210,11 @@ export class ShopProductService {
         sitemapUrls: limitedUrls,
         shopId: shopProduct.shop.id,
       },
-      hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+      hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
       confirmed:
-        shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-      count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+        shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+      count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+      candidatePages: shopProduct.candidatePages,
     };
 
     if (
@@ -313,10 +315,11 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       if (
@@ -419,10 +422,11 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       if (
@@ -526,10 +530,11 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       if (
@@ -635,10 +640,11 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       if (
@@ -752,10 +758,12 @@ export class ShopProductService {
             sitemapUrls: limitedUrls,
             shopId: shopProduct.shop.id,
           },
-          hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+          hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
           confirmed:
-            shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-          count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+            shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ??
+            false,
+          count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+          candidatePages: shopProduct.candidatePages,
         };
 
         if (
@@ -898,10 +906,11 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       if (
@@ -1003,10 +1012,11 @@ export class ShopProductService {
           sitemapUrls: limitedUrls,
           shopId: shopProduct.shop.id,
         },
-        hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       if (
@@ -1122,10 +1132,11 @@ export class ShopProductService {
         shopId: shopProduct.shop.id,
         sitemapUrls: limitedUrls,
       },
-      hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+      hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
       confirmed:
-        shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-      count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+        shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+      count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+      candidatePages: shopProduct.candidatePages,
     };
 
     if (shopProduct.shop.isShopifySite === true) {
@@ -1212,10 +1223,11 @@ export class ShopProductService {
         shopId: shopProduct.shop.id,
         sitemapUrls: limitedUrls,
       },
-      hash: shopProduct.candidatePage?.candidatePageCache?.hash ?? '0',
+      hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
       confirmed:
-        shopProduct.candidatePage?.candidatePageCache?.confirmed ?? false,
-      count: shopProduct.candidatePage?.candidatePageCache?.count ?? 0,
+        shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+      count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+      candidatePages: shopProduct.candidatePages,
     };
 
     if (shopProduct.shop.isShopifySite === true) {
@@ -1300,10 +1312,11 @@ export class ShopProductService {
           shopId: shopProduct.shop.id,
           sitemapUrls: limitedUrls,
         },
-        hash: shopProduct.candidatePages?.candidatePageCache?.hash ?? '0',
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:
-          shopProduct.candidatePages?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePages?.candidatePageCache?.count ?? 0,
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
       };
 
       if (

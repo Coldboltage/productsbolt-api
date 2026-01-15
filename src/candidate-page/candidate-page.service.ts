@@ -63,12 +63,6 @@ export class CandidatePageService {
       return this.findOne(candidatePageExists.id);
     } else {
       let candidatePageEntity: CandidatePage;
-      if (shopProductEntity.candidatePage) {
-        await this.candidatePageRepository.delete(
-          shopProductEntity.candidatePage.id,
-        );
-        shopProductEntity.candidatePage = null;
-      }
       try {
         candidatePageEntity = await this.candidatePageRepository.save({
           ...createCandidatePageDto,
@@ -87,6 +81,22 @@ export class CandidatePageService {
       console.log('Candidate page created');
       return candidatePageEntity;
     }
+  }
+
+  async findShopProductCandidatePage(
+    shopProductId: string,
+  ): Promise<CandidatePage> {
+    return this.candidatePageRepository.findOne({
+      where: {
+        shopProduct: {
+          id: shopProductId,
+        },
+      },
+      relations: {
+        candidatePageCache: true,
+        shopProduct: true,
+      },
+    });
   }
 
   async checkPage(candidatePageId: string): Promise<void> {

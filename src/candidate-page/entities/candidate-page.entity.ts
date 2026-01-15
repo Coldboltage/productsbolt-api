@@ -29,7 +29,7 @@ export class CandidatePage {
   @Column()
   reason: string;
 
-  @ManyToOne(() => ShopProduct, (shopProduct) => shopProduct.candidatePage, {
+  @ManyToOne(() => ShopProduct, (shopProduct) => shopProduct.candidatePages, {
     onDelete: 'CASCADE',
   })
   @JoinColumn()
