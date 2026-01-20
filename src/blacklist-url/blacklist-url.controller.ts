@@ -19,7 +19,9 @@ export class BlackListUrlController {
 
   // Duel function. It will create a new unique Blacklist URL or it'll find that a URL already exits and append itself.
   @Post()
-  async create(@Body() createBlackListUrlDto: CreateBlackListUrlDto): Promise<BlackListUrl> {
+  async create(
+    @Body() createBlackListUrlDto: CreateBlackListUrlDto,
+  ): Promise<BlackListUrl> {
     return this.BlackListUrlService.create(createBlackListUrlDto);
   }
 
@@ -44,10 +46,9 @@ export class BlackListUrlController {
     return this.BlackListUrlService.update(id, updateBlackListUrlDto);
   }
 
-  
   // Removes a Blacklist URL. This allows the URL to be allowed for certain products again
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<DeleteResult>{
+  remove(@Param('id') id: string): Promise<DeleteResult> {
     return this.BlackListUrlService.remove(id);
   }
 }
