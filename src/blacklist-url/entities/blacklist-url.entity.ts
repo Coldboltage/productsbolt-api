@@ -1,4 +1,4 @@
-import { shopProductBlacklistUrl } from 'src/shop-product-backlist-url/entities/shop-product-blacklist-url.entity';
+import { ShopProductBlacklistUrl } from 'src/shop-product-backlist-url/entities/shop-product-blacklist-url.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -10,11 +10,11 @@ export class BlackListUrl {
   url: string;
 
   @OneToMany(
-    () => shopProductBlacklistUrl,
+    () => ShopProductBlacklistUrl,
     (shopProductBlacklistUrls) => shopProductBlacklistUrls.blackListUrl,
     {
       onDelete: 'CASCADE',
     },
   )
-  shopProductBlacklistUrls: shopProductBlacklistUrl[];
+  shopProductBlacklistUrls: ShopProductBlacklistUrl[];
 }

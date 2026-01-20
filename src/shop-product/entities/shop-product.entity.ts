@@ -13,7 +13,7 @@ import { Product } from '../../product/entities/product.entity';
 import { Webpage } from '../../webpage/entities/webpage.entity';
 import { EbayProductDetail } from 'src/ebay/entities/ebay-product-detail.entity';
 import { CandidatePage } from 'src/candidate-page/entities/candidate-page.entity';
-import { shopProductBlacklistUrl } from 'src/shop-product-backlist-url/entities/shop-product-blacklist-url.entity';
+import { ShopProductBlacklistUrl } from 'src/shop-product-backlist-url/entities/shop-product-blacklist-url.entity';
 
 @Entity()
 @Unique(['name', 'shopId', 'productId'])
@@ -47,13 +47,13 @@ export class ShopProduct {
   product: Product;
 
   @OneToMany(
-    () => shopProductBlacklistUrl,
+    () => ShopProductBlacklistUrl,
     (shopProductBlacklistUrls) => shopProductBlacklistUrls.shopProduct,
     {
       cascade: ['insert', 'update'],
     },
   )
-  shopProductBlacklistUrls: shopProductBlacklistUrl[];
+  shopProductBlacklistUrls: ShopProductBlacklistUrl[];
 
   @OneToOne(() => Webpage, (webPage) => webPage.shopProduct)
   webPage: Webpage;

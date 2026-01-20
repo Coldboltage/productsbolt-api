@@ -7,9 +7,11 @@ import {
   JoinColumn,
   Entity,
   ManyToOne,
+  Unique,
 } from 'typeorm';
 
 @Entity()
+@Unique(['url', 'shopProduct'])
 export class CandidatePage {
   @PrimaryGeneratedColumn('uuid')
   id: string;

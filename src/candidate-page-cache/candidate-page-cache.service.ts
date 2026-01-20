@@ -48,6 +48,8 @@ export class CandidatePageCacheService {
     const candidateWebpageEntity = await this.candidatePageService.findOne(
       createCandidatePageWithIdDto.id,
     );
+    console.log(createCandidatePageWithIdDto);
+
     let count = createCandidatePageWithIdDto.count;
 
     console.log(count);

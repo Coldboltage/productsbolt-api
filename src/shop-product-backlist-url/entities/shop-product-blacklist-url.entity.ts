@@ -5,7 +5,7 @@ import { Entity } from 'typeorm/decorator/entity/Entity';
 
 @Entity()
 @Unique(['shopProduct', 'blackListUrl'])
-export class shopProductBlacklistUrl {
+export class ShopProductBlacklistUrl {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

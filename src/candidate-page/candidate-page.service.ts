@@ -28,7 +28,7 @@ export class CandidatePageService {
       where: {
         url: createCandidatePageDto.url,
         shopProduct: {
-          shopId: createCandidatePageDto.shopId,
+          id: createCandidatePageDto.shopProductId,
         },
       },
     });
