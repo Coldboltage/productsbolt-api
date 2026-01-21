@@ -6,6 +6,7 @@ import { Sitemap } from './entities/sitemap.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { ShopService } from '../shop/shop.service';
 import { ShopProductService } from 'src/shop-product/shop-product.service';
+import { SitemapUrl } from 'src/sitemap-url/entities/sitemap-url.entity';
 
 @Injectable()
 export class SitemapService {
@@ -33,6 +34,7 @@ export class SitemapService {
     return this.sitemapRepository.save({
       ...createSitemapDto,
       shop: shopEntity,
+      sitemapUrl: { urls: [''] },
     });
   }
 
