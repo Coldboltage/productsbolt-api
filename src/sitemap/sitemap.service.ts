@@ -12,6 +12,9 @@ import { SitemapUrl } from 'src/sitemap-url/entities/sitemap-url.entity';
 export class SitemapService {
   constructor(
     @InjectRepository(Sitemap) private sitemapRepository: Repository<Sitemap>,
+    @InjectRepository(SitemapUrl)
+    private sitemapUrlRepository: Repository<SitemapUrl>,
+
     private shopService: ShopService,
     private shopProductService: ShopProductService,
   ) {}
@@ -73,6 +76,7 @@ export class SitemapService {
       },
       relations: {
         shop: true,
+        sitemapUrl: true,
       },
     });
   }
@@ -120,7 +124,12 @@ export class SitemapService {
     sameSites = await this.checkSiteMapLoop(sitemapEntity, updateSitemapDto);
 
     if (!sameSites) {
-      await this.update(id, updateSitemapDto);
+      await this.update(id, {
+        ...updateSitemapDto,
+      });
+      await this.sitemapUrlRepository.update(sitemapEntity.sitemapUrl.id, {
+        urls: updateSitemapDto.sitemapUrls || [''],
+      });
       console.log('updating shopProduct links');
     } else {
       console.log('no need to update shopProduct links');

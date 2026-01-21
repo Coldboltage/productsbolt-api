@@ -60,7 +60,7 @@ export class Sitemap {
   shop: Shop;
 
   @OneToOne(() => SitemapUrl, (sitemapUrl) => sitemapUrl.sitemap, {
-    cascade: ['insert'],
+    cascade: ['insert', 'update'],
   })
   sitemapUrl: SitemapUrl;
 }
