@@ -5,9 +5,11 @@ import {
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 
 @Entity()
+@Unique(['sitemap'])
 export class SitemapUrl {
   @PrimaryGeneratedColumn('uuid')
   id: string;

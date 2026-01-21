@@ -15,5 +15,6 @@ import { SitemapUrl } from 'src/sitemap-url/entities/sitemap-url.entity';
   ],
   controllers: [SitemapController],
   providers: [SitemapService],
+  exports: [SitemapService],
 })
 export class SitemapModule {}

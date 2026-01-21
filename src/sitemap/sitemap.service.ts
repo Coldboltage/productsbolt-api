@@ -69,6 +69,15 @@ export class SitemapService {
     });
   }
 
+  async findAllWithSitemapUrl(): Promise<Sitemap[]> {
+    return this.sitemapRepository.find({
+      relations: {
+        shop: true,
+        sitemapUrl: true,
+      },
+    });
+  }
+
   async findOne(id: string): Promise<Sitemap> {
     return this.sitemapRepository.findOne({
       where: {
