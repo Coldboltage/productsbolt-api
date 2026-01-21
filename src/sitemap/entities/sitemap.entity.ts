@@ -19,8 +19,8 @@ export class Sitemap {
   @Column()
   sitemap: string;
 
-  @Column({ type: 'simple-array', default: '' })
-  sitemapUrls: string[];
+  // @Column({ type: 'simple-array', default: '' })
+  // sitemapUrls: string[];
 
   @Column({ default: false })
   isShopifySite: boolean;

@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { SitemapUrlService } from './sitemap-url.service';
 import { CreateSitemapUrlDto } from './dto/create-sitemap-url.dto';
 import { UpdateSitemapUrlDto } from './dto/update-sitemap-url.dto';
@@ -12,6 +20,11 @@ export class SitemapUrlController {
     return this.sitemapUrlService.create(createSitemapUrlDto);
   }
 
+  @Post('/create-and-pair-sitemap')
+  createAndPairSitemap() {
+    return this.sitemapUrlService.createAndPairSitemap();
+  }
+
   @Get()
   findAll() {
     return this.sitemapUrlService.findAll();
@@ -23,7 +36,10 @@ export class SitemapUrlController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSitemapUrlDto: UpdateSitemapUrlDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateSitemapUrlDto: UpdateSitemapUrlDto,
+  ) {
     return this.sitemapUrlService.update(+id, updateSitemapUrlDto);
   }
 

@@ -61,7 +61,7 @@ export class ShopProductService {
     const shopProductResponses = await Promise.all(shopProductsPromises);
     for (const shopProduct of shopProductResponses) {
       const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrls,
+        shopProduct.shop.sitemapEntity.sitemapUrl.urls,
         shopProduct.product.name,
       );
 
@@ -175,7 +175,7 @@ export class ShopProductService {
       throw new NotFoundException('shop_product_not_found_or_populated');
 
     const reducedSitemap = this.shopService.reduceSitemap(
-      shopProduct.shop.sitemapEntity.sitemapUrls,
+      shopProduct.shop.sitemapEntity.sitemapUrl.urls,
       shopProduct.product.name,
     );
 
@@ -276,7 +276,7 @@ export class ShopProductService {
       if (!shopProduct) continue;
 
       const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrls,
+        shopProduct.shop.sitemapEntity.sitemapUrl.urls,
         shopProduct.product.name,
       );
 
@@ -358,7 +358,9 @@ export class ShopProductService {
       relations: {
         product: true,
         shop: {
-          sitemapEntity: true,
+          sitemapEntity: {
+            sitemapUrl: true,
+          },
         },
         webPage: true,
         shopProductBlacklistUrls: {
@@ -383,7 +385,7 @@ export class ShopProductService {
       if (!shopProduct) continue;
 
       const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrls,
+        shopProduct.shop.sitemapEntity.sitemapUrl.urls,
         shopProduct.product.name,
       );
 
@@ -491,7 +493,7 @@ export class ShopProductService {
       if (!shopProduct) continue;
 
       const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrls,
+        shopProduct.shop.sitemapEntity.sitemapUrl.urls,
         shopProduct.product.name,
       );
 
@@ -593,24 +595,24 @@ export class ShopProductService {
     console.log(shopProductsOrphan.length);
 
     for (const shopProduct of shopProductsOrphan) {
-      const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrls,
-        shopProduct.product.name,
-      );
+      // const reducedSitemap = this.shopService.reduceSitemap(
+      //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+      //   shopProduct.product.name,
+      // );
 
-      if (reducedSitemap.length === 0) continue;
+      // if (reducedSitemap.length === 0) continue;
 
-      const limitedUrls = await this.filteredLimitedUrls(
-        shopProduct,
-        reducedSitemap,
-      );
+      // const limitedUrls = await this.filteredLimitedUrls(
+      //   shopProduct,
+      //   reducedSitemap,
+      // );
 
-      if (limitedUrls.length === 0) {
-        console.log(
-          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-        );
-        continue;
-      }
+      // if (limitedUrls.length === 0) {
+      //   console.log(
+      //     `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+      //   );
+      //   continue;
+      // }
 
       if (shopProduct.links.length === 0) {
         console.log(
@@ -637,7 +639,7 @@ export class ShopProductService {
         links: shopProduct.links,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
-          sitemapUrls: limitedUrls,
+          sitemapUrls: [],
           shopId: shopProduct.shop.id,
         },
         hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
@@ -711,24 +713,24 @@ export class ShopProductService {
       );
 
       for (const shopProduct of shopProductsOrphanSlice) {
-        const reducedSitemap = this.shopService.reduceSitemap(
-          shopProduct.shop.sitemapEntity.sitemapUrls,
-          shopProduct.product.name,
-        );
+        // const reducedSitemap = this.shopService.reduceSitemap(
+        //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+        //   shopProduct.product.name,
+        // );
 
-        if (reducedSitemap.length === 0) continue;
+        // if (reducedSitemap.length === 0) continue;
 
-        const limitedUrls = await this.filteredLimitedUrls(
-          shopProduct,
-          reducedSitemap,
-        );
+        // const limitedUrls = await this.filteredLimitedUrls(
+        //   shopProduct,
+        //   reducedSitemap,
+        // );
 
-        if (limitedUrls.length === 0) {
-          console.log(
-            `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-          );
-          continue;
-        }
+        // if (limitedUrls.length === 0) {
+        //   console.log(
+        //     `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        //   );
+        //   continue;
+        // }
 
         if (shopProduct.links.length === 0) {
           console.log(
@@ -755,7 +757,7 @@ export class ShopProductService {
           links: shopProduct.links,
           sitemapEntity: {
             ...shopProduct.shop.sitemapEntity,
-            sitemapUrls: limitedUrls,
+            sitemapUrls: [],
             shopId: shopProduct.shop.id,
           },
           hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
@@ -861,22 +863,22 @@ export class ShopProductService {
     console.log(shopProductsOrphan.length);
 
     for (const shopProduct of shopProductsOrphan) {
-      const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrls,
-        shopProduct.product.name,
-      );
+      // const reducedSitemap = this.shopService.reduceSitemap(
+      //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+      //   shopProduct.product.name,
+      // );
 
-      const limitedUrls = await this.filteredLimitedUrls(
-        shopProduct,
-        reducedSitemap,
-      );
+      // const limitedUrls = await this.filteredLimitedUrls(
+      //   shopProduct,
+      //   reducedSitemap,
+      // );
 
-      if (limitedUrls.length === 0) {
-        console.log(
-          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-        );
-        continue;
-      }
+      // if (limitedUrls.length === 0) {
+      //   console.log(
+      //     `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+      //   );
+      //   continue;
+      // }
 
       if (shopProduct.links.length === 0) {
         console.log(
@@ -903,7 +905,7 @@ export class ShopProductService {
         links: shopProduct.links,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
-          sitemapUrls: limitedUrls,
+          sitemapUrls: [],
           shopId: shopProduct.shop.id,
         },
         hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
@@ -967,22 +969,22 @@ export class ShopProductService {
     console.log(shopProductsOrphan.length);
 
     for (const shopProduct of shopProductsOrphan) {
-      const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrls,
-        shopProduct.product.name,
-      );
+      // const reducedSitemap = this.shopService.reduceSitemap(
+      //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+      //   shopProduct.product.name,
+      // );
 
-      const limitedUrls = await this.filteredLimitedUrls(
-        shopProduct,
-        reducedSitemap,
-      );
+      // const limitedUrls = await this.filteredLimitedUrls(
+      //   shopProduct,
+      //   reducedSitemap,
+      // );
 
-      if (limitedUrls.length === 0) {
-        console.log(
-          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-        );
-        continue;
-      }
+      // if (limitedUrls.length === 0) {
+      //   console.log(
+      //     `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+      //   );
+      //   continue;
+      // }
 
       if (shopProduct.links.length === 0) {
         console.log(
@@ -1009,7 +1011,7 @@ export class ShopProductService {
         links: shopProduct.links,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
-          sitemapUrls: limitedUrls,
+          sitemapUrls: [],
           shopId: shopProduct.shop.id,
         },
         hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
@@ -1089,24 +1091,24 @@ export class ShopProductService {
       },
     });
 
-    const reducedSitemap = this.shopService.reduceSitemap(
-      shopProduct.shop.sitemapEntity.sitemapUrls,
-      shopProduct.product.name,
-    );
+    // const reducedSitemap = this.shopService.reduceSitemap(
+    //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+    //   shopProduct.product.name,
+    // );
 
-    const limitedUrls = await this.filteredLimitedUrls(
-      shopProduct,
-      reducedSitemap,
-    );
+    // const limitedUrls = await this.filteredLimitedUrls(
+    //   shopProduct,
+    //   reducedSitemap,
+    // );
 
-    console.log(limitedUrls);
+    // console.log(limitedUrls);
 
-    if (limitedUrls.length === 0) {
-      console.log(
-        `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-      );
-      throw new NotFoundException('no_urls_found_for_product');
-    }
+    // if (limitedUrls.length === 0) {
+    //   console.log(
+    //     `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+    //   );
+    //   throw new NotFoundException('no_urls_found_for_product');
+    // }
 
     if (shopProduct.links.length === 0)
       throw new NotFoundException('no_links_found');
@@ -1130,7 +1132,7 @@ export class ShopProductService {
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
         shopId: shopProduct.shop.id,
-        sitemapUrls: limitedUrls,
+        sitemapUrls: [],
       },
       hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
       confirmed:
@@ -1182,22 +1184,22 @@ export class ShopProductService {
       },
     });
 
-    const reducedSitemap = this.shopService.reduceSitemap(
-      shopProduct.shop.sitemapEntity.sitemapUrls,
-      shopProduct.product.name,
-    );
+    // const reducedSitemap = this.shopService.reduceSitemap(
+    //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+    //   shopProduct.product.name,
+    // );
 
-    const limitedUrls = await this.filteredLimitedUrls(
-      shopProduct,
-      reducedSitemap,
-    );
+    // const limitedUrls = await this.filteredLimitedUrls(
+    //   shopProduct,
+    //   reducedSitemap,
+    // );
 
-    if (limitedUrls.length === 0) {
-      console.log(
-        `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-      );
-      throw new NotFoundException('no_urls_found_for_product');
-    }
+    // if (limitedUrls.length === 0) {
+    //   console.log(
+    //     `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+    //   );
+    //   throw new NotFoundException('no_urls_found_for_product');
+    // }
 
     if (shopProduct.links.length === 0)
       throw new NotFoundException('no_links_found');
@@ -1221,7 +1223,7 @@ export class ShopProductService {
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
         shopId: shopProduct.shop.id,
-        sitemapUrls: limitedUrls,
+        sitemapUrls: [],
       },
       hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
       confirmed:
@@ -1267,22 +1269,22 @@ export class ShopProductService {
     console.log(shopProducts.length);
 
     for (const shopProduct of shopProducts) {
-      const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrls,
-        shopProduct.product.name,
-      );
+      // const reducedSitemap = this.shopService.reduceSitemap(
+      //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+      //   shopProduct.product.name,
+      // );
 
-      const limitedUrls = await this.filteredLimitedUrls(
-        shopProduct,
-        reducedSitemap,
-      );
+      // const limitedUrls = await this.filteredLimitedUrls(
+      //   shopProduct,
+      //   reducedSitemap,
+      // );
 
-      if (limitedUrls.length === 0) {
-        console.log(
-          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-        );
-        continue;
-      }
+      // if (limitedUrls.length === 0) {
+      //   console.log(
+      //     `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+      //   );
+      //   continue;
+      // }
 
       if (shopProduct.links.length === 0) {
         console.log(
@@ -1310,7 +1312,7 @@ export class ShopProductService {
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           shopId: shopProduct.shop.id,
-          sitemapUrls: limitedUrls,
+          sitemapUrls: [],
         },
         hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
         confirmed:

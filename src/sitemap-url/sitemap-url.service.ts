@@ -23,7 +23,10 @@ export class SitemapUrlService {
       return !sitemap.sitemapUrl ? true : false;
     });
     for (const sitemap of filteredSitemaps) {
-      await this.sitemapUrlRepository.save({ urls: [''], sitemap });
+      await this.sitemapUrlRepository.save({
+        urls: [''],
+        sitemap,
+      });
     }
   }
 

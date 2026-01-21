@@ -48,7 +48,7 @@ export class SitemapService {
       const sitemapEntity = await this.create({
         isShopifySite: shop.isShopifySite,
         shopId: shop.id,
-        sitemapUrls: shop.sitemapEntity.sitemapUrls,
+        sitemapUrls: [''],
         sitemap: shop.sitemap,
       });
       console.log(sitemapEntity);
@@ -95,12 +95,13 @@ export class SitemapService {
     updateSitemapDto: UpdateSitemapDto,
   ): Promise<boolean> {
     if (
-      sitemapEntity.sitemapUrls.length !== updateSitemapDto.sitemapUrls.length
+      sitemapEntity.sitemapUrl.urls.length !==
+      updateSitemapDto.sitemapUrls.length
     )
       return false;
     console.time('checkSites');
 
-    const dbUrls = new Set(sitemapEntity.sitemapUrls);
+    const dbUrls = new Set(sitemapEntity.sitemapUrl.urls);
 
     for (let i = 0; i < updateSitemapDto.sitemapUrls.length; i++) {
       const url = updateSitemapDto.sitemapUrls[i];
