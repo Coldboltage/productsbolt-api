@@ -32,6 +32,7 @@ import { OpenTelemetryModule } from 'nestjs-otel';
 import { rabbitmqSchema } from './config/rabbitmq/rabbitmq.schema';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { ShopProductBacklistUrlModule } from './shop-product-backlist-url/shop-product-backlist-url.module';
+import { SitemapUrlModule } from './sitemap-url/sitemap-url.module';
 
 @Module({
   imports: [
@@ -98,6 +99,7 @@ import { ShopProductBacklistUrlModule } from './shop-product-backlist-url/shop-p
     ShopListingModule,
     OpenTelemetryModule.forRoot(),
     ShopProductBacklistUrlModule,
+    SitemapUrlModule,
   ],
   controllers: [AppController],
   providers: [AppService],

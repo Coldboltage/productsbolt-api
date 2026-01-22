@@ -6,11 +6,15 @@ import { Sitemap } from './entities/sitemap.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { ShopService } from '../shop/shop.service';
 import { ShopProductService } from 'src/shop-product/shop-product.service';
+import { SitemapUrl } from 'src/sitemap-url/entities/sitemap-url.entity';
 
 @Injectable()
 export class SitemapService {
   constructor(
     @InjectRepository(Sitemap) private sitemapRepository: Repository<Sitemap>,
+    @InjectRepository(SitemapUrl)
+    private sitemapUrlRepository: Repository<SitemapUrl>,
+
     private shopService: ShopService,
     private shopProductService: ShopProductService,
   ) {}
@@ -33,6 +37,7 @@ export class SitemapService {
     return this.sitemapRepository.save({
       ...createSitemapDto,
       shop: shopEntity,
+      sitemapUrl: { urls: [''] },
     });
   }
 
@@ -43,7 +48,7 @@ export class SitemapService {
       const sitemapEntity = await this.create({
         isShopifySite: shop.isShopifySite,
         shopId: shop.id,
-        sitemapUrls: shop.sitemapEntity.sitemapUrls,
+        sitemapUrls: [''],
         sitemap: shop.sitemap,
       });
       console.log(sitemapEntity);
@@ -64,6 +69,15 @@ export class SitemapService {
     });
   }
 
+  async findAllWithSitemapUrl(): Promise<Sitemap[]> {
+    return this.sitemapRepository.find({
+      relations: {
+        shop: true,
+        sitemapUrl: true,
+      },
+    });
+  }
+
   async findOne(id: string): Promise<Sitemap> {
     return this.sitemapRepository.findOne({
       where: {
@@ -71,6 +85,7 @@ export class SitemapService {
       },
       relations: {
         shop: true,
+        sitemapUrl: true,
       },
     });
   }
@@ -80,12 +95,13 @@ export class SitemapService {
     updateSitemapDto: UpdateSitemapDto,
   ): Promise<boolean> {
     if (
-      sitemapEntity.sitemapUrls.length !== updateSitemapDto.sitemapUrls.length
+      sitemapEntity.sitemapUrl.urls.length !==
+      updateSitemapDto.sitemapUrls.length
     )
       return false;
     console.time('checkSites');
 
-    const dbUrls = new Set(sitemapEntity.sitemapUrls);
+    const dbUrls = new Set(sitemapEntity.sitemapUrl.urls);
 
     for (let i = 0; i < updateSitemapDto.sitemapUrls.length; i++) {
       const url = updateSitemapDto.sitemapUrls[i];
@@ -118,7 +134,12 @@ export class SitemapService {
     sameSites = await this.checkSiteMapLoop(sitemapEntity, updateSitemapDto);
 
     if (!sameSites) {
-      await this.update(id, updateSitemapDto);
+      await this.update(id, {
+        ...updateSitemapDto,
+      });
+      await this.sitemapUrlRepository.update(sitemapEntity.sitemapUrl.id, {
+        urls: updateSitemapDto.sitemapUrls || [''],
+      });
       console.log('updating shopProduct links');
     } else {
       console.log('no need to update shopProduct links');

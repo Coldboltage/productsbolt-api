@@ -8,6 +8,7 @@ import {
   Unique,
 } from 'typeorm';
 import { Shop } from '../../shop/entities/shop.entity';
+import { SitemapUrl } from 'src/sitemap-url/entities/sitemap-url.entity';
 
 @Entity()
 @Unique(['shop', 'id'])
@@ -18,8 +19,8 @@ export class Sitemap {
   @Column()
   sitemap: string;
 
-  @Column({ type: 'simple-array', default: '' })
-  sitemapUrls: string[];
+  // @Column({ type: 'simple-array', default: '' })
+  // sitemapUrls: string[];
 
   @Column({ default: false })
   isShopifySite: boolean;
@@ -57,4 +58,9 @@ export class Sitemap {
   @Index({ unique: true })
   @JoinColumn()
   shop: Shop;
+
+  @OneToOne(() => SitemapUrl, (sitemapUrl) => sitemapUrl.sitemap, {
+    cascade: ['insert', 'update'],
+  })
+  sitemapUrl: SitemapUrl;
 }
