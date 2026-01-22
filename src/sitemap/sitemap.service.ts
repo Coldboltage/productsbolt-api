@@ -132,14 +132,17 @@ export class SitemapService {
     let sameSites = true;
 
     sameSites = await this.checkSiteMapLoop(sitemapEntity, updateSitemapDto);
+    console.log(sameSites);
 
     if (!sameSites) {
-      await this.update(id, {
-        ...updateSitemapDto,
-      });
+      console.log(sitemapEntity.sitemapUrl.id);
       await this.sitemapUrlRepository.update(sitemapEntity.sitemapUrl.id, {
         urls: updateSitemapDto.sitemapUrls || [''],
       });
+      await this.update(id, {
+        ...updateSitemapDto,
+      });
+
       console.log('updating shopProduct links');
     } else {
       console.log('no need to update shopProduct links');
@@ -168,7 +171,9 @@ export class SitemapService {
     id: string,
     updateSitemapDto: UpdateSitemapDto,
   ): Promise<UpdateResult> {
-    const result = await this.sitemapRepository.update(id, updateSitemapDto);
+    const { sitemapUrls, ...rest } = updateSitemapDto;
+    await this.sitemapRepository.update(id, rest);
+    const result = await this.sitemapRepository.update(id, rest);
     console.log('updating shopProduct links');
     const sitemapEntity = await this.findOne(id);
     const shopEntity = sitemapEntity.shop;

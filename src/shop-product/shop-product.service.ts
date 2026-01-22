@@ -468,7 +468,9 @@ export class ShopProductService {
       relations: {
         product: true,
         shop: {
-          sitemapEntity: true,
+          sitemapEntity: {
+            sitemapUrl: true,
+          },
         },
         webPage: true,
         shopProductBlacklistUrls: {
