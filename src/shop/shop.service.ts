@@ -16,7 +16,6 @@ import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { Sitemap } from '../sitemap/entities/sitemap.entity';
 import { ProductListingsCheckInterface } from './dto/product-listings-check.dto';
 import { Span } from 'nestjs-otel/lib/tracing/decorators/span';
-import { SitemapUrl } from 'src/sitemap-url/entities/sitemap-url.entity';
 
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
@@ -134,7 +133,7 @@ export class ShopService implements OnApplicationBootstrap {
   }
 
   async updateSpecificShopSitemap(shopId: string): Promise<void> {
-    const shop = await this.findOne(shopId);
+    const shop = await this.findOneWithSitemapUrls(shopId);
     console.log(shop.sitemapEntity);
     if (
       shop.sitemapEntity.isShopifySite &&
@@ -230,6 +229,23 @@ export class ShopService implements OnApplicationBootstrap {
       },
       relations: {
         sitemapEntity: true,
+        shopProducts: {
+          webPage: true,
+        },
+        shopListings: true,
+      },
+    });
+  }
+
+  async findOneWithSitemapUrls(id: string): Promise<Shop> {
+    return this.shopsRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        sitemapEntity: {
+          sitemapUrl: true,
+        },
         shopProducts: {
           webPage: true,
         },
