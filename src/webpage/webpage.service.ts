@@ -630,7 +630,7 @@ export class WebpageService {
           //   shopProduct,
           //   webpage: shopProduct.webPage,
           // })
-          const result = sitemapUrls.has(shopProduct.webPage.url)
+          const result = sitemapUrls.has(shopProduct.webPage?.url)
             ? false
             : true;
           // console.log(result);
@@ -641,7 +641,9 @@ export class WebpageService {
       });
       activeShopProducts.push(...shopActiveShopProducts);
     }
-    console.log(activeShopProducts.length);
-    return activeShopProducts.map((shopProduct) => shopProduct.webPage.url);
+    console.log(activeShopProducts);
+    return activeShopProducts.length > 0
+      ? activeShopProducts.map((shopProduct) => shopProduct.webPage.url)
+      : [];
   }
 }
