@@ -16,6 +16,7 @@ import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { Sitemap } from '../sitemap/entities/sitemap.entity';
 import { ProductListingsCheckInterface } from './dto/product-listings-check.dto';
 import { Span } from 'nestjs-otel/lib/tracing/decorators/span';
+import { SitemapUrl } from 'src/sitemap-url/entities/sitemap-url.entity';
 
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
@@ -200,6 +201,24 @@ export class ShopService implements OnApplicationBootstrap {
       where: {},
       relations: {
         shopProducts: true,
+      },
+    });
+  }
+
+  async findShopsWithActiveShopProducts(): Promise<Shop[]> {
+    return this.shopsRepository.find({
+      where: {
+        shopProducts: {
+          populated: true,
+        },
+      },
+      relations: {
+        shopProducts: {
+          webPage: true,
+        },
+        sitemapEntity: {
+          sitemapUrl: true,
+        },
       },
     });
   }

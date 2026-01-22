@@ -22,6 +22,7 @@ import { ProductService } from '../product/product.service';
 import { AlertService } from '../alert/alert.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Span } from 'nestjs-otel';
+import { ShopService } from 'src/shop/shop.service';
 
 @Injectable()
 export class WebpageService {
@@ -32,6 +33,7 @@ export class WebpageService {
     private shopProductService: ShopProductService,
     private productService: ProductService,
     private alertService: AlertService,
+    private shopService: ShopService,
   ) {}
 
   async onApplicationBootstrap() {
@@ -611,5 +613,20 @@ export class WebpageService {
       (webpage) => ((webpage.alertCount = 6), (webpage.disable = false)),
     );
     await this.webpagesRepository.save(webpageEntities);
+  }
+
+  async doesWebpageExistInSitemap() {
+    const shopEntities =
+      await this.shopService.findShopsWithActiveShopProducts();
+    for (const shop of shopEntities) {
+      const sitemapUrls = new Set(shop.sitemapEntity.sitemapUrl.urls);
+      const activeShopProducts = shop.shopProducts.filter((shopProduct) => {
+        const populated = shopProduct.populated === true;
+        if (populated) {
+          return sitemapUrls.has(shopProduct.webPage.url) ? true : false;
+        }
+      });
+      return activeShopProducts.map((shopProduct) => shopProduct.webPage);
+    }
   }
 }
