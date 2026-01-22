@@ -626,7 +626,7 @@ export class WebpageService {
           return sitemapUrls.has(shopProduct.webPage.url) ? true : false;
         }
       });
-      return activeShopProducts.map((shopProduct) => shopProduct.webPage);
+      return activeShopProducts.map((shopProduct) => shopProduct.webPage.url);
     }
   }
 }
