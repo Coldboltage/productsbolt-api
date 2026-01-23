@@ -92,6 +92,11 @@ export class WebpageController {
     return this.webpageService.findAllWithoutCache();
   }
 
+  @Get('does-webpage-exist-in-sitemap')
+  doesWebpageExistInSitemap() {
+    return this.webpageService.doesWebpageExistInSitemap();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Webpage> {
     return this.webpageService.findOne(id);

@@ -133,7 +133,7 @@ export class ShopService implements OnApplicationBootstrap {
   }
 
   async updateSpecificShopSitemap(shopId: string): Promise<void> {
-    const shop = await this.findOne(shopId);
+    const shop = await this.findOneWithSitemapUrls(shopId);
     console.log(shop.sitemapEntity);
     if (
       shop.sitemapEntity.isShopifySite &&
@@ -204,6 +204,24 @@ export class ShopService implements OnApplicationBootstrap {
     });
   }
 
+  async findShopsWithActiveShopProducts(): Promise<Shop[]> {
+    return this.shopsRepository.find({
+      where: {
+        shopProducts: {
+          populated: true,
+        },
+      },
+      relations: {
+        shopProducts: {
+          webPage: true,
+        },
+        sitemapEntity: {
+          sitemapUrl: true,
+        },
+      },
+    });
+  }
+
   async findOne(id: string): Promise<Shop> {
     return this.shopsRepository.findOne({
       where: {
@@ -211,6 +229,23 @@ export class ShopService implements OnApplicationBootstrap {
       },
       relations: {
         sitemapEntity: true,
+        shopProducts: {
+          webPage: true,
+        },
+        shopListings: true,
+      },
+    });
+  }
+
+  async findOneWithSitemapUrls(id: string): Promise<Shop> {
+    return this.shopsRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        sitemapEntity: {
+          sitemapUrl: true,
+        },
         shopProducts: {
           webPage: true,
         },

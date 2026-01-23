@@ -22,6 +22,8 @@ import { ProductService } from '../product/product.service';
 import { AlertService } from '../alert/alert.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Span } from 'nestjs-otel';
+import { ShopService } from 'src/shop/shop.service';
+import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
 
 @Injectable()
 export class WebpageService {
@@ -32,6 +34,7 @@ export class WebpageService {
     private shopProductService: ShopProductService,
     private productService: ProductService,
     private alertService: AlertService,
+    private shopService: ShopService,
   ) {}
 
   async onApplicationBootstrap() {
@@ -611,5 +614,36 @@ export class WebpageService {
       (webpage) => ((webpage.alertCount = 6), (webpage.disable = false)),
     );
     await this.webpagesRepository.save(webpageEntities);
+  }
+
+  async doesWebpageExistInSitemap() {
+    const shopEntities =
+      await this.shopService.findShopsWithActiveShopProducts();
+    console.log(shopEntities.length);
+    const activeShopProducts: ShopProduct[] = [];
+    for (const shop of shopEntities) {
+      const sitemapUrls = new Set(shop.sitemapEntity.sitemapUrl.urls);
+      const shopActiveShopProducts = shop.shopProducts.filter((shopProduct) => {
+        const populated = shopProduct.populated;
+        if (populated) {
+          // console.log({
+          //   shopProduct,
+          //   webpage: shopProduct.webPage,
+          // })
+          const result = sitemapUrls.has(shopProduct.webPage?.url)
+            ? false
+            : true;
+          // console.log(result);
+          return result;
+        } else {
+          return false;
+        }
+      });
+      activeShopProducts.push(...shopActiveShopProducts);
+    }
+    console.log(activeShopProducts);
+    return activeShopProducts.length > 0
+      ? activeShopProducts.map((shopProduct) => shopProduct.webPage.url)
+      : [];
   }
 }
