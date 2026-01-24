@@ -112,6 +112,7 @@ export class CandidatePageService {
       confirmed: page.candidatePageCache.confirmed,
       count: page.candidatePageCache.count,
       cloudflare: page.shopProduct.shop.cloudflare,
+      variantId: page.variantId,
     };
     console.log(page);
     if (page.shopProduct.shop.isShopifySite === true) {

@@ -312,12 +312,16 @@ export class WebpageService {
 
     if (!raw?.id) return null;
 
-    return this.webpagesRepository.findOne({
+    const webpageEntity = await this.webpagesRepository.findOne({
       where: { id: raw.id },
       relations: {
         shopProduct: true,
       },
     });
+
+    await this.webpagesRepository.update(webpageEntity.id, { inspected: true });
+
+    return webpageEntity;
   }
 
   async showAllWebpagesForAlert(id: string): Promise<Webpage[]> {
@@ -437,6 +441,7 @@ export class WebpageService {
         confirmed: page.webpageCache.confirmed,
         count: page.webpageCache.count,
         cloudflare: page.shopProduct.shop.cloudflare,
+        variantId: page.variantId,
       };
       if (page.shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
@@ -466,6 +471,7 @@ export class WebpageService {
         confirmed: page.webpageCache.confirmed,
         count: page.webpageCache.count,
         cloudflare: page.shopProduct.shop.cloudflare,
+        variantId: page.variantId,
       };
       if (page.shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
@@ -490,6 +496,7 @@ export class WebpageService {
       confirmed: page.webpageCache.confirmed,
       count: page.webpageCache.count,
       cloudflare: page.shopProduct.shop.cloudflare,
+      variantId: page.variantId,
     };
     console.log(page);
     if (page.shopProduct.shop.isShopifySite === true) {

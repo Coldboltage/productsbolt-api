@@ -52,6 +52,9 @@ export class CandidatePage {
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   lastScanned: Date;
 
+  @Column({ nullable: true, default: null })
+  variantId: null | string;
+
   @OneToOne(
     () => CandidatePageCache,
     (candidatePageCache) => candidatePageCache.candidatePage,

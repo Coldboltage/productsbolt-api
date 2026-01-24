@@ -52,6 +52,9 @@ export class Webpage {
   @Column({ default: false })
   inspected: boolean;
 
+  @Column({ default: null, nullable: true })
+  variantId: string;
+
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   lastScanned: Date;
 
@@ -89,6 +92,7 @@ export class CheckPageDto {
   confirmed: boolean;
   count: number;
   cloudflare: boolean;
+  variantId: null | string;
 }
 
 export class ProductToWebpageInterface {
