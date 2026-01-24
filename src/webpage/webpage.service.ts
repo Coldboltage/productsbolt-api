@@ -298,6 +298,28 @@ export class WebpageService {
     return response;
   }
 
+  async findPageToBeInspected(inspected = false) {
+    const raw = await this.webpagesRepository
+      .createQueryBuilder('page')
+      .select('page.id', 'id')
+      .innerJoin('page.shopProduct', 'sp')
+      .innerJoin('sp.shop', 'shop')
+      .where('page.inspected = :inspected', { inspected })
+      .andWhere('shop.active = true')
+      .orderBy('RANDOM()')
+      .limit(1)
+      .getRawOne<{ id: string }>();
+
+    if (!raw?.id) return null;
+
+    return this.webpagesRepository.findOne({
+      where: { id: raw.id },
+      relations: {
+        shopProduct: true,
+      },
+    });
+  }
+
   async showAllWebpagesForAlert(id: string): Promise<Webpage[]> {
     const alertEntity = await this.findOne(id);
     return this.findAllByProduct(alertEntity.id);

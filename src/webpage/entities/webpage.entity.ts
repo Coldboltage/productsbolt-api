@@ -49,6 +49,9 @@ export class Webpage {
   @Column({ default: '' })
   pageAllText: string;
 
+  @Column({ default: false })
+  inspected: boolean;
+
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   lastScanned: Date;
 

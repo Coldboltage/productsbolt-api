@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { WebpageService } from './webpage.service';
 import { CreateWebpageDto } from './dto/create-webpage.dto';
@@ -95,6 +96,11 @@ export class WebpageController {
   @Get('does-webpage-exist-in-sitemap')
   doesWebpageExistInSitemap() {
     return this.webpageService.doesWebpageExistInSitemap();
+  }
+
+  @Get('/find-page-inspected/:inspected')
+  findPageToBeInspected(@Param('inspected', ParseBoolPipe) inspected: boolean) {
+    return this.webpageService.findPageToBeInspected(inspected);
   }
 
   @Get(':id')
