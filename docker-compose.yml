@@ -86,16 +86,17 @@ services:
     networks:
       - productsbolt_net
 
-  services:
   renderer:
-    image: ghcr.io/browserless/chromium
+    image: ghcr.io/browserless/chromium:latest
+    container_name: renderer
     ports:
       - '4000:3000'
     environment:
-      - TOKEN=change_me
-      - CONCURRENT=4
-      - QUEUE_LENGTH=20
-      - TIMEOUT=60000
+      TOKEN: change_me
+      CONCURRENT: '4'
+      QUEUE_LENGTH: '20'
+      TIMEOUT: '60000'
+    shm_size: '2gb'
     restart: unless-stopped
     networks:
       - productsbolt_net
