@@ -10,6 +10,8 @@ import { CheckPageDto } from 'src/webpage/entities/webpage.entity';
 import { ClientProxy } from '@nestjs/microservices';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { RemoveWebpageDto } from 'src/webpage/dto/remove-webpage.dto';
+import { WebpageService } from 'src/webpage/webpage.service';
+import { CreateWebpageDto } from 'src/webpage/dto/create-webpage.dto';
 
 @Injectable()
 export class CandidatePageService {
@@ -18,6 +20,7 @@ export class CandidatePageService {
     @Inject('HEADLESS_CLIENT') private readonly headlessClient: ClientProxy,
     @InjectRepository(CandidatePage)
     private candidatePageRepository: Repository<CandidatePage>,
+    private webpageService: WebpageService,
     private shopProductService: ShopProductService,
     private eventEmitter: EventEmitter2,
   ) {}
@@ -52,6 +55,7 @@ export class CandidatePageService {
         currencyCode: createCandidatePageDto.currencyCode,
         reason: createCandidatePageDto.reason,
         priceCheck: createCandidatePageDto.priceCheck,
+        editionMatch: createCandidatePageDto.editionMatch,
       });
       const createCandidatePageDtoWithId = {
         ...createCandidatePageDto,
@@ -124,6 +128,31 @@ export class CandidatePageService {
     }
   }
 
+  async findAllPriceMatchEditionMatch() {
+    return this.candidatePageRepository.find({
+      where: {
+        priceCheck: true,
+        editionMatch: true,
+      },
+      relations: {
+        shopProduct: true,
+      },
+      select: {
+        id: true,
+        url: true,
+        price: true,
+        reason: true,
+        pageTitle: true,
+        shopProduct: {
+          id: true,
+          name: true,
+          shopId: true,
+          links: true,
+        },
+      },
+    });
+  }
+
   findAll() {
     return `This action returns all candidatePage`;
   }
@@ -145,8 +174,14 @@ export class CandidatePageService {
     return this.candidatePageRepository.update(id, updateCandidatePageDto);
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} candidatePage`;
+  @OnEvent('remove.candidatePage')
+  async remove(id: string) {
+    const candidatePageEntity = await this.candidatePageRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    return this.candidatePageRepository.remove(candidatePageEntity);
   }
 
   @OnEvent('webpage.remove')
@@ -169,7 +204,7 @@ export class CandidatePageService {
 
   @Cron(CronExpression.EVERY_5_MINUTES)
   async removeNull() {
-    return this.candidatePageRepository.find({
+    const candidatePages = await this.candidatePageRepository.find({
       relations: {
         shopProduct: true,
       },
@@ -177,5 +212,26 @@ export class CandidatePageService {
         shopProduct: IsNull(),
       },
     });
+    for (const candidatePage of candidatePages) {
+      await this.remove(candidatePage.id);
+    }
   }
+
+  // async createWebpageRemoveCandidatePage(id: string) {
+  //   const candidatePage = await this.findOne(id);
+  //   const webpageDto: CreateWebpageDto = {
+  //     url: candidatePage.url,
+  //     shopWebsite: candidatePage.shopProduct.shop.name,
+  //     inStock: candidatePage.inStock,
+  //     price: candidatePage.price,
+  //     currencyCode: candidatePage.currencyCode,
+  //     productName: candidatePage.shopProduct.name,
+  //     productId: candidatePage.shopProduct.productId,
+  //     shopId: candidatePage.shopProduct.id,
+  //     reason: candidatePage.reason,
+  //   };
+  //   const webpageEntity = await this.webpageService.create(webpageDto);
+  //   await this.remove(id);
+  //   return webpageEntity;
+  // }
 }

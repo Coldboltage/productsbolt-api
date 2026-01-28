@@ -48,4 +48,7 @@ export class CreateCandidatePageDto {
 
   @IsBoolean()
   priceCheck: boolean;
+
+  @IsBoolean()
+  editionMatch: boolean;
 }

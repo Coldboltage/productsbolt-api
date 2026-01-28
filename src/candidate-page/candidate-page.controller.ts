@@ -28,6 +28,11 @@ export class CandidatePageController {
     return this.candidatePageService.checkPage(id);
   }
 
+  @Get('find-all-price-match-edition-match')
+  findAllPriceMatchEditionMatch() {
+    return this.candidatePageService.findAllPriceMatchEditionMatch();
+  }
+
   @Get()
   findAll() {
     return this.candidatePageService.findAll();
@@ -46,8 +51,13 @@ export class CandidatePageController {
     return this.candidatePageService.update(id, updateCandidatePageDto);
   }
 
+  @Delete('remove-shop-product-null')
+  removeShopProductNull() {
+    return this.candidatePageService.removeNull();
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.candidatePageService.remove(+id);
+    return this.candidatePageService.remove(id);
   }
 }

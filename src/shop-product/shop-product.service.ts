@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateShopProductDto } from './dto/update-shop-product.dto';
-import { OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ShopProduct } from './entities/shop-product.entity';
 import { FindManyOptions, Repository, UpdateResult } from 'typeorm';
@@ -22,6 +22,7 @@ export class ShopProductService {
     private shopProductRepository: Repository<ShopProduct>,
     private shopService: ShopService,
     private productService: ProductService,
+    private eventemitter: EventEmitter2,
   ) {}
   async onApplicationBootstrap() {
     // Force the client to connect so we can inspect it
@@ -1441,10 +1442,14 @@ export class ShopProductService {
 
     console.log(shopProductEntity);
 
-    if (shopProductEntity) {
-      shopProductEntity.candidatePages = null;
-      await this.shopProductRepository.save(shopProductEntity);
+    for (const candidatePage of shopProductEntity.candidatePages) {
+      this.eventemitter.emit('remove.candidatePage', candidatePage.id);
     }
+
+    // if (shopProductEntity) {
+    //   shopProductEntity.candidatePages = null;
+    //   await this.shopProductRepository.save(shopProductEntity);
+    // }
   }
 
   async update(

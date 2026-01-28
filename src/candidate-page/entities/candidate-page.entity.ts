@@ -58,6 +58,9 @@ export class CandidatePage {
   @Column({ default: false })
   priceCheck: boolean;
 
+  @Column({ default: false })
+  editionMatch: boolean;
+
   @OneToOne(
     () => CandidatePageCache,
     (candidatePageCache) => candidatePageCache.candidatePage,
