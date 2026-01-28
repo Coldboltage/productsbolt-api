@@ -25,6 +25,9 @@ export class Product {
   @Column()
   context: string;
 
+  @Column({ default: 0 })
+  price: number;
+
   @OneToMany(() => Alert, (alerts) => alerts.product)
   alerts: Alert[];
 

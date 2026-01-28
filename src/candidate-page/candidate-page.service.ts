@@ -5,10 +5,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CandidatePage } from './entities/candidate-page.entity';
 import { IsNull, Repository } from 'typeorm';
 import { ShopProductService } from 'src/shop-product/shop-product.service';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { CheckPageDto } from 'src/webpage/entities/webpage.entity';
 import { ClientProxy } from '@nestjs/microservices';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { RemoveWebpageDto } from 'src/webpage/dto/remove-webpage.dto';
 
 @Injectable()
 export class CandidatePageService {
@@ -50,6 +51,7 @@ export class CandidatePageService {
         inStock: createCandidatePageDto.inStock,
         currencyCode: createCandidatePageDto.currencyCode,
         reason: createCandidatePageDto.reason,
+        priceCheck: createCandidatePageDto.priceCheck,
       });
       const createCandidatePageDtoWithId = {
         ...createCandidatePageDto,
@@ -143,8 +145,26 @@ export class CandidatePageService {
     return this.candidatePageRepository.update(id, updateCandidatePageDto);
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     return `This action removes a #${id} candidatePage`;
+  }
+
+  @OnEvent('webpage.remove')
+  async removeByShopProductId(removeWebpageDto: RemoveWebpageDto) {
+    console.log('webpage.remove event fired');
+    const candidatePageEntity = await this.candidatePageRepository.findOne({
+      where: {
+        url: removeWebpageDto.url,
+        shopProduct: {
+          id: removeWebpageDto.shopProductId,
+        },
+      },
+      relations: {
+        shopProduct: true,
+      },
+    });
+    if (candidatePageEntity === null) return;
+    await this.candidatePageRepository.remove(candidatePageEntity);
   }
 
   @Cron(CronExpression.EVERY_5_MINUTES)

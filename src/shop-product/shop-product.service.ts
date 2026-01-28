@@ -86,6 +86,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        expectedPrice: shopProduct.product.price,
         links: [],
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
@@ -206,6 +207,7 @@ export class ShopProductService {
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
       cloudflare: shopProduct.shop.cloudflare,
+      expectedPrice: shopProduct.product.price,
       links: [],
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
@@ -311,6 +313,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        expectedPrice: shopProduct.product.price,
         links: [],
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
@@ -420,6 +423,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        expectedPrice: shopProduct.product.price,
         links: [],
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
@@ -530,6 +534,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        expectedPrice: shopProduct.product.price,
         links: [],
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
@@ -641,6 +646,7 @@ export class ShopProductService {
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
         links: shopProduct.links,
+        expectedPrice: shopProduct.product.price,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           sitemapUrls: [],
@@ -758,6 +764,7 @@ export class ShopProductService {
           shopifySite: shopProduct.shop.isShopifySite,
           shopType: shopProduct.shop.uniqueShopType,
           cloudflare: shopProduct.shop.cloudflare,
+          expectedPrice: shopProduct.product.price,
           links: shopProduct.links,
           sitemapEntity: {
             ...shopProduct.shop.sitemapEntity,
@@ -907,6 +914,7 @@ export class ShopProductService {
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
         links: shopProduct.links,
+        expectedPrice: shopProduct.product.price,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           sitemapUrls: [],
@@ -1013,6 +1021,7 @@ export class ShopProductService {
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
         links: shopProduct.links,
+        expectedPrice: shopProduct.product.price,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           sitemapUrls: [],
@@ -1133,6 +1142,7 @@ export class ShopProductService {
       shopType: shopProduct.shop.uniqueShopType,
       cloudflare: shopProduct.shop.cloudflare,
       links: shopProduct.links,
+      expectedPrice: shopProduct.product.price,
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
         shopId: shopProduct.shop.id,
@@ -1224,6 +1234,7 @@ export class ShopProductService {
       shopType: shopProduct.shop.uniqueShopType,
       cloudflare: shopProduct.shop.cloudflare,
       links: shopProduct.links,
+      expectedPrice: shopProduct.product.price,
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
         shopId: shopProduct.shop.id,
@@ -1313,6 +1324,7 @@ export class ShopProductService {
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
         links: shopProduct.links,
+        expectedPrice: shopProduct.product.price,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           shopId: shopProduct.shop.id,

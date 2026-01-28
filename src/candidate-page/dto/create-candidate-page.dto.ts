@@ -45,4 +45,7 @@ export class CreateCandidatePageDto {
 
   @IsString()
   pageTitle: string;
+
+  @IsBoolean()
+  priceCheck: boolean;
 }

@@ -68,6 +68,9 @@ export class CreateProcessDto {
   @IsNumber()
   count: number;
 
+  @IsNumber()
+  expectedPrice: number;
+
   @IsArray()
   @IsString()
   links: string[];

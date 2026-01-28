@@ -24,6 +24,8 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { Span } from 'nestjs-otel';
 import { ShopService } from 'src/shop/shop.service';
 import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { RemoveWebpageDto } from './dto/remove-webpage.dto';
 
 @Injectable()
 export class WebpageService {
@@ -35,6 +37,7 @@ export class WebpageService {
     private productService: ProductService,
     private alertService: AlertService,
     private shopService: ShopService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async onApplicationBootstrap() {
@@ -627,6 +630,10 @@ export class WebpageService {
         webpage.shopProduct,
       );
     }
+    this.eventEmitter.emit('webpage.remove', {
+      url: webpage.url,
+      shopProductId: webpage.shopProduct.id,
+    });
     await this.remove(webpage.id);
     return true;
   }

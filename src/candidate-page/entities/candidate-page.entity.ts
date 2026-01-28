@@ -55,6 +55,9 @@ export class CandidatePage {
   @Column({ nullable: true, default: null })
   variantId: null | string;
 
+  @Column({ default: false })
+  priceCheck: boolean;
+
   @OneToOne(
     () => CandidatePageCache,
     (candidatePageCache) => candidatePageCache.candidatePage,
