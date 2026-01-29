@@ -95,7 +95,7 @@ export class SitemapService {
     updateSitemapDto: UpdateSitemapDto,
   ): Promise<boolean> {
     if (
-      sitemapEntity.sitemapUrl.urls.length !==
+      sitemapEntity.sitemapUrl?.urls?.length !==
       updateSitemapDto.sitemapUrls.length
     )
       return false;
