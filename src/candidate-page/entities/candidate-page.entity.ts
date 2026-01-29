@@ -61,6 +61,9 @@ export class CandidatePage {
   @Column({ default: false })
   editionMatch: boolean;
 
+  @Column({ default: false })
+  inspected: boolean;
+
   @OneToOne(
     () => CandidatePageCache,
     (candidatePageCache) => candidatePageCache.candidatePage,

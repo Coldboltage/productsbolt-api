@@ -87,6 +87,7 @@ export class WebpageService {
     }
 
     const entity = this.webpagesRepository.create(createWebpageDto);
+
     const shopProductEntity = await this.shopProductService.findOneByProductId(
       createWebpageDto.productId,
       createWebpageDto.shopId,
@@ -134,9 +135,12 @@ export class WebpageService {
     });
     console.log(`Page being created: ${createWebpageDto.url}`);
     console.log(webpageEntity);
-    await this.shopProductService.removeCandidatePageFromShopProduct(
-      webpageEntity.url,
-    );
+    if (shopProductEntity.candidatePages) {
+      await this.shopProductService.removeCandidatePageFromShopProduct(
+        webpageEntity.url,
+      );
+    }
+
     return webpageEntity;
   }
 

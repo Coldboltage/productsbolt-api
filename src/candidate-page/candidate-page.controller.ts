@@ -43,6 +43,11 @@ export class CandidatePageController {
     return this.candidatePageService.findOne(id);
   }
 
+  @Patch('updated-inspected/:id')
+  updatedInspected(@Param('id') id: string) {
+    return this.candidatePageService.updateInspected(id);
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -54,6 +59,11 @@ export class CandidatePageController {
   @Delete('remove-shop-product-null')
   removeShopProductNull() {
     return this.candidatePageService.removeNull();
+  }
+
+  @Delete('create-webpage-delete-candidate-page/:id')
+  createWebpageRemoveCandidatePage(@Param('id') id: string) {
+    return this.candidatePageService.createWebpageRemoveCandidatePage(id);
   }
 
   @Delete(':id')

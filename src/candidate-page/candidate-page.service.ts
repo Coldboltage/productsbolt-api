@@ -56,6 +56,7 @@ export class CandidatePageService {
         reason: createCandidatePageDto.reason,
         priceCheck: createCandidatePageDto.priceCheck,
         editionMatch: createCandidatePageDto.editionMatch,
+        inspected: candidatePageExists.inspected,
       });
       const createCandidatePageDtoWithId = {
         ...createCandidatePageDto,
@@ -133,6 +134,7 @@ export class CandidatePageService {
       where: {
         priceCheck: true,
         editionMatch: true,
+        inspected: false,
       },
       relations: {
         shopProduct: true,
@@ -168,6 +170,10 @@ export class CandidatePageService {
         },
       },
     });
+  }
+
+  async updateInspected(id: string) {
+    return this.update(id, { inspected: true });
   }
 
   async update(id: string, updateCandidatePageDto: UpdateCandidatePageDto) {
@@ -217,21 +223,20 @@ export class CandidatePageService {
     }
   }
 
-  // async createWebpageRemoveCandidatePage(id: string) {
-  //   const candidatePage = await this.findOne(id);
-  //   const webpageDto: CreateWebpageDto = {
-  //     url: candidatePage.url,
-  //     shopWebsite: candidatePage.shopProduct.shop.name,
-  //     inStock: candidatePage.inStock,
-  //     price: candidatePage.price,
-  //     currencyCode: candidatePage.currencyCode,
-  //     productName: candidatePage.shopProduct.name,
-  //     productId: candidatePage.shopProduct.productId,
-  //     shopId: candidatePage.shopProduct.id,
-  //     reason: candidatePage.reason,
-  //   };
-  //   const webpageEntity = await this.webpageService.create(webpageDto);
-  //   await this.remove(id);
-  //   return webpageEntity;
-  // }
+  async createWebpageRemoveCandidatePage(id: string) {
+    const candidatePage = await this.findOne(id);
+    const webpageDto: CreateWebpageDto = {
+      url: candidatePage.url,
+      shopWebsite: candidatePage.shopProduct.shop.name,
+      inStock: candidatePage.inStock,
+      price: candidatePage.price,
+      currencyCode: candidatePage.currencyCode,
+      productName: candidatePage.shopProduct.name,
+      productId: candidatePage.shopProduct.productId,
+      shopId: candidatePage.shopProduct.shop.id,
+      reason: candidatePage.reason,
+    };
+    await this.webpageService.create(webpageDto);
+    return this.remove(id);
+  }
 }
