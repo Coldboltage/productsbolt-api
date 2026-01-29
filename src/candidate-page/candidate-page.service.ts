@@ -1,4 +1,9 @@
-import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCandidatePageDto } from './dto/create-candidate-page.dto';
 import { UpdateCandidatePageDto } from './dto/update-candidate-page.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -160,7 +165,7 @@ export class CandidatePageService {
   }
 
   async findOne(id: string) {
-    return this.candidatePageRepository.findOne({
+    const candidatePageEntity = await this.candidatePageRepository.findOne({
       where: { id },
       relations: {
         candidatePageCache: true,
@@ -170,6 +175,9 @@ export class CandidatePageService {
         },
       },
     });
+    if (!candidatePageEntity)
+      throw new NotFoundException('candidate_page_not_found');
+    return candidatePageEntity;
   }
 
   async updateInspected(id: string) {

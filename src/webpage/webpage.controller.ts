@@ -103,6 +103,11 @@ export class WebpageController {
     return this.webpageService.findPageToBeInspected(inspected);
   }
 
+  @Get('find-all-price-match-edition-match')
+  findAllPriceMatchEditionMatch() {
+    return this.webpageService.findAllPriceMatchEditionMatch();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Webpage> {
     return this.webpageService.findOne(id);

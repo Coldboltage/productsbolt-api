@@ -428,6 +428,32 @@ export class WebpageService {
     });
   }
 
+  async findAllPriceMatchEditionMatch() {
+    return this.webpagesRepository.find({
+      where: {
+        priceCheck: false,
+        editionMatch: true,
+        inspected: false,
+      },
+      relations: {
+        shopProduct: true,
+      },
+      select: {
+        id: true,
+        url: true,
+        price: true,
+        reason: true,
+        pageTitle: true,
+        shopProduct: {
+          id: true,
+          name: true,
+          shopId: true,
+          links: true,
+        },
+      },
+    });
+  }
+
   @Cron(CronExpression.EVERY_2_HOURS, {
     name: 'updateAllPages',
   })

@@ -58,6 +58,12 @@ export class Webpage {
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   lastScanned: Date;
 
+  @Column({ default: false })
+  priceCheck: boolean;
+
+  @Column({ default: false })
+  editionMatch: boolean;
+
   @OneToOne(() => WebpageCache, (webpageCache) => webpageCache.webpage, {
     cascade: ['insert', 'update'],
   })
