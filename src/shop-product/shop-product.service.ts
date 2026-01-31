@@ -828,6 +828,10 @@ export class ShopProductService {
       );
     }
 
+    // console.log(blackListUrls);
+
+    // await new Promise((r) => setTimeout(r, 20000000));
+
     const shopEntity = await this.shopService.findOne(shopProduct.shopId);
 
     const shopProductUrlList = shopEntity.shopProducts
@@ -838,10 +842,17 @@ export class ShopProductService {
 
     const restrictedUrls = [...blackListUrls, ...shopProductUrlList];
 
-    const limitedUrls = reducedSitemap.filter((url: string) => {
-      return !restrictedUrls.includes(url);
-    });
+    const checks = await Promise.all(
+      reducedSitemap.map(async (url) => {
+        const isRestricted = restrictedUrls.includes(url);
+        const alreadyExists = await this.shopProductRepository.exists({
+          where: { webPage: { url } },
+        });
+        return { url, keep: !isRestricted && !alreadyExists };
+      }),
+    );
 
+    const limitedUrls = checks.filter((x) => x.keep).map((x) => x.url);
     return limitedUrls;
   }
 
@@ -1423,6 +1434,45 @@ export class ShopProductService {
       },
       relations: {
         product: true,
+      },
+    });
+  }
+
+  async findOneByWebpageId(webpageId: string) {
+    return this.shopProductRepository.findOne({
+      where: {
+        webPage: {
+          id: webpageId,
+        },
+      },
+      relations: {
+        webPage: true,
+      },
+    });
+  }
+
+  async findAllByWebpageId(webpageId: string) {
+    return this.shopProductRepository.find({
+      where: {
+        webPage: {
+          id: webpageId,
+        },
+      },
+      relations: {
+        webPage: true,
+      },
+    });
+  }
+
+  async findOneByWebpageUrl(webpageUrl: string) {
+    return this.shopProductRepository.findOne({
+      where: {
+        webPage: {
+          url: webpageUrl,
+        },
+      },
+      relations: {
+        webPage: true,
       },
     });
   }

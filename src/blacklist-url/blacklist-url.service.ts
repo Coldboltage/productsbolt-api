@@ -6,7 +6,6 @@ import { BlackListUrl } from './entities/blacklist-url.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { WebpageService } from '../webpage/webpage.service';
-import { ShopProductBacklistUrlService } from 'src/shop-product-backlist-url/shop-product-backlist-url.service';
 
 @Injectable()
 export class BlackListUrlService {
@@ -15,7 +14,6 @@ export class BlackListUrlService {
     private blackListRepository: Repository<BlackListUrl>,
     private shopProductsService: ShopProductService,
     private webPageService: WebpageService,
-    private shopProductBacklistUrlService: ShopProductBacklistUrlService,
   ) {}
   async create(
     createBlackListUrlDto: CreateBlackListUrlDto,
@@ -33,19 +31,19 @@ export class BlackListUrlService {
       console.log(urlExist);
       blackListEntity = urlExist;
 
-      await this.shopProductBacklistUrlService.create({
-        shopProductId: webpageEntity.shopProduct.id,
-        blackListId: urlExist.id,
-      });
+      // await this.shopProductBacklistUrlService.create({
+      //   shopProductId: webpageEntity.shopProduct.id,
+      //   blackListId: urlExist.id,
+      // });
       // urlExist.shopProducts.push(webpageEntity.shopProduct);
     } else {
       blackListEntity = await this.blackListRepository.save({
         url: webpageEntity.url,
       });
-      await this.shopProductBacklistUrlService.create({
-        shopProductId: webpageEntity.shopProduct.id,
-        blackListId: blackListEntity.id,
-      });
+      // await this.shopProductBacklistUrlService.create({
+      //   shopProductId: webpageEntity.shopProduct.id,
+      //   blackListId: blackListEntity.id,
+      // });
     }
 
     console.log(webpageEntity);

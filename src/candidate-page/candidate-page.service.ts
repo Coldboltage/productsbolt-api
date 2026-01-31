@@ -61,6 +61,7 @@ export class CandidatePageService {
         reason: createCandidatePageDto.reason,
         priceCheck: createCandidatePageDto.priceCheck,
         editionMatch: createCandidatePageDto.editionMatch,
+        packagingTypeMatch: createCandidatePageDto.packagingTypeMatch,
         inspected: candidatePageExists.inspected,
       });
       const createCandidatePageDtoWithId = {
@@ -160,6 +161,41 @@ export class CandidatePageService {
     });
   }
 
+  async findAllEditionMatch() {
+    return this.candidatePageRepository.find({
+      where: {
+        editionMatch: true,
+        packagingTypeMatch: true,
+        inspected: false,
+      },
+      relations: {
+        shopProduct: true,
+      },
+      select: {
+        id: true,
+        url: true,
+        price: true,
+        reason: true,
+        pageTitle: true,
+        priceCheck: true,
+        shopProduct: {
+          id: true,
+          name: true,
+          shopId: true,
+          links: true,
+        },
+      },
+    });
+  }
+
+  async batchUpdatedInspected() {
+    const candidatePagesToInspect = await this.findAllPriceMatchEditionMatch();
+    for (const page of candidatePagesToInspect) {
+      page.inspected = true;
+    }
+    return this.candidatePageRepository.save(candidatePagesToInspect);
+  }
+
   findAll() {
     return `This action returns all candidatePage`;
   }
@@ -246,5 +282,21 @@ export class CandidatePageService {
     };
     await this.webpageService.create(webpageDto);
     return this.remove(id);
+  }
+
+  async removeCandidatePagesWithWebpages() {
+    const candidatePages = await this.candidatePageRepository.find({
+      where: {
+        shopProduct: {
+          populated: true,
+        },
+      },
+      relations: {
+        shopProduct: {
+          webPage: true,
+        },
+      },
+    });
+    await this.candidatePageRepository.remove(candidatePages);
   }
 }

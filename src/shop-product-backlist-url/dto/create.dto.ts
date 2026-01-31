@@ -1,4 +1,4 @@
-import { IsUUID } from 'class-validator';
+import { IsUrl, IsUUID } from 'class-validator';
 
 export class CreateShopProductBlacklistUrlDto {
   @IsUUID()
@@ -6,4 +6,7 @@ export class CreateShopProductBlacklistUrlDto {
 
   @IsUUID()
   blackListId: string;
+
+  @IsUrl()
+  webpageUrl: string;
 }

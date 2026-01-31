@@ -91,6 +91,11 @@ export class ShopProductController {
     return this.shopProductService.findAll();
   }
 
+  @Get('find-all-by-webpage-url/:webpageId')
+  findAllByWebpageUrl(@Param('webpageId') webpageId: string) {
+    return this.shopProductService.findAllByWebpageId(webpageId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<ShopProduct> {
     return this.shopProductService.findOne(id);

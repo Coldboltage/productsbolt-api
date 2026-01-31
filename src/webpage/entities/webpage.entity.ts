@@ -64,6 +64,9 @@ export class Webpage {
   @Column({ default: false })
   editionMatch: boolean;
 
+  @Column({ default: false })
+  packagingTypeMatch: boolean;
+
   @OneToOne(() => WebpageCache, (webpageCache) => webpageCache.webpage, {
     cascade: ['insert', 'update'],
   })

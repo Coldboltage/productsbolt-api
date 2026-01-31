@@ -64,6 +64,12 @@ export class CandidatePage {
   @Column({ default: false })
   inspected: boolean;
 
+  @Column({ default: false })
+  packagingTypeMatch: boolean;
+
+  @Column({ default: false })
+  inspecpackagingTypeMatchted: boolean;
+
   @OneToOne(
     () => CandidatePageCache,
     (candidatePageCache) => candidatePageCache.candidatePage,

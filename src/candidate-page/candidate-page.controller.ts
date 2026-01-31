@@ -33,6 +33,11 @@ export class CandidatePageController {
     return this.candidatePageService.findAllPriceMatchEditionMatch();
   }
 
+  @Get('find-all-edition-match-only')
+  findAllEditionMatch() {
+    return this.candidatePageService.findAllEditionMatch();
+  }
+
   @Get()
   findAll() {
     return this.candidatePageService.findAll();
@@ -41,6 +46,11 @@ export class CandidatePageController {
   @Get(':id')
   findOne(@Param('id') id: string): Promise<CandidatePage> {
     return this.candidatePageService.findOne(id);
+  }
+
+  @Patch('batch-updated-inspected')
+  batchUpdatedInspected(): Promise<CandidatePage[]> {
+    return this.candidatePageService.batchUpdatedInspected();
   }
 
   @Patch('updated-inspected/:id')
@@ -64,6 +74,11 @@ export class CandidatePageController {
   @Delete('create-webpage-delete-candidate-page/:id')
   createWebpageRemoveCandidatePage(@Param('id') id: string) {
     return this.candidatePageService.createWebpageRemoveCandidatePage(id);
+  }
+
+  @Delete('remove-candidate-page-paired-with-webpage')
+  removeCandidatePagesWithWebpages() {
+    return this.candidatePageService.removeCandidatePagesWithWebpages();
   }
 
   @Delete(':id')

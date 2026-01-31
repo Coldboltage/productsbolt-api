@@ -14,6 +14,7 @@ export class BlackListUrl {
     (shopProductBlacklistUrls) => shopProductBlacklistUrls.blackListUrl,
     {
       onDelete: 'CASCADE',
+      cascade: ['insert', 'update'],
     },
   )
   shopProductBlacklistUrls: ShopProductBlacklistUrl[];
