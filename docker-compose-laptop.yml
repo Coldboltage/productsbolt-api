@@ -101,7 +101,7 @@ services:
       - --model
       - superjob/Qwen3-4B-Instruct-2507-GPTQ-Int4
       - --max-model-len
-      - '4096'
+      - '5600'
       - --gpu-memory-utilization
       - '0.85'
     networks:
