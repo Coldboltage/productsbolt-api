@@ -1477,6 +1477,19 @@ export class ShopProductService {
     });
   }
 
+  async findOneByCandidatePageUrl(candidatePageUrl: string) {
+    return this.shopProductRepository.findOne({
+      where: {
+        candidatePages: {
+          url: candidatePageUrl,
+        },
+      },
+      relations: {
+        candidatePages: true,
+      },
+    });
+  }
+
   async removeCandidatePageFromShopProduct(webpageUrl: string) {
     console.log(webpageUrl);
     const shopProductEntity = await this.shopProductRepository.findOne({

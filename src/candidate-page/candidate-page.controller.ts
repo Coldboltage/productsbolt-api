@@ -49,7 +49,7 @@ export class CandidatePageController {
   }
 
   @Patch('batch-updated-inspected')
-  batchUpdatedInspected(): Promise<CandidatePage[]> {
+  batchUpdatedInspected() {
     return this.candidatePageService.batchUpdatedInspected();
   }
 
