@@ -27,22 +27,22 @@ export class ShopProductBacklistUrlService {
 
     switch (createShopProductBlacklistUrlDto.pageType) {
       case PageType.WP:
-        shopProductEntity = await this.shopProductService.findOneByWebpageUrl(
-          createShopProductBlacklistUrlDto.webpageUrl,
+        shopProductEntity = await this.shopProductService.findOneByWebpageId(
+          createShopProductBlacklistUrlDto.pageId,
         );
         blackListUrlEntity = await this.blacklistUrlService.create({
-          url: createShopProductBlacklistUrlDto.webpageUrl,
+          url: createShopProductBlacklistUrlDto.pageId,
         });
         break;
       case PageType.CP:
         shopProductEntity =
-          await this.shopProductService.findOneByCandidatePageUrl(
-            createShopProductBlacklistUrlDto.webpageUrl,
+          await this.shopProductService.findOneByCandidatePageId(
+            createShopProductBlacklistUrlDto.pageId,
           );
 
         blackListUrlEntity =
           await this.blacklistUrlService.createFromCandidatePage(
-            createShopProductBlacklistUrlDto.webpageUrl,
+            createShopProductBlacklistUrlDto.pageId,
           );
     }
 

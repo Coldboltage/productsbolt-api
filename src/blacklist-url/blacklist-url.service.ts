@@ -20,11 +20,11 @@ export class BlackListUrlService {
   async create(
     createBlackListUrlDto: CreateBlackListUrlDto,
   ): Promise<BlackListUrl> {
-    const webpageEntity = await this.webPageService.findOneByUrl(
+    const webpageEntity = await this.webPageService.findOne(
       createBlackListUrlDto.url,
     );
 
-    const urlExist = await this.findOneByUrl(createBlackListUrlDto.url);
+    const urlExist = await this.findOneByUrl(webpageEntity?.url);
     let blackListEntity: BlackListUrl;
 
     if (!webpageEntity) throw new NotFoundException('webpage_does_not_exist');
@@ -71,9 +71,9 @@ export class BlackListUrlService {
   async createFromCandidatePage(candidatePageByUrl: string) {
     // Find shopProduct related to candidatePage
     const candidatePageEntity =
-      await this.candidatePageService.findOneByUrl(candidatePageByUrl);
+      await this.candidatePageService.findOne(candidatePageByUrl);
 
-    const urlExist = await this.findOneByUrl(candidatePageByUrl);
+    const urlExist = await this.findOneByUrl(candidatePageEntity?.url);
     let blackListEntity: BlackListUrl;
 
     if (!candidatePageEntity)

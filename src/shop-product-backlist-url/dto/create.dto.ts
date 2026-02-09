@@ -1,4 +1,4 @@
-import { IsEnum, IsUrl } from 'class-validator';
+import { IsEnum, IsUrl, IsUUID } from 'class-validator';
 import { PageType } from '../shop-product-blacklist-url.types';
 
 export class CreateShopProductBlacklistUrlDto {
@@ -8,8 +8,8 @@ export class CreateShopProductBlacklistUrlDto {
   // @IsUUID()
   // blackListId: string;
 
-  @IsUrl()
-  webpageUrl: string;
+  @IsUUID()
+  pageId: string;
 
   @IsEnum(PageType)
   pageType: PageType;
