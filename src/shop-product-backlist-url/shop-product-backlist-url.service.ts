@@ -5,6 +5,10 @@ import { CreateShopProductBlacklistUrlDto } from './dto/create.dto';
 import { ShopProductBlacklistUrl } from './entities/shop-product-blacklist-url.entity';
 import { ShopProductService } from 'src/shop-product/shop-product.service';
 import { BlackListUrlService } from 'src/blacklist-url/blacklist-url.service';
+import { PageType } from './shop-product-blacklist-url.types';
+import { BlackListUrl } from 'src/blacklist-url/entities/blacklist-url.entity';
+import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
+import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class ShopProductBacklistUrlService {
@@ -14,21 +18,46 @@ export class ShopProductBacklistUrlService {
     private shopProductService: ShopProductService,
     private blacklistUrlService: BlackListUrlService,
   ) {}
+  @OnEvent('blacklist.candidate.pages')
   async create(
     createShopProductBlacklistUrlDto: CreateShopProductBlacklistUrlDto,
   ): Promise<ShopProductBlacklistUrl> {
-    const shopProductEntity = await this.shopProductService.findOneByWebpageUrl(
-      createShopProductBlacklistUrlDto.webpageUrl,
+    let blackListUrlEntity: BlackListUrl = new BlackListUrl();
+    let shopProductEntity: ShopProduct = new ShopProduct();
+
+    switch (createShopProductBlacklistUrlDto.pageType) {
+      case PageType.WP:
+        shopProductEntity = await this.shopProductService.findOneByWebpageId(
+          createShopProductBlacklistUrlDto.pageId,
+        );
+        blackListUrlEntity = await this.blacklistUrlService.create({
+          url: createShopProductBlacklistUrlDto.pageId,
+        });
+        break;
+      case PageType.CP:
+        shopProductEntity =
+          await this.shopProductService.findOneByCandidatePageId(
+            createShopProductBlacklistUrlDto.pageId,
+          );
+
+        blackListUrlEntity =
+          await this.blacklistUrlService.createFromCandidatePage(
+            createShopProductBlacklistUrlDto.pageId,
+          );
+    }
+
+    const shopProductBlackListEntity =
+      await this.shopProductBlacklistRepository.save({
+        shopProduct: shopProductEntity,
+        blackListUrl: blackListUrlEntity,
+      });
+
+    await this.shopProductService.manualUpdateIndividualShopProductsImmediateLinks(
+      shopProductEntity.id,
+      false,
     );
 
-    const blackListUrlEntity = await this.blacklistUrlService.create({
-      url: createShopProductBlacklistUrlDto.webpageUrl,
-    });
-
-    return this.shopProductBlacklistRepository.save({
-      shopProduct: shopProductEntity,
-      blackListUrl: blackListUrlEntity,
-    });
+    return shopProductBlackListEntity;
   }
 
   async findAll() {

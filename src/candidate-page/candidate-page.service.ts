@@ -165,7 +165,7 @@ export class CandidatePageService {
     return this.candidatePageRepository.find({
       where: {
         editionMatch: true,
-        packagingTypeMatch: true,
+        // packagingTypeMatch: true,
         inspected: false,
       },
       relations: {
@@ -191,9 +191,13 @@ export class CandidatePageService {
   async batchUpdatedInspected() {
     const candidatePagesToInspect = await this.findAllPriceMatchEditionMatch();
     for (const page of candidatePagesToInspect) {
-      page.inspected = true;
+      this.eventEmitter.emit('blacklist.candidate.pages', {
+        webpageUrl: page.url,
+        pageType: 'CP',
+      });
     }
-    return this.candidatePageRepository.save(candidatePagesToInspect);
+    return true;
+    // return this.candidatePageRepository.save(candidatePagesToInspect);
   }
 
   findAll() {
@@ -214,6 +218,18 @@ export class CandidatePageService {
     if (!candidatePageEntity)
       throw new NotFoundException('candidate_page_not_found');
     return candidatePageEntity;
+  }
+
+  async findOneByUrl(url: string): Promise<CandidatePage> {
+    const entity = await this.candidatePageRepository.findOne({
+      where: { url },
+      relations: {
+        shopProduct: {
+          shopProductBlacklistUrls: true,
+        },
+      },
+    });
+    return entity;
   }
 
   async updateInspected(id: string) {

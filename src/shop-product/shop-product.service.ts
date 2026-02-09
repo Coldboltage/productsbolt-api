@@ -1477,6 +1477,32 @@ export class ShopProductService {
     });
   }
 
+  async findOneByCandidatePageId(candidatePageId: string) {
+    return this.shopProductRepository.findOne({
+      where: {
+        candidatePages: {
+          id: candidatePageId,
+        },
+      },
+      relations: {
+        candidatePages: true,
+      },
+    });
+  }
+
+  async findOneByCandidatePageUrl(candidatePageUrl: string) {
+    return this.shopProductRepository.findOne({
+      where: {
+        candidatePages: {
+          url: candidatePageUrl,
+        },
+      },
+      relations: {
+        candidatePages: true,
+      },
+    });
+  }
+
   async removeCandidatePageFromShopProduct(webpageUrl: string) {
     console.log(webpageUrl);
     const shopProductEntity = await this.shopProductRepository.findOne({

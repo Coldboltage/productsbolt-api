@@ -6,6 +6,7 @@ import { BlackListUrl } from './entities/blacklist-url.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { WebpageService } from '../webpage/webpage.service';
+import { CandidatePageService } from 'src/candidate-page/candidate-page.service';
 
 @Injectable()
 export class BlackListUrlService {
@@ -14,15 +15,16 @@ export class BlackListUrlService {
     private blackListRepository: Repository<BlackListUrl>,
     private shopProductsService: ShopProductService,
     private webPageService: WebpageService,
+    private candidatePageService: CandidatePageService,
   ) {}
   async create(
     createBlackListUrlDto: CreateBlackListUrlDto,
   ): Promise<BlackListUrl> {
-    const webpageEntity = await this.webPageService.findOneByUrl(
+    const webpageEntity = await this.webPageService.findOne(
       createBlackListUrlDto.url,
     );
 
-    const urlExist = await this.findOneByUrl(createBlackListUrlDto.url);
+    const urlExist = await this.findOneByUrl(webpageEntity?.url);
     let blackListEntity: BlackListUrl;
 
     if (!webpageEntity) throw new NotFoundException('webpage_does_not_exist');
@@ -62,6 +64,58 @@ export class BlackListUrlService {
       webpageEntity.shopProduct.id,
       false,
     );
+
+    return blackListEntity;
+  }
+
+  async createFromCandidatePage(candidatePageByUrl: string) {
+    // Find shopProduct related to candidatePage
+    const candidatePageEntity =
+      await this.candidatePageService.findOne(candidatePageByUrl);
+
+    const urlExist = await this.findOneByUrl(candidatePageEntity?.url);
+    let blackListEntity: BlackListUrl;
+
+    if (!candidatePageEntity)
+      throw new NotFoundException('candidatePage_does_not_exist');
+
+    if (urlExist) {
+      console.log(urlExist);
+      blackListEntity = urlExist;
+
+      // await this.shopProductBacklistUrlService.create({
+      //   shopProductId: webpageEntity.shopProduct.id,
+      //   blackListId: urlExist.id,
+      // });
+      // urlExist.shopProducts.push(webpageEntity.shopProduct);
+    } else {
+      blackListEntity = await this.blackListRepository.save({
+        url: candidatePageEntity.url,
+      });
+      // await this.shopProductBacklistUrlService.create({
+      //   shopProductId: candidatePageEntity.shopProduct.id,
+      //   blackListId: blackListEntity.id,
+      // });
+    }
+
+    console.log(candidatePageEntity);
+
+    // await this.shopProductsService.update(candidatePageEntity.shopProduct.id, {
+    //   populated: false,
+    // });
+
+    const response = await this.candidatePageService.remove(
+      candidatePageEntity.id,
+    );
+    if (!response) throw new Error('page might not have been deleted');
+
+    // blackListEntity =
+    //   await this.blackListRepository.save<BlackListUrl>(blackListEntity);
+
+    // await this.shopProductsService.manualUpdateIndividualShopProductsImmediateLinks(
+    //   candidatePageEntity.shopProduct.id,
+    //   false,
+    // );
 
     return blackListEntity;
   }
