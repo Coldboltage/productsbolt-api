@@ -299,4 +299,12 @@ export class CandidatePageService {
     });
     await this.candidatePageRepository.remove(candidatePages);
   }
+
+  async removeCandidatePagesEdidtionMatchFalse() {
+    const candidatePages = await this.candidatePageRepository.find({
+      where: {
+        editionMatch: false,
+      },
+    });
+  }
 }
