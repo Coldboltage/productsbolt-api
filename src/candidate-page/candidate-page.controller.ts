@@ -81,6 +81,16 @@ export class CandidatePageController {
     return this.candidatePageService.removeCandidatePagesWithWebpages();
   }
 
+  @Delete('remove-candidate-page-edition-match-false')
+  removeCandidatePagesEdidtionMatchFalse() {
+    return this.candidatePageService.removeCandidatePagesEdidtionMatchFalse();
+  }
+
+  @Delete('delete-candidate-page-with-links/:id')
+  removeSingleCandidatePage(@Param('id') id: string) {
+    return this.candidatePageService.removeSingleCandidatePage(id);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.candidatePageService.remove(id);

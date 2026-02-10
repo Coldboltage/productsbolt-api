@@ -192,7 +192,7 @@ export class CandidatePageService {
     const candidatePagesToInspect = await this.findAllPriceMatchEditionMatch();
     for (const page of candidatePagesToInspect) {
       this.eventEmitter.emit('blacklist.candidate.pages', {
-        webpageUrl: page.url,
+        pageId: page.id,
         pageType: 'CP',
       });
     }
@@ -321,6 +321,25 @@ export class CandidatePageService {
       where: {
         editionMatch: false,
       },
+    });
+    console.log(candidatePages.length);
+    for (const page of candidatePages) {
+      this.eventEmitter.emit('blacklist.candidate.pages', {
+        pageId: page.id,
+        pageType: 'CP',
+      });
+    }
+  }
+
+  async removeSingleCandidatePage(id: string) {
+    const candidatePages = await this.candidatePageRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    this.eventEmitter.emit('blacklist.candidate.pages', {
+      pageId: candidatePages.id,
+      pageType: 'CP',
     });
   }
 }

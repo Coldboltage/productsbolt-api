@@ -193,6 +193,16 @@ export class ShopProductService {
       reducedSitemap,
     );
 
+    if (limitedUrls.length === 0) {
+      console.log(
+        `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name} but was found in reduced sitemap: ${reducedSitemap}`,
+      );
+      throw new NotFoundException(`No URLs found for ${shopProduct.shop.name}`);
+    }
+
+    // console.log(limitedUrls);
+    // await new Promise((r) => setTimeout(r, 2000000));
+
     const createProcess: CreateProcessDto = {
       sitemap: shopProduct.shop.sitemap,
       url: shopProduct.shop.website,
@@ -612,21 +622,14 @@ export class ShopProductService {
 
       // if (reducedSitemap.length === 0) continue;
 
-      // const limitedUrls = await this.filteredLimitedUrls(
-      //   shopProduct,
-      //   reducedSitemap,
-      // );
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        shopProduct.links,
+      );
 
-      // if (limitedUrls.length === 0) {
-      //   console.log(
-      //     `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-      //   );
-      //   continue;
-      // }
-
-      if (shopProduct.links.length === 0) {
+      if (limitedUrls.length === 0) {
         console.log(
-          `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
         );
         continue;
       }
@@ -646,7 +649,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
-        links: shopProduct.links,
+        links: limitedUrls,
         expectedPrice: shopProduct.product.price,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
@@ -731,24 +734,24 @@ export class ShopProductService {
 
         // if (reducedSitemap.length === 0) continue;
 
-        // const limitedUrls = await this.filteredLimitedUrls(
-        //   shopProduct,
-        //   reducedSitemap,
-        // );
+        const limitedUrls = await this.filteredLimitedUrls(
+          shopProduct,
+          shopProduct.links,
+        );
 
-        // if (limitedUrls.length === 0) {
-        //   console.log(
-        //     `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-        //   );
-        //   continue;
-        // }
-
-        if (shopProduct.links.length === 0) {
+        if (limitedUrls.length === 0) {
           console.log(
-            `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+            `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
           );
           continue;
         }
+
+        // if (shopProduct.links.length === 0) {
+        //   console.log(
+        //     `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        //   );
+        //   continue;
+        // }
 
         const createProcess: CreateProcessDto = {
           sitemap: shopProduct.shop.sitemap,
@@ -766,7 +769,7 @@ export class ShopProductService {
           shopType: shopProduct.shop.uniqueShopType,
           cloudflare: shopProduct.shop.cloudflare,
           expectedPrice: shopProduct.product.price,
-          links: shopProduct.links,
+          links: limitedUrls,
           sitemapEntity: {
             ...shopProduct.shop.sitemapEntity,
             sitemapUrls: [],
@@ -852,7 +855,15 @@ export class ShopProductService {
       }),
     );
 
-    const limitedUrls = checks.filter((x) => x.keep).map((x) => x.url);
+    const limitedUrls = checks.filter((url) => url.keep).map((url) => url.url);
+
+    // const momentOfTruth = limitedUrls.includes(
+    //   'https://bossminis.co.uk/products/magic-the-gathering-edge-of-eternities-collector-booster-pack-releases-01-08-20205',
+    // );
+
+    // console.log(momentOfTruth);
+
+    // await new Promise((r) => setTimeout(r, 20000000));
     return limitedUrls;
   }
 
@@ -891,24 +902,24 @@ export class ShopProductService {
       //   shopProduct.product.name,
       // );
 
-      // const limitedUrls = await this.filteredLimitedUrls(
-      //   shopProduct,
-      //   reducedSitemap,
-      // );
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        shopProduct.links,
+      );
 
-      // if (limitedUrls.length === 0) {
-      //   console.log(
-      //     `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-      //   );
-      //   continue;
-      // }
-
-      if (shopProduct.links.length === 0) {
+      if (limitedUrls.length === 0) {
         console.log(
-          `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
         );
         continue;
       }
+
+      // if (shopProduct.links.length === 0) {
+      //   console.log(
+      //     `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+      //   );
+      //   continue;
+      // }
 
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
@@ -925,7 +936,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
-        links: shopProduct.links,
+        links: limitedUrls,
         expectedPrice: shopProduct.product.price,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
@@ -998,24 +1009,24 @@ export class ShopProductService {
       //   shopProduct.product.name,
       // );
 
-      // const limitedUrls = await this.filteredLimitedUrls(
-      //   shopProduct,
-      //   reducedSitemap,
-      // );
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        shopProduct.links,
+      );
 
-      // if (limitedUrls.length === 0) {
-      //   console.log(
-      //     `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-      //   );
-      //   continue;
-      // }
-
-      if (shopProduct.links.length === 0) {
+      if (limitedUrls.length === 0) {
         console.log(
-          `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
         );
         continue;
       }
+
+      // if (shopProduct.links.length === 0) {
+      //   console.log(
+      //     `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+      //   );
+      //   continue;
+      // }
 
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
@@ -1032,7 +1043,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
-        links: shopProduct.links,
+        links: limitedUrls,
         expectedPrice: shopProduct.product.price,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
@@ -1121,22 +1132,22 @@ export class ShopProductService {
     //   shopProduct.product.name,
     // );
 
-    // const limitedUrls = await this.filteredLimitedUrls(
-    //   shopProduct,
-    //   reducedSitemap,
-    // );
+    const limitedUrls = await this.filteredLimitedUrls(
+      shopProduct,
+      shopProduct.links,
+    );
 
     // console.log(limitedUrls);
 
-    // if (limitedUrls.length === 0) {
-    //   console.log(
-    //     `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-    //   );
-    //   throw new NotFoundException('no_urls_found_for_product');
-    // }
+    if (limitedUrls.length === 0) {
+      console.log(
+        `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+      );
+      throw new NotFoundException('no_urls_found_for_product');
+    }
 
-    if (shopProduct.links.length === 0)
-      throw new NotFoundException('no_links_found');
+    // if (shopProduct.links.length === 0)
+    //   throw new NotFoundException('no_links_found');
 
     const createProcess: CreateProcessDto = {
       sitemap: shopProduct.shop.sitemap,
@@ -1153,7 +1164,7 @@ export class ShopProductService {
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
       cloudflare: shopProduct.shop.cloudflare,
-      links: shopProduct.links,
+      links: limitedUrls,
       expectedPrice: shopProduct.product.price,
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
@@ -1215,20 +1226,20 @@ export class ShopProductService {
     //   shopProduct.product.name,
     // );
 
-    // const limitedUrls = await this.filteredLimitedUrls(
-    //   shopProduct,
-    //   reducedSitemap,
-    // );
+    const limitedUrls = await this.filteredLimitedUrls(
+      shopProduct,
+      shopProduct.links,
+    );
 
-    // if (limitedUrls.length === 0) {
-    //   console.log(
-    //     `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-    //   );
-    //   throw new NotFoundException('no_urls_found_for_product');
-    // }
+    if (limitedUrls.length === 0) {
+      console.log(
+        `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+      );
+      throw new NotFoundException('no_urls_found_for_product');
+    }
 
-    if (shopProduct.links.length === 0)
-      throw new NotFoundException('no_links_found');
+    // if (shopProduct.links.length === 0)
+    //   throw new NotFoundException('no_links_found');
 
     const createProcess: CreateProcessDto = {
       sitemap: shopProduct.shop.sitemap,
@@ -1245,7 +1256,7 @@ export class ShopProductService {
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
       cloudflare: shopProduct.shop.cloudflare,
-      links: shopProduct.links,
+      links: limitedUrls,
       expectedPrice: shopProduct.product.price,
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
@@ -1301,24 +1312,24 @@ export class ShopProductService {
       //   shopProduct.product.name,
       // );
 
-      // const limitedUrls = await this.filteredLimitedUrls(
-      //   shopProduct,
-      //   reducedSitemap,
-      // );
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        shopProduct.links,
+      );
 
-      // if (limitedUrls.length === 0) {
-      //   console.log(
-      //     `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-      //   );
-      //   continue;
-      // }
-
-      if (shopProduct.links.length === 0) {
+      if (limitedUrls.length === 0) {
         console.log(
-          `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
         );
         continue;
       }
+
+      // if (shopProduct.links.length === 0) {
+      //   console.log(
+      //     `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+      //   );
+      //   continue;
+      // }
 
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
@@ -1335,7 +1346,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
-        links: shopProduct.links,
+        links: limitedUrls,
         expectedPrice: shopProduct.product.price,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
