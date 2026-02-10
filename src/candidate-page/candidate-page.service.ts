@@ -219,8 +219,8 @@ export class CandidatePageService {
     });
   }
 
-  async batchUpdatedInspected() {
-    const candidatePagesToInspect = await this.findAllPriceMatchEditionMatch();
+  async batchRemoveCandidatePages() {
+    const candidatePagesToInspect = await this.findAllLoaded();
     for (const page of candidatePagesToInspect) {
       this.eventEmitter.emit('blacklist.candidate.pages', {
         pageId: page.id,
@@ -228,11 +228,20 @@ export class CandidatePageService {
       });
     }
     return true;
-    // return this.candidatePageRepository.save(candidatePagesToInspect);
   }
 
-  findAll() {
-    return `This action returns all candidatePage`;
+  async findAll(): Promise<CandidatePage[]> {
+    return this.candidatePageRepository.find({
+      where: {},
+      relations: { shopProduct: true },
+    });
+  }
+
+  async findAllLoaded(): Promise<CandidatePage[]> {
+    return this.candidatePageRepository.find({
+      where: { loadedData: true },
+      relations: { shopProduct: true },
+    });
   }
 
   async findOne(id: string) {

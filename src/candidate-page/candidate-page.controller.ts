@@ -52,11 +52,6 @@ export class CandidatePageController {
     return this.candidatePageService.findOne(id);
   }
 
-  @Patch('batch-updated-inspected')
-  batchUpdatedInspected() {
-    return this.candidatePageService.batchUpdatedInspected();
-  }
-
   @Patch('updated-inspected/:id')
   updatedInspected(@Param('id') id: string) {
     return this.candidatePageService.updateInspected(id);
@@ -68,6 +63,11 @@ export class CandidatePageController {
     @Body() updateCandidatePageDto: UpdateCandidatePageDto,
   ) {
     return this.candidatePageService.update(id, updateCandidatePageDto);
+  }
+
+  @Delete('batch-updated-inspected')
+  batchRemoveCandidatePages() {
+    return this.candidatePageService.batchRemoveCandidatePages();
   }
 
   @Delete('remove-shop-product-null')
