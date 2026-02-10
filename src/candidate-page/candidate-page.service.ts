@@ -63,6 +63,8 @@ export class CandidatePageService {
         editionMatch: createCandidatePageDto.editionMatch,
         packagingTypeMatch: createCandidatePageDto.packagingTypeMatch,
         inspected: candidatePageExists.inspected,
+        loadedData: createCandidatePageDto.loadedData,
+        hasMixedSignals: createCandidatePageDto.hasMixedSignals,
       });
       const createCandidatePageDtoWithId = {
         ...createCandidatePageDto,
@@ -141,6 +143,7 @@ export class CandidatePageService {
         priceCheck: true,
         editionMatch: true,
         inspected: false,
+        loadedData: true,
       },
       relations: {
         shopProduct: true,
@@ -167,6 +170,7 @@ export class CandidatePageService {
         editionMatch: true,
         // packagingTypeMatch: true,
         inspected: false,
+        loadedData: true,
       },
       relations: {
         shopProduct: true,
@@ -178,6 +182,33 @@ export class CandidatePageService {
         reason: true,
         pageTitle: true,
         priceCheck: true,
+        shopProduct: {
+          id: true,
+          name: true,
+          shopId: true,
+          links: true,
+        },
+      },
+    });
+  }
+
+  async findAllMixedSignalsEditionMatch() {
+    return this.candidatePageRepository.find({
+      where: {
+        hasMixedSignals: true,
+        editionMatch: true,
+        inspected: false,
+        loadedData: true,
+      },
+      relations: {
+        shopProduct: true,
+      },
+      select: {
+        id: true,
+        url: true,
+        price: true,
+        reason: true,
+        pageTitle: true,
         shopProduct: {
           id: true,
           name: true,

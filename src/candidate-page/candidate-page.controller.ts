@@ -37,6 +37,10 @@ export class CandidatePageController {
   findAllEditionMatch() {
     return this.candidatePageService.findAllEditionMatch();
   }
+  @Get('find-all-mixed-signals-edition-match')
+  findAllMixedSignalsEditionMatch() {
+    return this.candidatePageService.findAllMixedSignalsEditionMatch();
+  }
 
   @Get()
   findAll() {

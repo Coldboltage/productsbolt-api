@@ -54,4 +54,10 @@ export class CreateCandidatePageDto {
 
   @IsBoolean()
   packagingTypeMatch: boolean;
+
+  @IsBoolean()
+  loadedData: boolean;
+
+  @IsBoolean()
+  hasMixedSignals: boolean;
 }
