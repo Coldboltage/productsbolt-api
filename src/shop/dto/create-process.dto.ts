@@ -59,6 +59,9 @@ export class CreateProcessDto {
   @IsBoolean()
   cloudflare: boolean;
 
+  @IsBoolean()
+  headless: boolean;
+
   @IsString()
   hash: string;
 

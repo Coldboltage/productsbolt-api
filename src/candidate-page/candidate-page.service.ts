@@ -128,6 +128,7 @@ export class CandidatePageService {
       count: page.candidatePageCache.count,
       cloudflare: page.shopProduct.shop.cloudflare,
       variantId: page.variantId,
+      headless: page.shopProduct.shop.headless,
     };
     console.log(page);
     if (page.shopProduct.shop.isShopifySite === true) {

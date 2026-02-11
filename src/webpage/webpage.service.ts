@@ -185,6 +185,9 @@ export class WebpageService {
     return this.webpagesRepository.find({
       where: {
         shopProduct: {
+          shop: {
+            active: true,
+          },
           product: {
             priority: true,
           },
@@ -207,6 +210,9 @@ export class WebpageService {
     return this.webpagesRepository.find({
       where: {
         shopProduct: {
+          shop: {
+            active: true,
+          },
           product: {
             priority: false,
           },
@@ -475,6 +481,7 @@ export class WebpageService {
         count: page.webpageCache.count,
         cloudflare: page.shopProduct.shop.cloudflare,
         variantId: page.variantId,
+        headless: page.shopProduct.shop.headless,
       };
       if (page.shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
@@ -505,6 +512,7 @@ export class WebpageService {
         count: page.webpageCache.count,
         cloudflare: page.shopProduct.shop.cloudflare,
         variantId: page.variantId,
+        headless: page.shopProduct.shop.headless,
       };
       if (page.shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
@@ -530,6 +538,7 @@ export class WebpageService {
       count: page.webpageCache.count,
       cloudflare: page.shopProduct.shop.cloudflare,
       variantId: page.variantId,
+      headless: page.shopProduct.shop.headless,
     };
     console.log(page);
     if (page.shopProduct.shop.isShopifySite === true) {
