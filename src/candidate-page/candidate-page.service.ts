@@ -63,6 +63,8 @@ export class CandidatePageService {
         editionMatch: createCandidatePageDto.editionMatch,
         packagingTypeMatch: createCandidatePageDto.packagingTypeMatch,
         inspected: candidatePageExists.inspected,
+        loadedData: createCandidatePageDto.loadedData,
+        hasMixedSignals: createCandidatePageDto.hasMixedSignals,
       });
       const createCandidatePageDtoWithId = {
         ...createCandidatePageDto,
@@ -126,6 +128,7 @@ export class CandidatePageService {
       count: page.candidatePageCache.count,
       cloudflare: page.shopProduct.shop.cloudflare,
       variantId: page.variantId,
+      headless: page.shopProduct.shop.headless,
     };
     console.log(page);
     if (page.shopProduct.shop.isShopifySite === true) {
@@ -141,6 +144,7 @@ export class CandidatePageService {
         priceCheck: true,
         editionMatch: true,
         inspected: false,
+        loadedData: true,
       },
       relations: {
         shopProduct: true,
@@ -167,6 +171,7 @@ export class CandidatePageService {
         editionMatch: true,
         // packagingTypeMatch: true,
         inspected: false,
+        loadedData: true,
       },
       relations: {
         shopProduct: true,
@@ -188,8 +193,35 @@ export class CandidatePageService {
     });
   }
 
-  async batchUpdatedInspected() {
-    const candidatePagesToInspect = await this.findAllPriceMatchEditionMatch();
+  async findAllMixedSignalsEditionMatch() {
+    return this.candidatePageRepository.find({
+      where: {
+        hasMixedSignals: true,
+        editionMatch: true,
+        inspected: false,
+        loadedData: true,
+      },
+      relations: {
+        shopProduct: true,
+      },
+      select: {
+        id: true,
+        url: true,
+        price: true,
+        reason: true,
+        pageTitle: true,
+        shopProduct: {
+          id: true,
+          name: true,
+          shopId: true,
+          links: true,
+        },
+      },
+    });
+  }
+
+  async batchRemoveCandidatePages() {
+    const candidatePagesToInspect = await this.findAllLoaded();
     for (const page of candidatePagesToInspect) {
       this.eventEmitter.emit('blacklist.candidate.pages', {
         pageId: page.id,
@@ -197,11 +229,20 @@ export class CandidatePageService {
       });
     }
     return true;
-    // return this.candidatePageRepository.save(candidatePagesToInspect);
   }
 
-  findAll() {
-    return `This action returns all candidatePage`;
+  async findAll(): Promise<CandidatePage[]> {
+    return this.candidatePageRepository.find({
+      where: {},
+      relations: { shopProduct: true },
+    });
+  }
+
+  async findAllLoaded(): Promise<CandidatePage[]> {
+    return this.candidatePageRepository.find({
+      where: { loadedData: true },
+      relations: { shopProduct: true },
+    });
   }
 
   async findOne(id: string) {

@@ -102,6 +102,7 @@ export class CheckPageDto {
   count: number;
   cloudflare: boolean;
   variantId: null | string;
+  headless: boolean;
 }
 
 export class ProductToWebpageInterface {

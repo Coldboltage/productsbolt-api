@@ -87,6 +87,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        headless: shopProduct.shop.headless,
         expectedPrice: shopProduct.product.price,
         links: [],
         sitemapEntity: {
@@ -185,6 +186,8 @@ export class ShopProductService {
 
     console.log(shopProduct.product.name);
 
+    console.log(shopProduct.shop.sitemapEntity.sitemapUrl.urls.length);
+
     if (reducedSitemap.length === 0)
       throw new Error('no_urls_found_for_product');
 
@@ -218,6 +221,7 @@ export class ShopProductService {
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
       cloudflare: shopProduct.shop.cloudflare,
+      headless: shopProduct.shop.headless,
       expectedPrice: shopProduct.product.price,
       links: [],
       sitemapEntity: {
@@ -324,6 +328,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        headless: shopProduct.shop.headless,
         expectedPrice: shopProduct.product.price,
         links: [],
         sitemapEntity: {
@@ -434,6 +439,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        headless: shopProduct.shop.headless,
         expectedPrice: shopProduct.product.price,
         links: [],
         sitemapEntity: {
@@ -545,6 +551,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        headless: shopProduct.shop.headless,
         expectedPrice: shopProduct.product.price,
         links: [],
         sitemapEntity: {
@@ -649,6 +656,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        headless: shopProduct.shop.headless,
         links: limitedUrls,
         expectedPrice: shopProduct.product.price,
         sitemapEntity: {
@@ -686,7 +694,7 @@ export class ShopProductService {
           createProcess,
         );
       }
-      await new Promise((r) => setTimeout(r, 1));
+      // await new Promise((r) => setTimeout(r, 1));
     }
   }
 
@@ -769,6 +777,7 @@ export class ShopProductService {
           shopType: shopProduct.shop.uniqueShopType,
           cloudflare: shopProduct.shop.cloudflare,
           expectedPrice: shopProduct.product.price,
+          headless: shopProduct.shop.headless,
           links: limitedUrls,
           sitemapEntity: {
             ...shopProduct.shop.sitemapEntity,
@@ -936,6 +945,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        headless: shopProduct.shop.headless,
         links: limitedUrls,
         expectedPrice: shopProduct.product.price,
         sitemapEntity: {
@@ -1043,6 +1053,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        headless: shopProduct.shop.headless,
         links: limitedUrls,
         expectedPrice: shopProduct.product.price,
         sitemapEntity: {
@@ -1164,6 +1175,7 @@ export class ShopProductService {
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
       cloudflare: shopProduct.shop.cloudflare,
+      headless: shopProduct.shop.headless,
       links: limitedUrls,
       expectedPrice: shopProduct.product.price,
       sitemapEntity: {
@@ -1256,6 +1268,7 @@ export class ShopProductService {
       shopifySite: shopProduct.shop.isShopifySite,
       shopType: shopProduct.shop.uniqueShopType,
       cloudflare: shopProduct.shop.cloudflare,
+      headless: shopProduct.shop.headless,
       links: limitedUrls,
       expectedPrice: shopProduct.product.price,
       sitemapEntity: {
@@ -1346,6 +1359,7 @@ export class ShopProductService {
         shopifySite: shopProduct.shop.isShopifySite,
         shopType: shopProduct.shop.uniqueShopType,
         cloudflare: shopProduct.shop.cloudflare,
+        headless: shopProduct.shop.headless,
         links: limitedUrls,
         expectedPrice: shopProduct.product.price,
         sitemapEntity: {

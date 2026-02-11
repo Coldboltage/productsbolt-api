@@ -52,6 +52,9 @@ export class Shop {
   @Column({ default: false })
   cloudflare: boolean;
 
+  @Column({ default: false })
+  headless: boolean;
+
   @Column({ enum: UniqueShopType, nullable: true })
   uniqueShopType: UniqueShopType;
 

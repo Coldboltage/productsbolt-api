@@ -37,6 +37,10 @@ export class CandidatePageController {
   findAllEditionMatch() {
     return this.candidatePageService.findAllEditionMatch();
   }
+  @Get('find-all-mixed-signals-edition-match')
+  findAllMixedSignalsEditionMatch() {
+    return this.candidatePageService.findAllMixedSignalsEditionMatch();
+  }
 
   @Get()
   findAll() {
@@ -46,11 +50,6 @@ export class CandidatePageController {
   @Get(':id')
   findOne(@Param('id') id: string): Promise<CandidatePage> {
     return this.candidatePageService.findOne(id);
-  }
-
-  @Patch('batch-updated-inspected')
-  batchUpdatedInspected() {
-    return this.candidatePageService.batchUpdatedInspected();
   }
 
   @Patch('updated-inspected/:id')
@@ -64,6 +63,11 @@ export class CandidatePageController {
     @Body() updateCandidatePageDto: UpdateCandidatePageDto,
   ) {
     return this.candidatePageService.update(id, updateCandidatePageDto);
+  }
+
+  @Delete('batch-updated-inspected')
+  batchRemoveCandidatePages() {
+    return this.candidatePageService.batchRemoveCandidatePages();
   }
 
   @Delete('remove-shop-product-null')

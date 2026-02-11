@@ -70,6 +70,12 @@ export class CandidatePage {
   @Column({ default: false })
   inspecpackagingTypeMatchted: boolean;
 
+  @Column({ default: false })
+  loadedData: boolean;
+
+  @Column({ default: false })
+  hasMixedSignals: boolean;
+
   @OneToOne(
     () => CandidatePageCache,
     (candidatePageCache) => candidatePageCache.candidatePage,
