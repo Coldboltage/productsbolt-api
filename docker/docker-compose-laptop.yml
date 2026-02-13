@@ -86,52 +86,15 @@ services:
     networks:
       - productsbolt_net
 
-  vllm:
-    image: vllm/vllm-openai:latest
-    container_name: my_vllm_container
-    restart: unless-stopped
+  api:
+    image: coldbolt/productsbolt-api:latest
+    container_name: api
     ports:
-      - '8000:8000'
-    volumes:
-      - ~/.cache/huggingface:/root/.cache/huggingface
-    environment:
-      HUGGING_FACE_HUB_TOKEN: ${HUGGING_FACE_HUB_TOKEN}
-    ipc: host
-    command:
-      - --model
-      - superjob/Qwen3-4B-Instruct-2507-GPTQ-Int4
-      - --max-model-len
-      - '5600'
-      - --gpu-memory-utilization
-      - '0.85'
+      - '3000:3000'
+    env_file:
+      - .env
     networks:
       - productsbolt_net
-
-    # GPU access (pick ONE of the two blocks below depending on your Docker Compose support)
-
-    # ✅ Option 1 (most common with modern docker compose)
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-
-  # renderer:
-  #   image: ghcr.io/browserless/chromium:latest
-  #   container_name: renderer
-  #   ports:
-  #     - '4000:3000'
-  #   environment:
-  #     TOKEN: change_me
-  #     CONCURRENT: '4'
-  #     QUEUE_LENGTH: '20'
-  #     TIMEOUT: '60000'
-  #   shm_size: '2gb'
-  #   restart: unless-stopped
-  #   networks:
-  #     - productsbolt_net
 
 networks:
   productsbolt_net:
