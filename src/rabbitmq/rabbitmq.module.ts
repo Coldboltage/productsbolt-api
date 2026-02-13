@@ -11,7 +11,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'HEADFUL_CLIENT',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: [`amqp://${process.env.RABBITMQ_IP}:5672`],
           queue: 'headful_queue',
           queueOptions: { durable: false },
           prefetchCount: 10,
@@ -21,7 +21,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'HEADFUL_SLOW_CLIENT',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: [`amqp://${process.env.RABBITMQ_IP}:5672`],
           queue: 'headful_slow_queue',
           queueOptions: { durable: false },
           prefetchCount: 10,
@@ -31,7 +31,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'HEADLESS_BROWSER_CLIENT',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: [`amqp://${process.env.RABBITMQ_IP}:5672`],
           queue: 'headless_browser_queue',
           queueOptions: { durable: false },
           prefetchCount: 10,
@@ -41,7 +41,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'HEADLESS_CLIENT',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: [`amqp://${process.env.RABBITMQ_IP}:5672`],
           queue: 'headless_queue',
           queueOptions: { durable: false },
           prefetchCount: 10,
@@ -51,7 +51,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'SITEMAP_CLIENT',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: [`amqp://${process.env.RABBITMQ_IP}:5672`],
           queue: 'sitemap_queue',
           queueOptions: { durable: false },
           prefetchCount: 1,
@@ -61,7 +61,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'SLOW_SITEMAP_CLIENT',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: [`amqp://${process.env.RABBITMQ_IP}:5672`],
           queue: 'slow_sitemap_queue',
           queueOptions: { durable: false },
           prefetchCount: 1,
