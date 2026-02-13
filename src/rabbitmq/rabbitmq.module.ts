@@ -18,6 +18,16 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         },
       },
       {
+        name: 'HEADLESS_BROWSER_CLIENT',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://localhost:5672'],
+          queue: 'headless_browser_queue',
+          queueOptions: { durable: false },
+          prefetchCount: 10,
+        },
+      },
+      {
         name: 'HEADLESS_CLIENT',
         transport: Transport.RMQ,
         options: {
@@ -53,4 +63,4 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
   providers: [RabbitmqService],
   exports: [ClientsModule], // <- THIS IS NEEDED!
 })
-export class RabbitmqModule { }
+export class RabbitmqModule {}

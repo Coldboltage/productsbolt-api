@@ -54,9 +54,8 @@ export class ShopProductBacklistUrlService {
         blackListUrl: blackListUrlEntity,
       });
 
-    await this.shopProductService.manualUpdateIndividualShopProductsImmediateLinks(
+    await this.shopProductService.checkForIndividualShopProduct(
       shopProductEntity.id,
-      false,
     );
 
     return shopProductBlackListEntity;

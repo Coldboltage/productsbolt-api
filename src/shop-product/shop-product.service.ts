@@ -17,7 +17,8 @@ export class ShopProductService {
   constructor(
     @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
     @Inject('HEADLESS_CLIENT') private headlessClient: ClientProxy,
-
+    @Inject('HEADLESS_BROWSER_CLIENT')
+    private headlessBrowserClient: ClientProxy,
     @InjectRepository(ShopProduct)
     private shopProductRepository: Repository<ShopProduct>,
     private shopService: ShopService,
@@ -28,6 +29,7 @@ export class ShopProductService {
     // Force the client to connect so we can inspect it
     await this.headfulClient.connect();
     await this.headlessClient.connect();
+    await this.headlessBrowserClient.connect();
 
     // Dig into the amqp-connection-manager instance
     const client: any = this.headfulClient;
@@ -187,6 +189,7 @@ export class ShopProductService {
     console.log(shopProduct.product.name);
 
     console.log(shopProduct.shop.sitemapEntity.sitemapUrl.urls.length);
+    console.log(reducedSitemap);
 
     if (reducedSitemap.length === 0)
       throw new Error('no_urls_found_for_product');
@@ -687,6 +690,11 @@ export class ShopProductService {
           'webpageDiscovery',
           createProcess,
         );
+      } else if (shopProduct.shop.headless === true) {
+        this.headlessBrowserClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
       } else {
         console.log('normal setup');
         this.headfulClient.emit<CreateProcessDto>(
@@ -805,6 +813,11 @@ export class ShopProductService {
         if (shopProduct.shop.isShopifySite === true) {
           console.log('shopifySiteFound');
           this.headlessClient.emit<CreateProcessDto>(
+            'webpageDiscovery',
+            createProcess,
+          );
+        } else if (shopProduct.shop.headless === true) {
+          this.headlessBrowserClient.emit<CreateProcessDto>(
             'webpageDiscovery',
             createProcess,
           );
@@ -975,6 +988,11 @@ export class ShopProductService {
           'webpageDiscovery',
           createProcess,
         );
+      } else if (shopProduct.shop.headless === true) {
+        this.headlessBrowserClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
       } else {
         this.headfulClient.emit<CreateProcessDto>(
           'webpageDiscovery',
@@ -1080,6 +1098,11 @@ export class ShopProductService {
 
       if (shopProduct.shop.sitemapEntity.isShopifySite === true) {
         this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else if (shopProduct.shop.headless === true) {
+        this.headlessBrowserClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
         );
@@ -1195,6 +1218,11 @@ export class ShopProductService {
         'webpageDiscovery',
         createProcess,
       );
+    } else if (shopProduct.shop.headless === true) {
+      this.headlessBrowserClient.emit<CreateProcessDto>(
+        'webpageDiscovery',
+        createProcess,
+      );
     } else if (shopProduct.shop.cloudflare === true) {
       this.headfulClient.emit<CreateProcessDto>(
         'webpageDiscovery',
@@ -1285,6 +1313,11 @@ export class ShopProductService {
 
     if (shopProduct.shop.isShopifySite === true) {
       this.headlessClient.emit<CreateProcessDto>(
+        'webpageDiscovery',
+        createProcess,
+      );
+    } else if (shopProduct.shop.headless === true) {
+      this.headlessBrowserClient.emit<CreateProcessDto>(
         'webpageDiscovery',
         createProcess,
       );
@@ -1386,6 +1419,11 @@ export class ShopProductService {
 
       if (shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else if (shopProduct.shop.headless === true) {
+        this.headlessBrowserClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
         );

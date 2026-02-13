@@ -32,6 +32,8 @@ export class WebpageService {
   constructor(
     @InjectRepository(Webpage) private webpagesRepository: Repository<Webpage>,
     @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
+    @Inject('HEADLESS_BROWSER_CLIENT')
+    private headlessBrowserClient: ClientProxy,
     @Inject('HEADLESS_CLIENT') private readonly headlessClient: ClientProxy,
     private shopProductService: ShopProductService,
     private productService: ProductService,
@@ -485,6 +487,8 @@ export class WebpageService {
       };
       if (page.shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
+      } else if (page.shopProduct.shop.headless === true) {
+        this.headlessBrowserClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.cloudflare === true) {
         this.headfulClient.emit('updatePage', updatePageDto);
       } else {
@@ -516,6 +520,8 @@ export class WebpageService {
       };
       if (page.shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
+      } else if (page.shopProduct.shop.headless === true) {
+        this.headlessBrowserClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.cloudflare === true) {
         this.headfulClient.emit('updatePage', updatePageDto);
       } else {
