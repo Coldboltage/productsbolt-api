@@ -32,6 +32,8 @@ export class WebpageService {
   constructor(
     @InjectRepository(Webpage) private webpagesRepository: Repository<Webpage>,
     @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
+    @Inject('HEADFUL_SLOW_CLIENT') private headfulSlowClient: ClientProxy,
+
     @Inject('HEADLESS_BROWSER_CLIENT')
     private headlessBrowserClient: ClientProxy,
     @Inject('HEADLESS_CLIENT') private readonly headlessClient: ClientProxy,
@@ -487,6 +489,8 @@ export class WebpageService {
       };
       if (page.shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
+      } else if (page.shopProduct.shop.website.includes('chaoscards.co.uk')) {
+        this.headfulSlowClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.headless === true) {
         this.headlessBrowserClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.cloudflare === true) {
@@ -504,6 +508,8 @@ export class WebpageService {
     const webPages = await this.findAllHighPriority();
     console.log(webPages.length);
     for (const page of webPages) {
+      await new Promise((r) => setTimeout(r, 6));
+
       const updatePageDto: CheckPageDto = {
         url: page.url,
         query: page.shopProduct.name,
@@ -520,6 +526,8 @@ export class WebpageService {
       };
       if (page.shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
+      } else if (page.shopProduct.shop.website.includes('chaoscards.co.uk')) {
+        this.headfulSlowClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.headless === true) {
         this.headlessBrowserClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.cloudflare === true) {

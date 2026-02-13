@@ -18,6 +18,16 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         },
       },
       {
+        name: 'HEADFUL_SLOW_CLIENT',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://localhost:5672'],
+          queue: 'headful_slow_queue',
+          queueOptions: { durable: false },
+          prefetchCount: 10,
+        },
+      },
+      {
         name: 'HEADLESS_BROWSER_CLIENT',
         transport: Transport.RMQ,
         options: {

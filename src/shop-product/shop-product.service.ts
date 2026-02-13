@@ -19,6 +19,8 @@ export class ShopProductService {
     @Inject('HEADLESS_CLIENT') private headlessClient: ClientProxy,
     @Inject('HEADLESS_BROWSER_CLIENT')
     private headlessBrowserClient: ClientProxy,
+    @Inject('HEADFUL_SLOW_CLIENT')
+    private headfulSlowClient: ClientProxy,
     @InjectRepository(ShopProduct)
     private shopProductRepository: Repository<ShopProduct>,
     private shopService: ShopService,
@@ -632,6 +634,8 @@ export class ShopProductService {
 
       // if (reducedSitemap.length === 0) continue;
 
+      await new Promise((r) => setTimeout(r, 6));
+
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
         shopProduct.links,
@@ -695,6 +699,11 @@ export class ShopProductService {
           'webpageDiscovery',
           createProcess,
         );
+      } else if (shopProduct.shop.website.includes('chaoscards.co.uk')) {
+        this.headfulSlowClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
       } else {
         console.log('normal setup');
         this.headfulClient.emit<CreateProcessDto>(
@@ -749,6 +758,8 @@ export class ShopProductService {
         // );
 
         // if (reducedSitemap.length === 0) continue;
+
+        await new Promise((r) => setTimeout(r, 6));
 
         const limitedUrls = await this.filteredLimitedUrls(
           shopProduct,
@@ -813,6 +824,11 @@ export class ShopProductService {
         if (shopProduct.shop.isShopifySite === true) {
           console.log('shopifySiteFound');
           this.headlessClient.emit<CreateProcessDto>(
+            'webpageDiscovery',
+            createProcess,
+          );
+        } else if (shopProduct.shop.website.includes('chaoscards.co.uk')) {
+          this.headfulSlowClient.emit<CreateProcessDto>(
             'webpageDiscovery',
             createProcess,
           );
@@ -924,6 +940,8 @@ export class ShopProductService {
       //   shopProduct.product.name,
       // );
 
+      await new Promise((r) => setTimeout(r, 6));
+
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
         shopProduct.links,
@@ -988,6 +1006,11 @@ export class ShopProductService {
           'webpageDiscovery',
           createProcess,
         );
+      } else if (shopProduct.shop.website.includes('chaoscards.co.uk')) {
+        this.headfulSlowClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
       } else if (shopProduct.shop.headless === true) {
         this.headlessBrowserClient.emit<CreateProcessDto>(
           'webpageDiscovery',
@@ -1036,6 +1059,8 @@ export class ShopProductService {
       //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
       //   shopProduct.product.name,
       // );
+
+      await new Promise((r) => setTimeout(r, 6));
 
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
@@ -1098,6 +1123,11 @@ export class ShopProductService {
 
       if (shopProduct.shop.sitemapEntity.isShopifySite === true) {
         this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else if (shopProduct.shop.website.includes('chaoscards.co.uk')) {
+        this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
         );
@@ -1357,6 +1387,7 @@ export class ShopProductService {
       //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
       //   shopProduct.product.name,
       // );
+      await new Promise((r) => setTimeout(r, 6));
 
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
@@ -1419,6 +1450,11 @@ export class ShopProductService {
 
       if (shopProduct.shop.isShopifySite === true) {
         this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else if (shopProduct.shop.website.includes('chaoscards.co.uk')) {
+        this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
         );
