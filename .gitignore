@@ -3,6 +3,7 @@
 /node_modules
 /build
 /diagnostics
+/db_backup
 
 # Logs
 logs
