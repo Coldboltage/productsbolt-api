@@ -4,6 +4,7 @@
 /build
 /diagnostics
 /db_backup
+/backups
 
 # Logs
 logs
