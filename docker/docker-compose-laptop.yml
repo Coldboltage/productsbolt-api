@@ -100,7 +100,7 @@ services:
       - rabbitmq
   worker:
     image: coldbolt/productsbolt-worker:latest
-    container_name: api
+    container_name: worker
     env_file:
       - .worker.env
     networks:
