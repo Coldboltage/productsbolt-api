@@ -59,3 +59,5 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 *.sql
 docker/.worker.env
+docker/remote/.worker.env
+docker/pc/.worker.env

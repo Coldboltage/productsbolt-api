@@ -1,0 +1,117 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: productsbolt-postgres
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${TYPEORM_USERNAME}
+      POSTGRES_PASSWORD: ${TYPEORM_PASSWORD}
+      POSTGRES_DB: ${TYPEORM_DATABASE}
+    labels:
+      - 'pgbackup.enable=true'
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - productsbolt_net
+
+  pgbackup:
+    image: kartoza/pg-backup:16-3.4
+    container_name: productsbolt-backup
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${TYPEORM_USERNAME}
+      POSTGRES_PASS: ${TYPEORM_PASSWORD}
+      POSTGRES_HOST: productsbolt-postgres
+      POSTGRES_PORT: 5432
+      DUMP_ARGS: '-Fc'
+      CRON_SCHEDULE: '0 */23 * * *' # every 12 hours
+      ARCHIVE_FILENAME: 'latest'
+      RUN_ONCE: 'false'
+    volumes:
+      - ./backups:/backups
+    depends_on:
+      - postgres
+    networks:
+      - productsbolt_net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: some-rabbit
+    restart: unless-stopped
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    networks:
+      - productsbolt_net
+
+  jager:
+    image: jaegertracing/all-in-one:1.56
+    container_name: jaeger
+    ports:
+      - '16686:16686'
+      - '4318:4318'
+      - '4317:4317'
+    networks:
+      - productsbolt_net
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - '9090:9090'
+    networks:
+      - productsbolt_net
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: grafana
+    ports:
+      - '3001:3000'
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    networks:
+      - productsbolt_net
+
+  api:
+    image: coldbolt/productsbolt-api:latest
+    container_name: api
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    networks:
+      - productsbolt_net
+    depends_on:
+      - postgres
+      - rabbitmq
+  worker:
+    image: coldbolt/productsbolt-worker:latest
+    container_name: worker
+    env_file:
+      - .worker.env
+    networks:
+      - productsbolt_net
+    depends_on:
+      - postgres
+      - rabbitmq
+
+networks:
+  productsbolt_net:
+    driver: bridge
+
+volumes:
+  postgres_data:
