@@ -557,8 +557,10 @@ export class WebpageService {
     console.log(page);
     if (page.shopProduct.shop.isShopifySite === true) {
       this.headlessClient.emit('updatePage', updatePageDto);
+      console.log('emitting to headlessClient');
     } else {
       this.headfulClient.emit('updatePage', updatePageDto);
+      console.log(`emitting to headfulClient`);
     }
   }
 
