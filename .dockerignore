@@ -3,3 +3,6 @@ dist
 *.log
 *.md
 .git
+backups
+db_backups
+diagnostics
