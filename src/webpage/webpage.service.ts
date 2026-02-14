@@ -25,7 +25,6 @@ import { Span } from 'nestjs-otel';
 import { ShopService } from 'src/shop/shop.service';
 import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { RemoveWebpageDto } from './dto/remove-webpage.dto';
 
 @Injectable()
 export class WebpageService {
@@ -48,6 +47,7 @@ export class WebpageService {
     // Force the client to connect so we can inspect it
     await this.headfulClient.connect();
     await this.headlessClient.connect();
+    await this.headfulClient.connect();
 
     // Dig into the amqp-connection-manager instance
     const client: any = this.headfulClient;
