@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
+  constructor(private jwtService: JwtService) {}
   create(createAuthDto: CreateAuthDto) {
     return 'This action adds a new auth';
   }
@@ -22,5 +24,11 @@ export class AuthService {
 
   remove(id: number) {
     return `This action removes a #${id} auth`;
+  }
+
+  test() {
+    return {
+      access_token: this.jwtService.sign({ userId: '', username: '' }),
+    };
   }
 }

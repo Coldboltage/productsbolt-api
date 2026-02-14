@@ -65,6 +65,7 @@ export class WebpageController {
 
   @Get('find-all-by-product/:id')
   findAllByProduct(@Param('id') id: string): Promise<Webpage[]> {
+    console.log('hello');
     return this.webpageService.findAllByProduct(id);
   }
 

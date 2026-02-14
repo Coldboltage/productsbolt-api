@@ -25,6 +25,11 @@ export class AuthController {
     return this.authService.findAll();
   }
 
+  @Get('test')
+  test() {
+    return this.authService.test();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.authService.findOne(+id);
