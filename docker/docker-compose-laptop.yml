@@ -87,7 +87,7 @@ services:
       - productsbolt_net
 
   api:
-    image: coldbolt/productsbolt-api:latest
+    image: coldbolt/productsbolt-worker:latest
     container_name: api
     ports:
       - '3000:3000'
@@ -95,6 +95,19 @@ services:
       - .env
     networks:
       - productsbolt_net
+    depends_on:
+      - postgres
+      - rabbitmq
+  worker:
+    image: coldbolt/productsbolt-api:latest
+    container_name: api
+    env_file:
+      - .worker.env
+    networks:
+      - productsbolt_net
+    depends_on:
+      - postgres
+      - rabbitmq
 
 networks:
   productsbolt_net:
