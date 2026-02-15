@@ -252,7 +252,9 @@ export class CandidatePageService {
         candidatePageCache: true,
         shopProduct: {
           product: true,
-          shop: true,
+          shop: {
+            sitemapEntity: true,
+          },
         },
       },
     });

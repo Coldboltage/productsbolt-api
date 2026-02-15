@@ -200,7 +200,9 @@ export class WebpageService {
       relations: {
         shopProduct: {
           product: true,
-          shop: true,
+          shop: {
+            sitemapEntity: true,
+          },
         },
         webpageCache: true,
       },
@@ -225,7 +227,9 @@ export class WebpageService {
       relations: {
         shopProduct: {
           product: true,
-          shop: true,
+          shop: {
+            sitemapEntity: true,
+          },
         },
         webpageCache: true,
       },
@@ -569,7 +573,9 @@ export class WebpageService {
       where: { id },
       relations: {
         shopProduct: {
-          shop: true,
+          shop: {
+            sitemapEntity: true,
+          },
           product: true,
         },
         webpageCache: true,
