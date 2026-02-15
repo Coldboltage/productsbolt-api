@@ -479,7 +479,7 @@ export class WebpageService {
         type: page.shopProduct.product.type,
         shopWebsite: page.shopProduct.shop.name,
         webPageId: page.id,
-        shopifySite: page.shopProduct.shop.isShopifySite,
+        shopifySite: page.shopProduct.shop.sitemapEntity.isShopifySite,
         hash: page.webpageCache.hash,
         confirmed: page.webpageCache.confirmed,
         count: page.webpageCache.count,
@@ -487,7 +487,7 @@ export class WebpageService {
         variantId: page.variantId,
         headless: page.shopProduct.shop.headless,
       };
-      if (page.shopProduct.shop.isShopifySite === true) {
+      if (page.shopProduct.shop.sitemapEntity.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.website.includes('chaoscards.co.uk')) {
         this.headfulSlowClient.emit('updatePage', updatePageDto);
@@ -516,7 +516,7 @@ export class WebpageService {
         type: page.shopProduct.product.type,
         shopWebsite: page.shopProduct.shop.name,
         webPageId: page.id,
-        shopifySite: page.shopProduct.shop.isShopifySite,
+        shopifySite: page.shopProduct.shop.sitemapEntity.isShopifySite,
         hash: page.webpageCache.hash,
         confirmed: page.webpageCache.confirmed,
         count: page.webpageCache.count,
@@ -524,7 +524,7 @@ export class WebpageService {
         variantId: page.variantId,
         headless: page.shopProduct.shop.headless,
       };
-      if (page.shopProduct.shop.isShopifySite === true) {
+      if (page.shopProduct.shop.sitemapEntity.isShopifySite === true) {
         this.headlessClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.website.includes('chaoscards.co.uk')) {
         this.headfulSlowClient.emit('updatePage', updatePageDto);
@@ -546,7 +546,7 @@ export class WebpageService {
       type: page.shopProduct.product.type,
       shopWebsite: page.shopProduct.shop.name,
       webPageId: page.id,
-      shopifySite: page.shopProduct.shop.isShopifySite,
+      shopifySite: page.shopProduct.shop.sitemapEntity.isShopifySite,
       hash: page.webpageCache.hash,
       confirmed: page.webpageCache.confirmed,
       count: page.webpageCache.count,
@@ -555,7 +555,7 @@ export class WebpageService {
       headless: page.shopProduct.shop.headless,
     };
     console.log(page);
-    if (page.shopProduct.shop.isShopifySite === true) {
+    if (page.shopProduct.shop.sitemapEntity.isShopifySite === true) {
       this.headlessClient.emit('updatePage', updatePageDto);
       console.log('emitting to headlessClient');
     } else {

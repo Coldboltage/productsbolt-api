@@ -122,7 +122,7 @@ export class CandidatePageService {
       type: page.shopProduct.product.type,
       shopWebsite: page.shopProduct.shop.name,
       webPageId: page.id,
-      shopifySite: page.shopProduct.shop.isShopifySite,
+      shopifySite: page.shopProduct.shop.sitemapEntity.isShopifySite,
       hash: page.candidatePageCache.hash,
       confirmed: page.candidatePageCache.confirmed,
       count: page.candidatePageCache.count,
@@ -131,7 +131,7 @@ export class CandidatePageService {
       headless: page.shopProduct.shop.headless,
     };
     console.log(page);
-    if (page.shopProduct.shop.isShopifySite === true) {
+    if (page.shopProduct.shop.sitemapEntity.isShopifySite === true) {
       this.headlessClient.emit('updatePage', updatePageDto);
     } else {
       this.headfulClient.emit('updatePage', updatePageDto);
