@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  worker:
+    image: coldbolt/productsbolt-worker:latest
+    container_name: worker
+    env_file:
+      - .worker.env
+    networks:
+      - productsbolt_net
+    depends_on:
+      - postgres
+      - rabbitmq
+
+networks:
+  productsbolt_net:
+    driver: bridge
+
+volumes:
+  postgres_data:
