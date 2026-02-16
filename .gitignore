@@ -63,3 +63,4 @@ docker/remote/.worker.env
 docker/pc/.worker.env
 docker/main/.worker.env
 docker/remote/.worker.headful.env
+docker/local-test/.worker.env
