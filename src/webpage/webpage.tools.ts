@@ -5,7 +5,7 @@ import { WebpageService } from './webpage.service';
 
 @Injectable()
 export class WebpageTools {
-  constructor(private webpageService: WebpageService) { }
+  constructor(private webpageService: WebpageService) {}
 
   // @Tool({
   //   name: 'webpage.findAll',
@@ -37,6 +37,33 @@ export class WebpageTools {
       );
 
     // This ensures pretty JSON instead of one-line escaped string
-    return result
+    return result;
+  }
+
+  @Tool({
+    name: 'Find all webpages for specific product and instock state',
+    description:
+      'Returns a JSON array where each item represents the chosen product and state, including the product name and an array of its associated webpages.',
+    parameters: z.object({
+      state: z.coerce
+        .boolean()
+        .describe(
+          'true to get only in-stock webpages, false to get only out-of-stock webpages',
+        ),
+      productId: z.coerce.string().describe('UUID of chosen product'),
+    }),
+  })
+  async findAllWebpagesDividedByProductIdStockStateSlim(params: {
+    state: boolean;
+    productId: string;
+  }) {
+    const result =
+      await this.webpageService.findAllWebpagesDividedByProductIdStockStateSlim(
+        params.state,
+        params.productId,
+      );
+
+    // This ensures pretty JSON instead of one-line escaped string
+    return result;
   }
 }

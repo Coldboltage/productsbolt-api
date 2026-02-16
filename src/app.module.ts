@@ -90,6 +90,7 @@ import { AuthModule } from './auth/auth.module';
     McpModule.forRoot({
       name: 'productsbolt-mcp',
       version: '0.0.1',
+      instructions: `Productsbolt tracks product prices across many shops. Entities: Product, Shop, ShopProduct (joins Shop+Product), Webpage (a URL for a ShopProduct). Typical flow: search product → list shopProducts/webpages → fetch latest price/stock → optionally create alerts. Please always check the product listing`,
       // defaults: SSE + Streamable HTTP + STDIO enabled
       // SSE endpoints: GET /sse (stream), POST /messages (calls)
     }),

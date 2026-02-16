@@ -27,13 +27,21 @@ export class ProductController {
     return this.productService.findAll();
   }
 
+  @Get('find-one-product-only')
+  async findAllProducts() {
+    return this.productService.findAllProductsOnly();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Product> {
     return this.productService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto): Promise<UpdateResult> {
+  update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ): Promise<UpdateResult> {
     return this.productService.update(id, updateProductDto);
   }
 

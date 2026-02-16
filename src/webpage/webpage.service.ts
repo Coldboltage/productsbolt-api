@@ -373,6 +373,37 @@ export class WebpageService {
     return productWebpages;
   }
 
+  async findAllWebpagesDividedByProductIdStockStateSlim(
+    state: boolean,
+    productId: string,
+  ): Promise<ProductToWebpageSlimInterface[]> {
+    console.log('fired findAllWebpagesDividedByProductsStockStateSlim');
+    const product = await this.productService.findOne(productId);
+    const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
+      [];
+
+    const specificWebPagesForProduct = await this.findAllByProductStock(
+      state,
+      product.id,
+    );
+    if (specificWebPagesForProduct.length === 0)
+      throw new NotFoundException('no_webpages_found_for_product');
+    const strippedWebpages = specificWebPagesForProduct.map((webpage) => ({
+      id: webpage.id,
+      url: webpage.url,
+      inStock: webpage.inStock,
+      price: webpage.price,
+      currencyCode: webpage.currencyCode,
+    }));
+    response.push({
+      productName: product.name,
+      webPages: strippedWebpages,
+    });
+
+    console.log(response[0].webPages.length);
+    return response;
+  }
+
   async findAllWebpagesDividedByProductsStockStateSlim(
     state: boolean,
   ): Promise<ProductToWebpageSlimInterface[]> {

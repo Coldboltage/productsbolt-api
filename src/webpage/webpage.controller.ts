@@ -54,6 +54,17 @@ export class WebpageController {
     );
   }
 
+  @Get('find-all-divided-by-product-slim/:stockState/:productId')
+  findAllWebpagesDividedByProductIdStockStateSlim(
+    @Param('stockState') stockState: boolean,
+    @Param('productId') productId: string,
+  ): Promise<ProductToWebpageSlimInterface[]> {
+    return this.webpageService.findAllWebpagesDividedByProductIdStockStateSlim(
+      stockState,
+      productId,
+    );
+  }
+
   @Get('find-all-divided-by-product-slim/:stockState')
   findAllWebpagesDividedByProductsStockStateSlim(
     @Param('stockState') stockState: boolean,

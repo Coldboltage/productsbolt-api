@@ -38,6 +38,16 @@ export class ProductService {
     return allProducts;
   }
 
+  async findAllProductsOnly(): Promise<Product[]> {
+    const allProducts = await this.productsRepository.find({
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    return allProducts;
+  }
+
   async findOne(id: string): Promise<Product> {
     return this.productsRepository.findOne({
       where: { id },
