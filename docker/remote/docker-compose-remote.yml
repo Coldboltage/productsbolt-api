@@ -18,7 +18,7 @@ services:
     networks:
       - productsbolt_net
     deploy:
-      replicas: 2
+      replicas: 1
       restart_policy:
         condition: any
 
