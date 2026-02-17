@@ -34,6 +34,8 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { ShopProductBacklistUrlModule } from './shop-product-backlist-url/shop-product-backlist-url.module';
 import { SitemapUrlModule } from './sitemap-url/sitemap-url.module';
 import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -87,10 +89,19 @@ import { AuthModule } from './auth/auth.module';
     EbayModule,
     WebpageUtilsModule,
     SitemapModule,
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 100,
+        },
+      ],
+    }),
     McpModule.forRoot({
       name: 'productsbolt-mcp',
       version: '0.0.1',
       instructions: `Productsbolt tracks product prices across many shops. Entities: Product, Shop, ShopProduct (joins Shop+Product), Webpage (a URL for a ShopProduct). Typical flow: search product → list shopProducts/webpages → fetch latest price/stock → optionally create alerts. Please always check the product listing`,
+      guards: [JwtAuthGuard, ThrottlerGuard],
       // defaults: SSE + Streamable HTTP + STDIO enabled
       // SSE endpoints: GET /sse (stream), POST /messages (calls)
     }),
