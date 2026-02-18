@@ -15,7 +15,7 @@ import {
   StrippedWebpageSlim,
   Webpage,
 } from './entities/webpage.entity';
-import { IsNull, Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
@@ -252,9 +252,11 @@ export class WebpageService {
           },
         },
         inStock: state,
+        price: Not(0),
       },
       relations: {
         shopProduct: {
+          shop: true,
           product: {
             ebayStat: true,
           },
@@ -376,7 +378,7 @@ export class WebpageService {
   async findAllWebpagesDividedByProductIdStockStateSlim(
     state: boolean,
     productId: string,
-  ): Promise<ProductToWebpageSlimInterface[]> {
+  ): Promise<ProductToWebpageSlimInterface> {
     console.log('fired findAllWebpagesDividedByProductsStockStateSlim');
     const product = await this.productService.findOne(productId);
     const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
@@ -394,6 +396,7 @@ export class WebpageService {
       inStock: webpage.inStock,
       price: webpage.price,
       currencyCode: webpage.currencyCode,
+      shop: webpage.shopProduct.shop.name,
     }));
     response.push({
       productName: product.name,
@@ -401,7 +404,7 @@ export class WebpageService {
     });
 
     console.log(response[0].webPages.length);
-    return response;
+    return response[0];
   }
 
   async findAllWebpagesDividedByProductsStockStateSlim(

@@ -58,7 +58,7 @@ export class WebpageController {
   findAllWebpagesDividedByProductIdStockStateSlim(
     @Param('stockState') stockState: boolean,
     @Param('productId') productId: string,
-  ): Promise<ProductToWebpageSlimInterface[]> {
+  ): Promise<ProductToWebpageSlimInterface> {
     return this.webpageService.findAllWebpagesDividedByProductIdStockStateSlim(
       stockState,
       productId,

@@ -27,7 +27,7 @@ export class ProductController {
     return this.productService.findAll();
   }
 
-  @Get('find-one-product-only')
+  @Get('find-all-product-only')
   async findAllProducts() {
     return this.productService.findAllProductsOnly();
   }
