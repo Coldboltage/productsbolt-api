@@ -85,6 +85,17 @@ export class WebpageCacheService {
     // The Webpage will update as per normal
     await this.webpageCacheRepository.save(webpageEntity.webpageCache);
     await this.webpageService.update(webpageId, { ...updateWebpageDto });
+
+    if (
+      webpageEntity.price !== updateWebpageDto.price ||
+      webpageEntity.inStock !== updateWebpageDto.inStock
+    ) {
+      const productId = webpageEntity.shopProduct.productId;
+      await fetch(
+        `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productId=${productId}`,
+        { method: 'POST' },
+      );
+    }
   }
 
   findAll() {

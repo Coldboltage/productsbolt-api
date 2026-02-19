@@ -2,6 +2,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateWebpageDto } from './dto/create-webpage.dto';
@@ -28,6 +29,8 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class WebpageService {
+  private readonly logger = new Logger(WebpageService.name);
+
   constructor(
     @InjectRepository(Webpage) private webpagesRepository: Repository<Webpage>,
     @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
@@ -57,14 +60,14 @@ export class WebpageService {
 
     // Listen for when it actually connects to the broker
     manager.on('connect', ({ url }) => {
-      console.log('✅ Client connected to', url);
+      this.logger.log('✅ Client connected to', url);
     });
     manager.on('disconnect', (params) => {
-      console.log('❌ Client disconnected', params.err.message);
+      this.logger.log('❌ Client disconnected', params.err.message);
     });
 
     // Inspect the asserted queue options
-    console.log('Client queueOptions:', client.options.queueOptions);
+    this.logger.log('Client queueOptions:', client.options.queueOptions);
 
     // Testing area
     // await this.nextProductToSell();
@@ -97,7 +100,7 @@ export class WebpageService {
       createWebpageDto.shopId,
     );
 
-    console.log(shopProductEntity);
+    this.logger.log(shopProductEntity);
     if (shopProductEntity.populated === true) {
       console.error('WebPage exists for shopProduct');
 
@@ -137,8 +140,21 @@ export class WebpageService {
       ...entity,
       webpageCache: {},
     });
-    console.log(`Page being created: ${createWebpageDto.url}`);
-    console.log(webpageEntity);
+
+    this.logger.log('Website Revalidate');
+
+    const productId = webpageEntity.shopProduct.productId;
+    await fetch(
+      `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productId=${productId}`,
+      { method: 'POST' },
+    );
+
+    console.log(
+      `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productId=${productId}`,
+    );
+
+    this.logger.log(`Page being created: ${createWebpageDto.url}`);
+    this.logger.log(webpageEntity);
     if (shopProductEntity.candidatePages) {
       await this.shopProductService.removeCandidatePageFromShopProduct(
         webpageEntity.url,
@@ -165,7 +181,7 @@ export class WebpageService {
   }
 
   async findAllByProduct(productId: string): Promise<Webpage[]> {
-    console.log(productId);
+    this.logger.log(productId);
     return this.webpagesRepository.find({
       where: {
         shopProduct: {
@@ -290,7 +306,7 @@ export class WebpageService {
         webPages: strippedWebpages,
       });
     }
-    console.log(response[0].webPages.length);
+    this.logger.log(response[0].webPages.length);
     return response;
   }
 
@@ -317,7 +333,7 @@ export class WebpageService {
         webPages: strippedWebpages,
       });
     }
-    console.log(response[0].webPages.length);
+    this.logger.log(response[0].webPages.length);
     return response;
   }
 
@@ -379,7 +395,7 @@ export class WebpageService {
     state: boolean,
     productId: string,
   ): Promise<ProductToWebpageSlimInterface> {
-    console.log('fired findAllWebpagesDividedByProductsStockStateSlim');
+    this.logger.log('fired findAllWebpagesDividedByProductsStockStateSlim');
     const product = await this.productService.findOne(productId);
     const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
       [];
@@ -403,14 +419,14 @@ export class WebpageService {
       webPages: strippedWebpages,
     });
 
-    console.log(response[0].webPages.length);
+    this.logger.log(response[0].webPages.length);
     return response[0];
   }
 
   async findAllWebpagesDividedByProductsStockStateSlim(
     state: boolean,
   ): Promise<ProductToWebpageSlimInterface[]> {
-    console.log('fired findAllWebpagesDividedByProductsStockStateSlim');
+    this.logger.log('fired findAllWebpagesDividedByProductsStockStateSlim');
     const products = await this.productService.findAll();
     const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
       [];
@@ -432,7 +448,7 @@ export class WebpageService {
         webPages: strippedWebpages,
       });
     }
-    console.log(response[0].webPages.length);
+    this.logger.log(response[0].webPages.length);
     return response;
   }
 
@@ -459,7 +475,7 @@ export class WebpageService {
         webPages: strippedWebpages,
       });
     }
-    console.log(response[0].webPages.length);
+    this.logger.log(response[0].webPages.length);
     return response;
   }
 
@@ -508,9 +524,9 @@ export class WebpageService {
   async updateAllPages(): Promise<void> {
     // Already doing high priority every 5 minutes
     const webPages = await this.findAllNonHighPriority();
-    console.log(webPages.length);
+    this.logger.log(webPages.length);
     for (const page of webPages) {
-      console.log(page);
+      this.logger.log(page);
       const updatePageDto: CheckPageDto = {
         url: page.url,
         query: page.shopProduct.name,
@@ -544,7 +560,7 @@ export class WebpageService {
   })
   async updateHighPriorityWebpages(): Promise<void> {
     const webPages = await this.findAllHighPriority();
-    console.log(webPages.length);
+    this.logger.log(webPages.length);
     for (const page of webPages) {
       await new Promise((r) => setTimeout(r, 6));
 
@@ -592,13 +608,13 @@ export class WebpageService {
       variantId: page.variantId,
       headless: page.shopProduct.shop.headless,
     };
-    console.log(page);
+    this.logger.log(page);
     if (page.shopProduct.shop.sitemapEntity.isShopifySite === true) {
       this.headlessClient.emit('updatePage', updatePageDto);
-      console.log('emitting to headlessClient');
+      this.logger.log('emitting to headlessClient');
     } else {
       this.headfulClient.emit('updatePage', updatePageDto);
-      console.log(`emitting to headfulClient`);
+      this.logger.log(`emitting to headfulClient`);
     }
   }
 
@@ -664,7 +680,7 @@ export class WebpageService {
   }
 
   async removeProductWebpages(productId: string): Promise<boolean> {
-    console.log(productId);
+    this.logger.log(productId);
     const webpages = await this.webpagesRepository.find({
       where: {
         shopProduct: { product: { id: productId } },
@@ -689,7 +705,7 @@ export class WebpageService {
   }
 
   async removeShopProductWebpages(shopProductId: string): Promise<boolean> {
-    console.log(shopProductId);
+    this.logger.log(shopProductId);
     const webpages = await this.webpagesRepository.find({
       where: {
         shopProduct: { id: shopProductId },
@@ -710,7 +726,7 @@ export class WebpageService {
   }
 
   async removeWebpage(id: string): Promise<boolean> {
-    console.log(id);
+    this.logger.log(id);
     const webpage = await this.webpagesRepository.findOne({
       where: { id },
       relations: ['shopProduct'],
@@ -750,21 +766,21 @@ export class WebpageService {
   async doesWebpageExistInSitemap() {
     const shopEntities =
       await this.shopService.findShopsWithActiveShopProducts();
-    console.log(shopEntities.length);
+    this.logger.log(shopEntities.length);
     const activeShopProducts: ShopProduct[] = [];
     for (const shop of shopEntities) {
       const sitemapUrls = new Set(shop.sitemapEntity.sitemapUrl.urls);
       const shopActiveShopProducts = shop.shopProducts.filter((shopProduct) => {
         const populated = shopProduct.populated;
         if (populated) {
-          // console.log({
+          // this.logger.log({
           //   shopProduct,
           //   webpage: shopProduct.webPage,
           // })
           const result = sitemapUrls.has(shopProduct.webPage?.url)
             ? false
             : true;
-          // console.log(result);
+          // this.logger.log(result);
           return result;
         } else {
           return false;
@@ -772,7 +788,7 @@ export class WebpageService {
       });
       activeShopProducts.push(...shopActiveShopProducts);
     }
-    console.log(activeShopProducts);
+    this.logger.log(activeShopProducts);
     return activeShopProducts.length > 0
       ? activeShopProducts.map((shopProduct) => shopProduct.webPage.url)
       : [];
