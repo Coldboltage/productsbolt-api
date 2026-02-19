@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -12,6 +13,7 @@ import { ProductType } from 'src/product/entities/product.entity';
 
 @Entity()
 @Unique(['url'])
+@Index(['shopProduct', 'inStock', 'price'])
 export class Webpage {
   @PrimaryGeneratedColumn('uuid')
   id: string;

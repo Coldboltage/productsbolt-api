@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -17,6 +18,7 @@ import { ShopProductBlacklistUrl } from 'src/shop-product-backlist-url/entities/
 
 @Entity()
 @Unique(['name', 'shopId', 'productId'])
+@Index(['product'])
 export class ShopProduct {
   @PrimaryGeneratedColumn('uuid')
   id: string;
