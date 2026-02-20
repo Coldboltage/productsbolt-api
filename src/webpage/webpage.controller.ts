@@ -17,7 +17,6 @@ import {
   StrippedWebpageSlim,
   Webpage,
 } from './entities/webpage.entity';
-import { UpdateResult } from 'typeorm';
 
 @Controller('webpage')
 export class WebpageController {
@@ -64,6 +63,30 @@ export class WebpageController {
       productId,
     );
   }
+
+  @Get('find-all-divided-by-product-slim-product-name/:stockState/:productName')
+  findAllWebpagesDividedByProductNameStockStateSlim(
+    @Param('stockState') stockState: boolean,
+    @Param('productName') productName: string,
+  ): Promise<ProductToWebpageSlimInterface> {
+    console.log(productName);
+    return this.webpageService.findAllWebpagesDividedByProductNameStockStateSlim(
+      stockState,
+      productName,
+    );
+  }
+
+  // @Get('find-all-divided-by-product-slim-brand-name/:stockState/:brandName')
+  // findAllWebpagesDividedByBrandNameStockStateSlim(
+  //   @Param('stockState') stockState: boolean,
+  //   @Param('brandName') brandName: string,
+  // ): Promise<ProductToWebpageSlimInterface> {
+  //   console.log(brandName);
+  //   return this.webpageService.findAllWebpagesDividedByBrandNameStockStateSlim(
+  //     stockState,
+  //     brandName,
+  //   );
+  // }
 
   @Get('find-all-divided-by-product-slim/:stockState')
   findAllWebpagesDividedByProductsStockStateSlim(

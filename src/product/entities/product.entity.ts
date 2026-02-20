@@ -37,6 +37,12 @@ export class Product {
   @Column({ default: false })
   priority: boolean;
 
+  @Column({ default: '' })
+  urlSafeName: string;
+
+  @Column({ default: '' })
+  brand: string;
+
   @OneToOne(() => EbayStat, (ebayStat) => ebayStat.product)
   ebayStat: EbayStat;
 }

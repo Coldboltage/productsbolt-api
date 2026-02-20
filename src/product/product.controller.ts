@@ -32,6 +32,11 @@ export class ProductController {
     return this.productService.findAllProductsOnly();
   }
 
+  @Get('find-all-product-only-by-brand/:brandName')
+  async findProductsByBrand(@Param('brandName') brandName: string) {
+    return this.productService.findProductsByBrand(brandName);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Product> {
     return this.productService.findOne(id);

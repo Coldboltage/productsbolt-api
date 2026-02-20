@@ -423,6 +423,71 @@ export class WebpageService {
     return response[0];
   }
 
+  async findAllWebpagesDividedByProductNameStockStateSlim(
+    state: boolean,
+    productName: string,
+  ): Promise<ProductToWebpageSlimInterface> {
+    this.logger.log('fired findAllWebpagesDividedByProductsStockStateSlim');
+    const product =
+      await this.productService.findOneByProductSafeName(productName);
+    const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
+      [];
+
+    const specificWebPagesForProduct = await this.findAllByProductStock(
+      state,
+      product.id,
+    );
+    if (specificWebPagesForProduct.length === 0)
+      throw new NotFoundException('no_webpages_found_for_product');
+    const strippedWebpages = specificWebPagesForProduct.map((webpage) => ({
+      id: webpage.id,
+      url: webpage.url,
+      inStock: webpage.inStock,
+      price: webpage.price,
+      currencyCode: webpage.currencyCode,
+      shop: webpage.shopProduct.shop.name,
+    }));
+    response.push({
+      productName: product.name,
+      webPages: strippedWebpages,
+    });
+
+    this.logger.log(response[0].webPages.length);
+    return response[0];
+  }
+
+  // async findAllWebpagesDividedByBrandNameStockStateSlim(
+  //   state: boolean,
+  //   brandName: string,
+  // ): Promise<ProductToWebpageSlimInterface> {
+  //   this.logger.log('fired findAllWebpagesDividedByBrandNameStockStateSlim');
+  //   const product = await this.productService.findProductsByBrand(brandName);
+  //   const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
+  //     [];
+
+  //   const specificWebPagesForProduct = await this.findAllByProductStock(
+  //     state,
+  //     product.id,
+  //   );
+  //   if (specificWebPagesForProduct.length === 0)
+  //     throw new NotFoundException('no_webpages_found_for_product');
+  //   const strippedWebpages = specificWebPagesForProduct.map((webpage) => ({
+  //     id: webpage.id,
+  //     url: webpage.url,
+  //     inStock: webpage.inStock,
+  //     price: webpage.price,
+  //     currencyCode: webpage.currencyCode,
+  //     shop: webpage.shopProduct.shop.name,
+  //   }));
+  //   response.push({
+  //     productName: product.name,
+  //     webPages: strippedWebpages,
+  //   });
+
+  //   this.logger.log(response[0].webPages.length);
+  //   return response[0];
+  // }
+
   async findAllWebpagesDividedByProductsStockStateSlim(
     state: boolean,
   ): Promise<ProductToWebpageSlimInterface[]> {

@@ -43,14 +43,39 @@ export class ProductService {
       select: {
         id: true,
         name: true,
+        brand: true,
+        urlSafeName: true,
       },
     });
+    return allProducts;
+  }
+
+  async findProductsByBrand(brand: string): Promise<Product[]> {
+    const allProducts = await this.productsRepository.find({
+      where: {
+        brand,
+      },
+      select: {
+        id: true,
+        name: true,
+        brand: true,
+        urlSafeName: true,
+      },
+    });
+    console.log(allProducts);
     return allProducts;
   }
 
   async findOne(id: string): Promise<Product> {
     return this.productsRepository.findOne({
       where: { id },
+      relations: { ebayStat: true },
+    });
+  }
+
+  async findOneByProductSafeName(productName: string): Promise<Product> {
+    return this.productsRepository.findOne({
+      where: { urlSafeName: productName },
       relations: { ebayStat: true },
     });
   }
