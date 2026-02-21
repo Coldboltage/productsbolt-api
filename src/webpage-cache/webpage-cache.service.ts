@@ -90,9 +90,9 @@ export class WebpageCacheService {
       webpageEntity.price !== updateWebpageDto.price ||
       webpageEntity.inStock !== updateWebpageDto.inStock
     ) {
-      const productId = webpageEntity.shopProduct.productId;
+      const productName = webpageEntity.shopProduct.product.urlSafeName;
       await fetch(
-        `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productId=${productId}`,
+        `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${productName}`,
         { method: 'POST' },
       );
     }

@@ -144,8 +144,9 @@ export class WebpageService {
     this.logger.log('Website Revalidate');
 
     const productId = webpageEntity.shopProduct.productId;
+    const productName = webpageEntity.shopProduct.product.urlSafeName;
     await fetch(
-      `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productId=${productId}`,
+      `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${productName}`,
       { method: 'POST' },
     );
 
@@ -395,7 +396,7 @@ export class WebpageService {
     state: boolean,
     productId: string,
   ): Promise<ProductToWebpageSlimInterface> {
-    this.logger.log('fired findAllWebpagesDividedByProductsStockStateSlim');
+    this.logger.log('fired findAllWebpagesDividedByProductIdStockStateSlim');
     const product = await this.productService.findOne(productId);
     const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
       [];
@@ -427,7 +428,8 @@ export class WebpageService {
     state: boolean,
     productName: string,
   ): Promise<ProductToWebpageSlimInterface> {
-    this.logger.log('fired findAllWebpagesDividedByProductsStockStateSlim');
+    console.log({ state, productName });
+    this.logger.log('fired findAllWebpagesDividedByProductNameStockStateSlim');
     const product =
       await this.productService.findOneByProductSafeName(productName);
     const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
