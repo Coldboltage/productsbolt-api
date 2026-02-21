@@ -43,6 +43,9 @@ export class Product {
   @Column({ default: '' })
   brand: string;
 
+  @Column({ nullable: true })
+  imageUrl: string;
+
   @OneToOne(() => EbayStat, (ebayStat) => ebayStat.product)
   ebayStat: EbayStat;
 }

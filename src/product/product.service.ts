@@ -45,6 +45,7 @@ export class ProductService {
         name: true,
         brand: true,
         urlSafeName: true,
+        imageUrl: true,
       },
     });
     return allProducts;
@@ -60,6 +61,7 @@ export class ProductService {
         name: true,
         brand: true,
         urlSafeName: true,
+        imageUrl: true,
       },
     });
     console.log(allProducts);
