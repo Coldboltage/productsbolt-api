@@ -86,8 +86,22 @@ export class WebpageCacheService {
     await this.webpageCacheRepository.save(webpageEntity.webpageCache);
     await this.webpageService.update(webpageId, { ...updateWebpageDto });
 
+    console.log({
+      webpageEntityPrice: +webpageEntity.price,
+      updatedWebpageDtoPrice: updateWebpageDto.price,
+      webpageEntityStock: webpageEntity.inStock,
+      updateWebpageDtoInStock: updateWebpageDto.inStock,
+    });
+
+    console.log(
+      `has the page changed: ${
+        +webpageEntity.price !== updateWebpageDto.price ||
+        webpageEntity.inStock !== updateWebpageDto.inStock
+      }`,
+    );
+
     if (
-      webpageEntity.price !== updateWebpageDto.price ||
+      +webpageEntity.price !== updateWebpageDto.price ||
       webpageEntity.inStock !== updateWebpageDto.inStock
     ) {
       const productName = webpageEntity.shopProduct.product.urlSafeName;
