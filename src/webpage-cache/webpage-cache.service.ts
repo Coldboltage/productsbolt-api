@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateWebpageCacheDto } from './dto/create-webpage-cache.dto';
 import { UpdateWebpageCacheDto } from './dto/update-webpage-cache.dto';
 import { WebpageService } from '../webpage/webpage.service';
@@ -9,6 +9,7 @@ import { UpdateWebpageDto } from 'src/webpage/dto/update-webpage.dto';
 
 @Injectable()
 export class WebpageCacheService {
+  private logger = new Logger(WebpageCacheService.name);
   constructor(
     @InjectRepository(WebpageCache)
     private webpageCacheRepository: Repository<WebpageCache>,
@@ -36,7 +37,7 @@ export class WebpageCacheService {
     webpageId: string,
     updateWebpageDto: UpdateWebpageDto,
   ) {
-    console.log('updateWebpageAndCache called');
+    this.logger.log('updateWebpageAndCache called');
 
     // We're going to get the answer. If the answer is the same as before, we're going to add count++. If this becomes over 5+, then it'll be considered confirmed
 
@@ -44,7 +45,7 @@ export class WebpageCacheService {
     let count = webpageEntity.webpageCache.count;
     webpageEntity.webpageCache.date = new Date();
 
-    console.log(updateWebpageDto.shopifySite);
+    this.logger.log(updateWebpageDto.shopifySite);
 
     if (
       webpageEntity.inStock === updateWebpageDto.inStock &&
@@ -52,7 +53,7 @@ export class WebpageCacheService {
       webpageEntity.webpageCache.hash === updateWebpageDto.hash &&
       !updateWebpageDto.shopifySite
     ) {
-      console.log('count if activated');
+      this.logger.log('count if activated');
       count++;
     }
     // if scenarios
@@ -63,7 +64,7 @@ export class WebpageCacheService {
       webpageEntity.webpageCache.count = 0;
       webpageEntity.webpageCache.confirmed = false;
     } else if (webpageEntity.webpageCache.hash !== updateWebpageDto.hash) {
-      console.log('if 1 activated');
+      this.logger.log('if 1 activated');
       webpageEntity.webpageCache.hash = updateWebpageDto.hash;
       webpageEntity.webpageCache.count = 1;
       webpageEntity.webpageCache.confirmed = false;
@@ -71,14 +72,14 @@ export class WebpageCacheService {
       webpageEntity.webpageCache.hash === updateWebpageDto.hash &&
       webpageEntity.webpageCache.count < 4
     ) {
-      console.log('if 2 activated');
+      this.logger.log('if 2 activated');
       webpageEntity.webpageCache.count = count;
     } else if (
       webpageEntity.webpageCache.hash === updateWebpageDto.hash &&
       count >= 3 &&
       !webpageEntity.webpageCache.confirmed
     ) {
-      console.log('if 3 activated');
+      this.logger.log('if 3 activated');
       webpageEntity.webpageCache.confirmed = true;
     }
 
@@ -86,14 +87,14 @@ export class WebpageCacheService {
     await this.webpageCacheRepository.save(webpageEntity.webpageCache);
     await this.webpageService.update(webpageId, { ...updateWebpageDto });
 
-    console.log({
+    this.logger.log({
       webpageEntityPrice: +webpageEntity.price,
       updatedWebpageDtoPrice: updateWebpageDto.price,
       webpageEntityStock: webpageEntity.inStock,
       updateWebpageDtoInStock: updateWebpageDto.inStock,
     });
 
-    console.log(
+    this.logger.log(
       `has the page changed: ${
         +webpageEntity.price !== updateWebpageDto.price ||
         webpageEntity.inStock !== updateWebpageDto.inStock
@@ -108,6 +109,9 @@ export class WebpageCacheService {
       await fetch(
         `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${productName}`,
         { method: 'POST' },
+      );
+      this.logger.log(
+        `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${productName}`,
       );
     }
   }
