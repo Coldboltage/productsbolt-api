@@ -60,10 +60,10 @@ export class BlackListUrlService {
     // blackListEntity =
     //   await this.blackListRepository.save<BlackListUrl>(blackListEntity);
 
-    await this.shopProductsService.manualUpdateIndividualShopProductsImmediateLinks(
-      webpageEntity.shopProduct.id,
-      false,
-    );
+    // await this.shopProductsService.manualUpdateIndividualShopProductsImmediateLinks(
+    //   webpageEntity.shopProduct.id,
+    //   false,
+    // );
 
     return blackListEntity;
   }
