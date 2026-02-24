@@ -1,6 +1,14 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateShopDto } from './create-shop.dto';
-import { IsArray, IsOptional, IsString, IsUrl } from 'class-validator';
+import {
+  IsArray,
+  IsOptional,
+  IsString,
+  IsUrl,
+  IsUUID,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class UpdateShopDto extends PartialType(CreateShopDto) {
   @IsOptional()
@@ -23,4 +31,15 @@ export class UpdateShopDto extends PartialType(CreateShopDto) {
   @IsOptional()
   @IsString()
   currency?: string;
+
+  @IsOptional()
+  @IsUUID()
+  id?: string;
+}
+
+export class UpdateShopBatchDto extends PartialType(CreateShopDto) {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UpdateShopDto)
+  batch!: UpdateShopDto[];
 }

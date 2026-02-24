@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { CreateShopDto } from './dto/create-shop.dto';
-import { UpdateShopDto } from './dto/update-shop.dto';
+import { UpdateShopBatchDto, UpdateShopDto } from './dto/update-shop.dto';
 import { Shop } from './entities/shop.entity';
 import { UpdateResult } from 'typeorm';
 
@@ -94,6 +94,15 @@ export class ShopController {
   @Get()
   findAll(): Promise<Shop[]> {
     return this.shopService.findAll();
+  }
+
+  @Patch('batch/')
+  batchUpdate(
+    @Param('id') id: string,
+    @Body() updateShopDto: UpdateShopBatchDto,
+  ): Promise<void> {
+    console.log(updateShopDto);
+    return this.shopService.batchUpdate(updateShopDto.batch);
   }
 
   @Patch(':id')

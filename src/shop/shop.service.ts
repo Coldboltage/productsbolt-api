@@ -6,7 +6,7 @@ import {
   OnApplicationBootstrap,
 } from '@nestjs/common';
 import { CreateShopDto } from './dto/create-shop.dto';
-import { UpdateShopDto } from './dto/update-shop.dto';
+import { UpdateShopBatchDto, UpdateShopDto } from './dto/update-shop.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
 import { Shop } from './entities/shop.entity';
@@ -298,6 +298,15 @@ export class ShopService implements OnApplicationBootstrap {
     console.log(id);
     console.log(updatedEntity);
     return updatedEntity;
+  }
+
+  async batchUpdate(updateShopDto: UpdateShopDto[]) {
+    console.log(updateShopDto);
+    for (const shop of updateShopDto) {
+      const { city, province, country, currency } = shop;
+      console.log({});
+      await this.update(shop.id, { city, province, country, currency });
+    }
   }
 
   async remove(id: string): Promise<Shop> {
