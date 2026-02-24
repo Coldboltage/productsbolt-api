@@ -37,6 +37,11 @@ export class ProductController {
     return this.productService.findProductsByBrand(brandName);
   }
 
+  @Get('find-one-by-product-name/:urlSafeName')
+  async findOneByProductName(@Param('urlSafeName') urlSafeName: string) {
+    return this.productService.findOneByProductName(urlSafeName);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Product> {
     return this.productService.findOne(id);

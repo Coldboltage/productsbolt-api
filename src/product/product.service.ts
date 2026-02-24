@@ -23,10 +23,10 @@ export class ProductService {
     return entity;
   }
 
-  async findOneByProductName(productName: string): Promise<Product> {
+  async findOneByProductName(urlSafeName: string): Promise<Product> {
     return this.productsRepository.findOne({
       where: {
-        name: productName,
+        urlSafeName,
       },
     });
   }

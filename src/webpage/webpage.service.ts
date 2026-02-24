@@ -432,8 +432,11 @@ export class WebpageService {
     this.logger.log('fired findAllWebpagesDividedByProductNameStockStateSlim');
     const product =
       await this.productService.findOneByProductSafeName(productName);
-    const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
-      [];
+    const response: {
+      productName: string;
+      productImage: string;
+      webPages: StrippedWebpageSlim[];
+    }[] = [];
 
     const specificWebPagesForProduct = await this.findAllByProductStock(
       state,
@@ -451,6 +454,7 @@ export class WebpageService {
     }));
     response.push({
       productName: product.name,
+      productImage: product.imageUrl,
       webPages: strippedWebpages,
     });
 
