@@ -14,6 +14,7 @@ import {
   ProductToWebpageSlimInterface,
   StrippedWebpage,
   StrippedWebpageSlim,
+  StrippedWebpageSlimWithShop,
   Webpage,
 } from './entities/webpage.entity';
 import { IsNull, Not, Repository } from 'typeorm';
@@ -462,37 +463,51 @@ export class WebpageService {
     return response[0];
   }
 
-  // async findAllWebpagesDividedByBrandNameStockStateSlim(
-  //   state: boolean,
-  //   brandName: string,
-  // ): Promise<ProductToWebpageSlimInterface> {
-  //   this.logger.log('fired findAllWebpagesDividedByBrandNameStockStateSlim');
-  //   const product = await this.productService.findProductsByBrand(brandName);
-  //   const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
-  //     [];
+  async findAllWebpagesDividedByProductsStockStateShopInfoSlim(
+    state: boolean,
+    productName: string,
+  ): Promise<ProductToWebpageSlimInterface> {
+    console.log({ state, productName });
+    this.logger.log('fired findAllWebpagesDividedByProductNameStockStateSlim');
+    const product =
+      await this.productService.findOneByProductSafeName(productName);
+    const response: {
+      productName: string;
+      productImage: string;
+      webPages: StrippedWebpageSlimWithShop[];
+    }[] = [];
 
-  //   const specificWebPagesForProduct = await this.findAllByProductStock(
-  //     state,
-  //     product.id,
-  //   );
-  //   if (specificWebPagesForProduct.length === 0)
-  //     throw new NotFoundException('no_webpages_found_for_product');
-  //   const strippedWebpages = specificWebPagesForProduct.map((webpage) => ({
-  //     id: webpage.id,
-  //     url: webpage.url,
-  //     inStock: webpage.inStock,
-  //     price: webpage.price,
-  //     currencyCode: webpage.currencyCode,
-  //     shop: webpage.shopProduct.shop.name,
-  //   }));
-  //   response.push({
-  //     productName: product.name,
-  //     webPages: strippedWebpages,
-  //   });
+    const specificWebPagesForProduct = await this.findAllByProductStock(
+      state,
+      product.id,
+    );
+    if (specificWebPagesForProduct.length === 0)
+      throw new NotFoundException('no_webpages_found_for_product');
+    const strippedWebpageSlimWithShop = specificWebPagesForProduct.map(
+      (webpage) => ({
+        id: webpage.id,
+        url: webpage.url,
+        inStock: webpage.inStock,
+        price: webpage.price,
+        currencyCode: webpage.currencyCode,
+        shop: {
+          name: webpage.shopProduct.shop.name,
+          city: webpage.shopProduct.shop.city,
+          province: webpage.shopProduct.shop.province,
+          country: webpage.shopProduct.shop.country,
+          currency: webpage.shopProduct.shop.currency,
+        },
+      }),
+    );
+    response.push({
+      productName: product.name,
+      productImage: product.imageUrl,
+      webPages: strippedWebpageSlimWithShop,
+    });
 
-  //   this.logger.log(response[0].webPages.length);
-  //   return response[0];
-  // }
+    this.logger.log(response[0].webPages.length);
+    return response[0];
+  }
 
   async findAllWebpagesDividedByProductsStockStateSlim(
     state: boolean,

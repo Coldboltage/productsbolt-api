@@ -277,7 +277,8 @@ export class ShopService implements OnApplicationBootstrap {
 
   async getAllShopifyMetaInformation() {
     const shopifyShops = await this.findAllShopifyShops();
-    for (const shop of shopifyShops) {
+    const filterShops = shopifyShops.filter((shop) => shop.country !== null);
+    for (const shop of filterShops) {
       const shopifyMetPayload: ShopifyMetaDto = {
         url: shop.website,
         id: shop.id,

@@ -92,6 +92,20 @@ export interface StrippedWebpageSlim {
   currencyCode: string;
 }
 
+export interface StrippedWebpageSlimWithShop {
+  id: string;
+  url: string;
+  inStock: boolean;
+  price: number;
+  currencyCode: string;
+  shop: {
+    name: string;
+    city: string;
+    province: string;
+    country: string;
+    currency: string;
+  };
+}
 export class CheckPageDto {
   url: string;
   query: string;

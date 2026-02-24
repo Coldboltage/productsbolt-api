@@ -64,6 +64,20 @@ export class WebpageController {
     );
   }
 
+  @Get(
+    'find-all-divided-by-product-slim-product-name-shop-info/:stockState/:productName',
+  )
+  findAllWebpagesDividedByProductsStockStateShopInfoSlim(
+    @Param('stockState') stockState: boolean,
+    @Param('productName') productName: string,
+  ): Promise<ProductToWebpageSlimInterface> {
+    console.log(productName);
+    return this.webpageService.findAllWebpagesDividedByProductsStockStateShopInfoSlim(
+      stockState,
+      productName,
+    );
+  }
+
   @Get('find-all-divided-by-product-slim-product-name/:stockState/:productName')
   findAllWebpagesDividedByProductNameStockStateSlim(
     @Param('stockState') stockState: boolean,
