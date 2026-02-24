@@ -3,10 +3,11 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  Logger,
   OnApplicationBootstrap,
 } from '@nestjs/common';
 import { CreateShopDto } from './dto/create-shop.dto';
-import { UpdateShopBatchDto, UpdateShopDto } from './dto/update-shop.dto';
+import { UpdateShopDto } from './dto/update-shop.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
 import { Shop } from './entities/shop.entity';
@@ -20,6 +21,7 @@ import { ShopifyMetaDto } from './dto/shopify-meta.dto';
 
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
+  private logger = new Logger(ShopService.name);
   constructor(
     @InjectRepository(Shop) private shopsRepository: Repository<Shop>,
     @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
@@ -44,14 +46,14 @@ export class ShopService implements OnApplicationBootstrap {
 
     // Listen for when it actually connects to the broker
     manager.on('connect', ({ url }) => {
-      console.log('✅ Client connected to', url);
+      this.logger.log('✅ Client connected to', url);
     });
     manager.on('disconnect', (params) => {
-      console.log('❌ Client disconnected', params.err.message);
+      this.logger.log('❌ Client disconnected', params.err.message);
     });
 
     // Inspect the asserted queue options
-    console.log('Client queueOptions:', client.options.queueOptions);
+    this.logger.log('Client queueOptions:', client.options.queueOptions);
   }
 
   async create(createShopDto: CreateShopDto): Promise<Shop> {
@@ -123,7 +125,7 @@ export class ShopService implements OnApplicationBootstrap {
   async testShopifySiteCollection(shopId: string): Promise<void> {
     const shop = await this.findOne(shopId);
     if (shop.sitemapEntity.isShopifySite) {
-      console.log('testShopifySiteCollection fired');
+      this.logger.log('testShopifySiteCollection fired');
       this.headlessClient.emit('shopifyCollectionsTest', shop);
     }
   }
@@ -140,7 +142,7 @@ export class ShopService implements OnApplicationBootstrap {
 
   async updateSpecificShopSitemap(shopId: string): Promise<void> {
     const shop = await this.findOneWithSitemapUrls(shopId);
-    console.log(shop.sitemapEntity);
+    this.logger.log(shop.sitemapEntity);
     if (
       shop.sitemapEntity.isShopifySite &&
       shop.sitemapEntity.error === false &&
@@ -175,9 +177,9 @@ export class ShopService implements OnApplicationBootstrap {
   }
 
   async checkIfShopIsShopify(shopId: string): Promise<void> {
-    console.log('checkIfShopIsShopify called with id:', shopId);
+    this.logger.log('checkIfShopIsShopify called with id:', shopId);
     const shop = await this.findOne(shopId);
-    console.log(shop.name);
+    this.logger.log(shop.name);
     if (shop) this.headfulClient.emit('shopifyCheck', shop);
   }
 
@@ -277,7 +279,8 @@ export class ShopService implements OnApplicationBootstrap {
 
   async getAllShopifyMetaInformation() {
     const shopifyShops = await this.findAllShopifyShops();
-    const filterShops = shopifyShops.filter((shop) => shop.country !== null);
+    const filterShops = shopifyShops.filter((shop) => shop.country == null);
+    this.logger.log(filterShops.length);
     for (const shop of filterShops) {
       const shopifyMetPayload: ShopifyMetaDto = {
         url: shop.website,
@@ -296,16 +299,16 @@ export class ShopService implements OnApplicationBootstrap {
       { id },
       updateShopDto,
     );
-    console.log(id);
-    console.log(updatedEntity);
+    this.logger.log(id);
+    this.logger.log(updatedEntity);
     return updatedEntity;
   }
 
   async batchUpdate(updateShopDto: UpdateShopDto[]) {
-    console.log(updateShopDto);
+    this.logger.log(updateShopDto);
     for (const shop of updateShopDto) {
       const { city, province, country, currency } = shop;
-      console.log({});
+      this.logger.log({});
       await this.update(shop.id, { city, province, country, currency });
     }
   }
@@ -388,7 +391,7 @@ export class ShopService implements OnApplicationBootstrap {
 
   @Cron(CronExpression.EVERY_HOUR)
   async checkShopListingsCron() {
-    console.log('Running checkShopListingsCron job');
+    this.logger.log('Running checkShopListingsCron job');
     const shopToCheck = await this.shopsRepository.find({
       where: {
         active: true,
@@ -396,7 +399,7 @@ export class ShopService implements OnApplicationBootstrap {
       },
     });
     for (const shop of shopToCheck) {
-      console.log(`Checking shop listings for shop: ${shop.name}`);
+      this.logger.log(`Checking shop listings for shop: ${shop.name}`);
       this.checkShopProductListings(shop.id);
     }
   }
@@ -414,7 +417,7 @@ export class ShopService implements OnApplicationBootstrap {
       urlStructure: `${shopEntity.protocol}${shopEntity.website}`,
     };
 
-    console.log('Emitting product-listings-check with payload:', payload);
+    this.logger.log('Emitting product-listings-check with payload:', payload);
     this.headlessClient.emit('product-listings-check', payload);
   }
 }
