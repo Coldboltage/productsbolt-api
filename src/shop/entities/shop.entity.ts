@@ -44,6 +44,18 @@ export class Shop {
   isShopifySite: boolean;
 
   @Column({ nullable: true })
+  city: string;
+
+  @Column({ nullable: true })
+  province: string;
+
+  @Column({ nullable: true })
+  country: string;
+
+  @Column({ nullable: true })
+  currency: string;
+
+  @Column({ nullable: true })
   etag: string;
 
   @Column({ default: 0 })

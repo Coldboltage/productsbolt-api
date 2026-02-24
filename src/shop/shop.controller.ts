@@ -81,6 +81,11 @@ export class ShopController {
     return this.shopService.checkShopProductListings(shopId);
   }
 
+  @Post('get-all-shopify-meta-information')
+  async getAllShopifyMetaInformation() {
+    return this.shopService.getAllShopifyMetaInformation();
+  }
+
   @Get('find-shop/:website')
   findShop(@Param('website') website: string): Promise<Shop> {
     return this.shopService.findShop(website);

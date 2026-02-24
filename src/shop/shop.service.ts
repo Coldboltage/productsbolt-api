@@ -16,6 +16,7 @@ import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { Sitemap } from '../sitemap/entities/sitemap.entity';
 import { ProductListingsCheckInterface } from './dto/product-listings-check.dto';
 import { Span } from 'nestjs-otel/lib/tracing/decorators/span';
+import { ShopifyMetaDto } from './dto/shopify-meta.dto';
 
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
@@ -26,6 +27,8 @@ export class ShopService implements OnApplicationBootstrap {
     @Inject('SITEMAP_CLIENT') private readonly sitemapClient: ClientProxy,
     @Inject('SLOW_SITEMAP_CLIENT')
     private readonly slowSitemapClient: ClientProxy,
+    @Inject('HEADFUL_SLOW_CLIENT')
+    private headfulSlowClient: ClientProxy,
     private eventEmitter: EventEmitter2,
     private readonly scheduler: SchedulerRegistry,
   ) {}
@@ -255,6 +258,33 @@ export class ShopService implements OnApplicationBootstrap {
         shopListings: true,
       },
     });
+  }
+
+  async findAllShopifyShops() {
+    return this.shopsRepository.find({
+      where: {
+        sitemapEntity: {
+          isShopifySite: true,
+        },
+        active: true,
+        cloudflare: false,
+      },
+      relations: {
+        sitemapEntity: true,
+      },
+    });
+  }
+
+  async getAllShopifyMetaInformation() {
+    const shopifyShops = await this.findAllShopifyShops();
+    for (const shop of shopifyShops) {
+      const shopifyMetPayload: ShopifyMetaDto = {
+        url: shop.website,
+        id: shop.id,
+      };
+
+      this.headfulSlowClient.emit('shopifyMeta', shopifyMetPayload);
+    }
   }
 
   async update(
