@@ -93,6 +93,8 @@ export class ShopProductService {
         cloudflare: shopProduct.shop.cloudflare,
         headless: shopProduct.shop.headless,
         expectedPrice: shopProduct.product.price,
+        country: shopProduct.shop.country,
+        currency: shopProduct.shop.currency,
         links: [],
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
@@ -228,6 +230,8 @@ export class ShopProductService {
       cloudflare: shopProduct.shop.cloudflare,
       headless: shopProduct.shop.headless,
       expectedPrice: shopProduct.product.price,
+      country: shopProduct.shop.country,
+      currency: shopProduct.shop.currency,
       links: [],
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
@@ -335,6 +339,8 @@ export class ShopProductService {
         cloudflare: shopProduct.shop.cloudflare,
         headless: shopProduct.shop.headless,
         expectedPrice: shopProduct.product.price,
+        country: shopProduct.shop.country,
+        currency: shopProduct.shop.currency,
         links: [],
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
@@ -446,6 +452,8 @@ export class ShopProductService {
         cloudflare: shopProduct.shop.cloudflare,
         headless: shopProduct.shop.headless,
         expectedPrice: shopProduct.product.price,
+        country: shopProduct.shop.country,
+        currency: shopProduct.shop.currency,
         links: [],
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
@@ -558,6 +566,8 @@ export class ShopProductService {
         cloudflare: shopProduct.shop.cloudflare,
         headless: shopProduct.shop.headless,
         expectedPrice: shopProduct.product.price,
+        country: shopProduct.shop.country,
+        currency: shopProduct.shop.currency,
         links: [],
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
@@ -666,6 +676,8 @@ export class ShopProductService {
         headless: shopProduct.shop.headless,
         links: limitedUrls,
         expectedPrice: shopProduct.product.price,
+        country: shopProduct.shop.country,
+        currency: shopProduct.shop.currency,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           sitemapUrls: [],
@@ -797,6 +809,8 @@ export class ShopProductService {
           cloudflare: shopProduct.shop.cloudflare,
           expectedPrice: shopProduct.product.price,
           headless: shopProduct.shop.headless,
+          country: shopProduct.shop.country,
+          currency: shopProduct.shop.currency,
           links: limitedUrls,
           sitemapEntity: {
             ...shopProduct.shop.sitemapEntity,
@@ -979,6 +993,8 @@ export class ShopProductService {
         headless: shopProduct.shop.headless,
         links: limitedUrls,
         expectedPrice: shopProduct.product.price,
+        country: shopProduct.shop.country,
+        currency: shopProduct.shop.currency,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           sitemapUrls: [],
@@ -1099,6 +1115,8 @@ export class ShopProductService {
         headless: shopProduct.shop.headless,
         links: limitedUrls,
         expectedPrice: shopProduct.product.price,
+        country: shopProduct.shop.country,
+        currency: shopProduct.shop.currency,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           sitemapUrls: [],
@@ -1121,7 +1139,10 @@ export class ShopProductService {
         };
       }
 
-      if (shopProduct.shop.sitemapEntity.isShopifySite === true) {
+      if (
+        shopProduct.shop.sitemapEntity.isShopifySite === true &&
+        shopProduct.shop.cloudflare === false
+      ) {
         this.headlessClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
@@ -1231,6 +1252,8 @@ export class ShopProductService {
       headless: shopProduct.shop.headless,
       links: limitedUrls,
       expectedPrice: shopProduct.product.price,
+      country: shopProduct.shop.country,
+      currency: shopProduct.shop.currency,
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
         shopId: shopProduct.shop.id,
@@ -1329,6 +1352,8 @@ export class ShopProductService {
       headless: shopProduct.shop.headless,
       links: limitedUrls,
       expectedPrice: shopProduct.product.price,
+      country: shopProduct.shop.country,
+      currency: shopProduct.shop.currency,
       sitemapEntity: {
         ...shopProduct.shop.sitemapEntity,
         shopId: shopProduct.shop.id,
@@ -1426,6 +1451,8 @@ export class ShopProductService {
         headless: shopProduct.shop.headless,
         links: limitedUrls,
         expectedPrice: shopProduct.product.price,
+        country: shopProduct.shop.country,
+        currency: shopProduct.shop.currency,
         sitemapEntity: {
           ...shopProduct.shop.sitemapEntity,
           shopId: shopProduct.shop.id,

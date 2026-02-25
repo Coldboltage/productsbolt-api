@@ -122,6 +122,8 @@ export class CheckPageDto {
   cloudflare: boolean;
   variantId: null | string;
   headless: boolean;
+  country: string;
+  currency: string;
 }
 
 export class ProductToWebpageInterface {

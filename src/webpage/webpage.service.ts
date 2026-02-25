@@ -632,8 +632,13 @@ export class WebpageService {
         cloudflare: page.shopProduct.shop.cloudflare,
         variantId: page.variantId,
         headless: page.shopProduct.shop.headless,
+        country: page.shopProduct.shop.country,
+        currency: page.shopProduct.shop.country,
       };
-      if (page.shopProduct.shop.sitemapEntity.isShopifySite === true) {
+      if (
+        page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
+        page.shopProduct.shop.cloudflare === false
+      ) {
         this.headlessClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.website.includes('chaoscards.co.uk')) {
         this.headfulSlowClient.emit('updatePage', updatePageDto);
@@ -669,8 +674,13 @@ export class WebpageService {
         cloudflare: page.shopProduct.shop.cloudflare,
         variantId: page.variantId,
         headless: page.shopProduct.shop.headless,
+        country: page.shopProduct.shop.country,
+        currency: page.shopProduct.shop.country,
       };
-      if (page.shopProduct.shop.sitemapEntity.isShopifySite === true) {
+      if (
+        page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
+        page.shopProduct.shop.cloudflare === false
+      ) {
         this.headlessClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.website.includes('chaoscards.co.uk')) {
         this.headfulSlowClient.emit('updatePage', updatePageDto);
@@ -699,9 +709,14 @@ export class WebpageService {
       cloudflare: page.shopProduct.shop.cloudflare,
       variantId: page.variantId,
       headless: page.shopProduct.shop.headless,
+      country: page.shopProduct.shop.country,
+      currency: page.shopProduct.shop.country,
     };
     this.logger.log(page);
-    if (page.shopProduct.shop.sitemapEntity.isShopifySite === true) {
+    if (
+      page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
+      page.shopProduct.shop.cloudflare === false
+    ) {
       this.headlessClient.emit('updatePage', updatePageDto);
       this.logger.log('emitting to headlessClient');
     } else {

@@ -78,6 +78,12 @@ export class CreateProcessDto {
   @IsString()
   links: string[];
 
+  @IsString()
+  country: string;
+
+  @IsString()
+  currency: string;
+
   @ValidateNested()
   @Type(() => EbayProductDetailDto)
   @IsOptional()
