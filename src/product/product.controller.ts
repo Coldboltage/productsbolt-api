@@ -22,6 +22,11 @@ export class ProductController {
     return this.productService.create(createProductDto);
   }
 
+  @Post('update-website-product-page/:productId')
+  updatePageForSite(@Param('productId') productId: string) {
+    return this.productService.updatePageForSite(productId);
+  }
+
   @Get()
   findAll(): Promise<Product[]> {
     return this.productService.findAll();

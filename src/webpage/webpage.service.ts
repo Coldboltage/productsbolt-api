@@ -480,6 +480,8 @@ export class WebpageService {
       webPages: StrippedWebpageSlimWithShop[];
     }[] = [];
 
+    console.log(product);
+
     const specificWebPagesForProduct = await this.findAllByProductStock(
       state,
       product.id,
