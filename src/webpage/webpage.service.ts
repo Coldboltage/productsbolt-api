@@ -753,7 +753,11 @@ export class WebpageService {
   }
 
   async updateNormal(id: string, updateWebpageDto: UpdateWebpageDto) {
-    return this.webpagesRepository.update(id, updateWebpageDto);
+    try {
+      return this.webpagesRepository.update(id, updateWebpageDto);
+    } catch (error) {
+      this.logger.error({ error, updateWebpageDto, id });
+    }
   }
 
   async update(
