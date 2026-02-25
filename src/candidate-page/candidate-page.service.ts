@@ -133,7 +133,10 @@ export class CandidatePageService {
       currency: page.shopProduct.shop.country,
     };
     console.log(page);
-    if (page.shopProduct.shop.sitemapEntity.isShopifySite === true) {
+    if (
+      page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
+      page.shopProduct.shop.cloudflare === false
+    ) {
       this.headlessClient.emit('updatePage', updatePageDto);
     } else {
       this.headfulClient.emit('updatePage', updatePageDto);

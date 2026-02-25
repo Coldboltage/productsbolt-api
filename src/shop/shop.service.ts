@@ -403,7 +403,7 @@ export class ShopService implements OnApplicationBootstrap {
     this.headlessClient.emit('cloudflare-test', shopEntity);
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
+  // @Cron(CronExpression.EVERY_HOUR)
   async checkShopListingsCron() {
     this.logger.log('Running checkShopListingsCron job');
     const shopToCheck = await this.shopsRepository.find({

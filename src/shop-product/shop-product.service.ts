@@ -700,7 +700,10 @@ export class ShopProductService {
         };
       }
 
-      if (shopProduct.shop.isShopifySite === true) {
+      if (
+        shopProduct.shop.isShopifySite === true &&
+        shopProduct.shop.cloudflare === false
+      ) {
         console.log('shopifySiteFound');
         this.headlessClient.emit<CreateProcessDto>(
           'webpageDiscovery',
@@ -835,7 +838,10 @@ export class ShopProductService {
           };
         }
 
-        if (shopProduct.shop.isShopifySite === true) {
+        if (
+          shopProduct.shop.isShopifySite === true &&
+          shopProduct.shop.cloudflare === false
+        ) {
           console.log('shopifySiteFound');
           this.headlessClient.emit<CreateProcessDto>(
             'webpageDiscovery',
@@ -1017,7 +1023,10 @@ export class ShopProductService {
         };
       }
 
-      if (shopProduct.shop.sitemapEntity.isShopifySite === true) {
+      if (
+        shopProduct.shop.sitemapEntity.isShopifySite === true &&
+        shopProduct.shop.cloudflare === false
+      ) {
         this.headlessClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
@@ -1475,7 +1484,10 @@ export class ShopProductService {
         };
       }
 
-      if (shopProduct.shop.isShopifySite === true) {
+      if (
+        shopProduct.shop.isShopifySite === true &&
+        shopProduct.shop.cloudflare === false
+      ) {
         this.headlessClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
