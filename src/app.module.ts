@@ -37,6 +37,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { CurrencyModule } from './currency/currency.module';
 
 @Module({
   imports: [
@@ -115,6 +116,7 @@ import { APP_GUARD } from '@nestjs/core';
     ShopProductBacklistUrlModule,
     SitemapUrlModule,
     AuthModule,
+    CurrencyModule,
   ],
   controllers: [AppController],
   providers: [
