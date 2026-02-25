@@ -27,6 +27,7 @@ import { Span } from 'nestjs-otel';
 import { ShopService } from 'src/shop/shop.service';
 import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CurrencyService } from 'src/currency/currency.service';
 
 @Injectable()
 export class WebpageService {
@@ -44,6 +45,7 @@ export class WebpageService {
     private productService: ProductService,
     private alertService: AlertService,
     private shopService: ShopService,
+    private currencyService: CurrencyService,
     private eventEmitter: EventEmitter2,
   ) {}
 
@@ -171,7 +173,7 @@ export class WebpageService {
       order: {
         price: 'ASC',
       },
-      where: {},
+      where: { shopProduct: { shop: { active: true } } },
       relations: {
         shopProduct: {
           product: true,
@@ -271,6 +273,7 @@ export class WebpageService {
         },
         inStock: state,
         price: Not(0),
+        euroPrice: Not(0),
       },
       relations: {
         shopProduct: {
@@ -281,7 +284,7 @@ export class WebpageService {
         },
       },
       order: {
-        price: 'ASC',
+        euroPrice: 'ASC',
       },
     });
   }
@@ -489,6 +492,7 @@ export class WebpageService {
         url: webpage.url,
         inStock: webpage.inStock,
         price: webpage.price,
+        euroPrice: webpage.euroPrice,
         currencyCode: webpage.currencyCode,
         shop: {
           name: webpage.shopProduct.shop.name,
@@ -731,6 +735,10 @@ export class WebpageService {
     return entity;
   }
 
+  async updateNormal(id: string, updateWebpageDto: UpdateWebpageDto) {
+    return this.webpagesRepository.update(id, updateWebpageDto);
+  }
+
   async update(
     id: string,
     updateWebpageDto: UpdateWebpageDto,
@@ -878,5 +886,24 @@ export class WebpageService {
     return activeShopProducts.length > 0
       ? activeShopProducts.map((shopProduct) => shopProduct.webPage.url)
       : [];
+  }
+
+  @Cron(CronExpression.EVERY_2ND_HOUR)
+  async updateEuroPrice() {
+    const activeWebpages = await this.findAll();
+    for (const webpage of activeWebpages) {
+      const shopCurrency = webpage.shopProduct.shop.currency;
+      if (shopCurrency === 'EUR') {
+        await this.updateNormal(webpage.id, { euroPrice: webpage.price });
+        continue;
+      }
+
+      const currencyInfo = await this.currencyService.findOneByBaseAndCompare(
+        'EUR',
+        shopCurrency,
+      );
+      const euroPrice = webpage.price / currencyInfo.value;
+      await this.updateNormal(webpage.id, { euroPrice });
+    }
   }
 }

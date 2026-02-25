@@ -291,6 +291,20 @@ export class ShopService implements OnApplicationBootstrap {
     }
   }
 
+  async getAllCurrencies() {
+    const currencies = await this.shopsRepository.find({
+      where: {
+        active: true,
+      },
+      select: {
+        currency: true,
+      },
+    });
+    return Array.from(
+      new Set(currencies.map((shop) => shop.currency).filter(Boolean)),
+    );
+  }
+
   async update(
     id: string,
     updateShopDto: UpdateShopDto,

@@ -27,6 +27,9 @@ export class Webpage {
   @Column({ type: 'numeric', precision: 10, scale: 2 })
   price: number;
 
+  @Column({ type: 'numeric', precision: 10, scale: 2, default: 0 })
+  euroPrice: number;
+
   @Column()
   currencyCode: string;
 
