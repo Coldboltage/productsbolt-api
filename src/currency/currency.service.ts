@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateCurrencyDto } from './dto/create-currency.dto';
@@ -13,6 +14,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class CurrencyService {
+  private logger = new Logger(CurrencyService.name);
   constructor(
     @InjectRepository(Currency)
     private currencyRepository: Repository<Currency>,
@@ -32,12 +34,12 @@ export class CurrencyService {
     });
 
     if (doesCurrencyExist) {
-      console.log(`${doesCurrencyExist} exists`);
+      this.logger.log(`${doesCurrencyExist} exists`);
       const result = await this.update(doesCurrencyExist.id, createCurrencyDto);
-      console.log(result);
+      this.logger.log(result);
     } else {
       const result = await this.create(createCurrencyDto);
-      console.log(result);
+      this.logger.log(result);
       return result;
     }
   }
@@ -51,13 +53,13 @@ export class CurrencyService {
       `https://api.freecurrencyapi.com/v1/latest?apikey=${process.env.CURRENCY_KEY}&currencies=${createCurrencyString}&base_currency=${baseCurrency}`,
     );
 
-    console.log(uniqueCurrencies, createCurrencyString, url);
+    this.logger.log(uniqueCurrencies, createCurrencyString, url);
 
     const currencyConversionsResponse = await fetch(url);
     const currencyConversionsJson =
       (await currencyConversionsResponse.json()) as ExchangeRatesResponse;
 
-    console.log(
+    this.logger.log(
       uniqueCurrencies,
       createCurrencyString,
       url,

@@ -701,8 +701,10 @@ export class ShopProductService {
       }
 
       if (
-        shopProduct.shop.isShopifySite === true &&
-        shopProduct.shop.cloudflare === false
+        (shopProduct.shop.isShopifySite === true &&
+          shopProduct.shop.cloudflare === false) ||
+        (shopProduct.shop.cloudflare === false &&
+          shopProduct.shop.headless === false)
       ) {
         console.log('shopifySiteFound');
         this.headlessClient.emit<CreateProcessDto>(
@@ -839,8 +841,10 @@ export class ShopProductService {
         }
 
         if (
-          shopProduct.shop.isShopifySite === true &&
-          shopProduct.shop.cloudflare === false
+          (shopProduct.shop.isShopifySite === true &&
+            shopProduct.shop.cloudflare === false) ||
+          (shopProduct.shop.cloudflare === false &&
+            shopProduct.shop.headless === false)
         ) {
           console.log('shopifySiteFound');
           this.headlessClient.emit<CreateProcessDto>(
@@ -1024,8 +1028,10 @@ export class ShopProductService {
       }
 
       if (
-        shopProduct.shop.sitemapEntity.isShopifySite === true &&
-        shopProduct.shop.cloudflare === false
+        (shopProduct.shop.isShopifySite === true &&
+          shopProduct.shop.cloudflare === false) ||
+        (shopProduct.shop.cloudflare === false &&
+          shopProduct.shop.headless === false)
       ) {
         this.headlessClient.emit<CreateProcessDto>(
           'webpageDiscovery',
@@ -1149,8 +1155,10 @@ export class ShopProductService {
       }
 
       if (
-        shopProduct.shop.sitemapEntity.isShopifySite === true &&
-        shopProduct.shop.cloudflare === false
+        (shopProduct.shop.isShopifySite === true &&
+          shopProduct.shop.cloudflare === false) ||
+        (shopProduct.shop.cloudflare === false &&
+          shopProduct.shop.headless === false)
       ) {
         this.headlessClient.emit<CreateProcessDto>(
           'webpageDiscovery',
@@ -1485,8 +1493,10 @@ export class ShopProductService {
       }
 
       if (
-        shopProduct.shop.isShopifySite === true &&
-        shopProduct.shop.cloudflare === false
+        (shopProduct.shop.isShopifySite === true &&
+          shopProduct.shop.cloudflare === false) ||
+        (shopProduct.shop.cloudflare === false &&
+          shopProduct.shop.headless === false)
       ) {
         this.headlessClient.emit<CreateProcessDto>(
           'webpageDiscovery',

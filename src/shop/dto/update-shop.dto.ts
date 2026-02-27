@@ -2,6 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateShopDto } from './create-shop.dto';
 import {
   IsArray,
+  IsBoolean,
   IsOptional,
   IsString,
   IsUrl,
@@ -35,6 +36,10 @@ export class UpdateShopDto extends PartialType(CreateShopDto) {
   @IsOptional()
   @IsUUID()
   id?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  vatShown?: boolean;
 }
 
 export class UpdateShopBatchDto extends PartialType(CreateShopDto) {

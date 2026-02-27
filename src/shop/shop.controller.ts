@@ -86,6 +86,11 @@ export class ShopController {
     return this.shopService.getAllShopifyMetaInformation();
   }
 
+  @Post('add-cat-shown-to-shops')
+  async addVatShownToShops() {
+    return this.shopService.addVatShownToShops();
+  }
+
   @Get('find-shop/:website')
   findShop(@Param('website') website: string): Promise<Shop> {
     return this.shopService.findShop(website);

@@ -502,6 +502,7 @@ export class WebpageService {
           province: webpage.shopProduct.shop.province,
           country: webpage.shopProduct.shop.country,
           currency: webpage.shopProduct.shop.currency,
+          vatShown: webpage.shopProduct.shop.vatShown,
         },
       }),
     );
@@ -636,8 +637,10 @@ export class WebpageService {
         currency: page.shopProduct.shop.country,
       };
       if (
-        page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
-        page.shopProduct.shop.cloudflare === false
+        (page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
+          page.shopProduct.shop.cloudflare === false) ||
+        (page.shopProduct.shop.cloudflare === false &&
+          page.shopProduct.shop.headless === false)
       ) {
         this.headlessClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.website.includes('chaoscards.co.uk')) {
@@ -678,8 +681,10 @@ export class WebpageService {
         currency: page.shopProduct.shop.country,
       };
       if (
-        page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
-        page.shopProduct.shop.cloudflare === false
+        (page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
+          page.shopProduct.shop.cloudflare === false) ||
+        (page.shopProduct.shop.cloudflare === false &&
+          page.shopProduct.shop.headless === false)
       ) {
         this.headlessClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.website.includes('chaoscards.co.uk')) {
@@ -714,8 +719,10 @@ export class WebpageService {
     };
     this.logger.log(page);
     if (
-      page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
-      page.shopProduct.shop.cloudflare === false
+      (page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
+        page.shopProduct.shop.cloudflare === false) ||
+      (page.shopProduct.shop.cloudflare === false &&
+        page.shopProduct.shop.headless === false)
     ) {
       this.headlessClient.emit('updatePage', updatePageDto);
       this.logger.log('emitting to headlessClient');
@@ -918,6 +925,8 @@ export class WebpageService {
         await this.updateNormal(webpage.id, { euroPrice: webpage.price });
         continue;
       }
+
+      this.logger.log(shopCurrency);
 
       const currencyInfo = await this.currencyService.findOneByBaseAndCompare(
         'EUR',

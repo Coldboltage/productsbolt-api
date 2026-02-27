@@ -107,6 +107,7 @@ export interface StrippedWebpageSlimWithShop {
     province: string;
     country: string;
     currency: string;
+    vatShown: boolean;
   };
 }
 export class CheckPageDto {

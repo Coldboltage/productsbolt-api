@@ -4,5 +4,5 @@ dist
 *.md
 .git
 backups
-db_backups
+db_backup
 diagnostics
