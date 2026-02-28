@@ -8,9 +8,13 @@ services:
     networks:
       - productsbolt_net
     deploy:
-      replicas: 1
+      mode: global
+      placement:
+        constraints:
+          - node.labels.role == worker
       restart_policy:
         condition: any
+
   headful-worker:
     image: coldbolt/productsbolt-worker:latest
     env_file:
@@ -18,7 +22,10 @@ services:
     networks:
       - productsbolt_net
     deploy:
-      replicas: 1
+      mode: global
+      placement:
+        constraints:
+          - node.labels.role == worker
       restart_policy:
         condition: any
 
