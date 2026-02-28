@@ -143,6 +143,7 @@ export class WebpageService {
       ...entity,
       webpageCache: {},
     });
+    await this.updateEuroPriceForOne(webpageEntity.id);
 
     this.logger.log('Website Revalidate');
 
@@ -941,5 +942,23 @@ export class WebpageService {
       const euroPrice = webpage.price / currencyInfo.value;
       await this.updateNormal(webpage.id, { euroPrice });
     }
+  }
+
+  async updateEuroPriceForOne(id: string): Promise<void> {
+    const webpage = await this.findOne(id);
+    const shopCurrency = webpage.shopProduct.shop.currency;
+    if (shopCurrency === 'EUR') {
+      await this.updateNormal(webpage.id, { euroPrice: webpage.price });
+      return;
+    }
+
+    this.logger.log(shopCurrency);
+
+    const currencyInfo = await this.currencyService.findOneByBaseAndCompare(
+      'EUR',
+      shopCurrency,
+    );
+    const euroPrice = webpage.price / currencyInfo.value;
+    await this.updateNormal(webpage.id, { euroPrice });
   }
 }

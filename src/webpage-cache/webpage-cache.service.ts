@@ -82,10 +82,11 @@ export class WebpageCacheService {
       this.logger.log('if 3 activated');
       webpageEntity.webpageCache.confirmed = true;
     }
-
     // The Webpage will update as per normal
     await this.webpageCacheRepository.save(webpageEntity.webpageCache);
+
     await this.webpageService.update(webpageId, { ...updateWebpageDto });
+    await this.webpageService.updateEuroPriceForOne(webpageEntity.id);
 
     this.logger.log({
       webpageEntityPrice: +webpageEntity.price,
