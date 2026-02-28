@@ -9,6 +9,7 @@ import { ProductModule } from '../product/product.module';
 import { AlertModule } from '../alert/alert.module';
 import { WebpageTools } from './webpage.tools';
 import { ShopModule } from 'src/shop/shop.module';
+import { CurrencyModule } from 'src/currency/currency.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ShopModule } from 'src/shop/shop.module';
     ProductModule,
     AlertModule,
     ShopModule,
+    CurrencyModule,
   ],
   controllers: [WebpageController],
   providers: [WebpageService, WebpageTools],

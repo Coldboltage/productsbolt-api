@@ -87,6 +87,9 @@ export class Shop {
   @Column({ type: 'simple-array', nullable: true })
   productListingUrls: string[];
 
+  @Column({ default: true })
+  vatShown: boolean;
+
   @Column({ type: 'jsonb', nullable: true })
   selectors: {
     listItemNameSelector: string;

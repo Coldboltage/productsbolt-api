@@ -27,6 +27,9 @@ export class Webpage {
   @Column({ type: 'numeric', precision: 10, scale: 2 })
   price: number;
 
+  @Column({ type: 'numeric', precision: 10, scale: 2, default: 0 })
+  euroPrice: number;
+
   @Column()
   currencyCode: string;
 
@@ -104,6 +107,7 @@ export interface StrippedWebpageSlimWithShop {
     province: string;
     country: string;
     currency: string;
+    vatShown: boolean;
   };
 }
 export class CheckPageDto {
@@ -119,6 +123,8 @@ export class CheckPageDto {
   cloudflare: boolean;
   variantId: null | string;
   headless: boolean;
+  country: string;
+  currency: string;
 }
 
 export class ProductToWebpageInterface {
