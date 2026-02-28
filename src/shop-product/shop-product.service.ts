@@ -716,7 +716,10 @@ export class ShopProductService {
           'webpageDiscovery',
           createProcess,
         );
-      } else if (shopProduct.shop.website.includes('chaoscards.co.uk')) {
+      } else if (
+        shopProduct.shop.website.includes('chaoscards.co.uk') ||
+        shopProduct.shop.website.includes('magicmadhouse')
+      ) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
@@ -851,7 +854,10 @@ export class ShopProductService {
             'webpageDiscovery',
             createProcess,
           );
-        } else if (shopProduct.shop.website.includes('chaoscards.co.uk')) {
+        } else if (
+          shopProduct.shop.website.includes('chaoscards.co.uk') ||
+          shopProduct.shop.website.includes('magicmadhouse')
+        ) {
           this.headfulSlowClient.emit<CreateProcessDto>(
             'webpageDiscovery',
             createProcess,
@@ -1037,7 +1043,10 @@ export class ShopProductService {
           'webpageDiscovery',
           createProcess,
         );
-      } else if (shopProduct.shop.website.includes('chaoscards.co.uk')) {
+      } else if (
+        shopProduct.shop.website.includes('chaoscards.co.uk') ||
+        shopProduct.shop.website.includes('magicmadhouse')
+      ) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
@@ -1164,7 +1173,10 @@ export class ShopProductService {
           'webpageDiscovery',
           createProcess,
         );
-      } else if (shopProduct.shop.website.includes('chaoscards.co.uk')) {
+      } else if (
+        shopProduct.shop.website.includes('chaoscards.co.uk') ||
+        shopProduct.shop.website.includes('magicmadhouse')
+      ) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
@@ -1502,7 +1514,10 @@ export class ShopProductService {
           'webpageDiscovery',
           createProcess,
         );
-      } else if (shopProduct.shop.website.includes('chaoscards.co.uk')) {
+      } else if (
+        shopProduct.shop.website.includes('chaoscards.co.uk') ||
+        shopProduct.shop.website.includes('magicmadhouse')
+      ) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
