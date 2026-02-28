@@ -18,6 +18,7 @@ import { Sitemap } from '../sitemap/entities/sitemap.entity';
 import { ProductListingsCheckInterface } from './dto/product-listings-check.dto';
 import { Span } from 'nestjs-otel/lib/tracing/decorators/span';
 import { ShopifyMetaDto } from './dto/shopify-meta.dto';
+import { VAT_INCLUDED_BY_DEFAULT } from './shop.vat.constant';
 
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
@@ -291,6 +292,20 @@ export class ShopService implements OnApplicationBootstrap {
     }
   }
 
+  async getAllCurrencies() {
+    const currencies = await this.shopsRepository.find({
+      where: {
+        active: true,
+      },
+      select: {
+        currency: true,
+      },
+    });
+    return Array.from(
+      new Set(currencies.map((shop) => shop.currency).filter(Boolean)),
+    );
+  }
+
   async update(
     id: string,
     updateShopDto: UpdateShopDto,
@@ -389,7 +404,7 @@ export class ShopService implements OnApplicationBootstrap {
     this.headlessClient.emit('cloudflare-test', shopEntity);
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
+  // @Cron(CronExpression.EVERY_HOUR)
   async checkShopListingsCron() {
     this.logger.log('Running checkShopListingsCron job');
     const shopToCheck = await this.shopsRepository.find({
@@ -419,5 +434,17 @@ export class ShopService implements OnApplicationBootstrap {
 
     this.logger.log('Emitting product-listings-check with payload:', payload);
     this.headlessClient.emit('product-listings-check', payload);
+  }
+
+  async addVatShownToShops() {
+    const shops = await this.findAll();
+    for (const shop of shops) {
+      this.logger.log(
+        `${shop.country} = ${VAT_INCLUDED_BY_DEFAULT[shop.country]}`,
+      );
+      await this.update(shop.id, {
+        vatShown: VAT_INCLUDED_BY_DEFAULT[shop.country],
+      });
+    }
   }
 }

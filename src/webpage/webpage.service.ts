@@ -27,6 +27,7 @@ import { Span } from 'nestjs-otel';
 import { ShopService } from 'src/shop/shop.service';
 import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CurrencyService } from 'src/currency/currency.service';
 
 @Injectable()
 export class WebpageService {
@@ -44,6 +45,7 @@ export class WebpageService {
     private productService: ProductService,
     private alertService: AlertService,
     private shopService: ShopService,
+    private currencyService: CurrencyService,
     private eventEmitter: EventEmitter2,
   ) {}
 
@@ -171,7 +173,7 @@ export class WebpageService {
       order: {
         price: 'ASC',
       },
-      where: {},
+      where: { shopProduct: { shop: { active: true } } },
       relations: {
         shopProduct: {
           product: true,
@@ -271,6 +273,7 @@ export class WebpageService {
         },
         inStock: state,
         price: Not(0),
+        euroPrice: Not(0),
       },
       relations: {
         shopProduct: {
@@ -281,7 +284,7 @@ export class WebpageService {
         },
       },
       order: {
-        price: 'ASC',
+        euroPrice: 'ASC',
       },
     });
   }
@@ -477,6 +480,8 @@ export class WebpageService {
       webPages: StrippedWebpageSlimWithShop[];
     }[] = [];
 
+    console.log(product);
+
     const specificWebPagesForProduct = await this.findAllByProductStock(
       state,
       product.id,
@@ -489,6 +494,7 @@ export class WebpageService {
         url: webpage.url,
         inStock: webpage.inStock,
         price: webpage.price,
+        euroPrice: webpage.euroPrice,
         currencyCode: webpage.currencyCode,
         shop: {
           name: webpage.shopProduct.shop.name,
@@ -496,6 +502,7 @@ export class WebpageService {
           province: webpage.shopProduct.shop.province,
           country: webpage.shopProduct.shop.country,
           currency: webpage.shopProduct.shop.currency,
+          vatShown: webpage.shopProduct.shop.vatShown,
         },
       }),
     );
@@ -626,10 +633,20 @@ export class WebpageService {
         cloudflare: page.shopProduct.shop.cloudflare,
         variantId: page.variantId,
         headless: page.shopProduct.shop.headless,
+        country: page.shopProduct.shop.country,
+        currency: page.shopProduct.shop.country,
       };
-      if (page.shopProduct.shop.sitemapEntity.isShopifySite === true) {
+      if (
+        (page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
+          page.shopProduct.shop.cloudflare === false) ||
+        (page.shopProduct.shop.cloudflare === false &&
+          page.shopProduct.shop.headless === false)
+      ) {
         this.headlessClient.emit('updatePage', updatePageDto);
-      } else if (page.shopProduct.shop.website.includes('chaoscards.co.uk')) {
+      } else if (
+        page.shopProduct.shop.website.includes('chaoscards.co.uk') ||
+        page.shopProduct.shop.website.includes('magicmadhouse')
+      ) {
         this.headfulSlowClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.headless === true) {
         this.headlessBrowserClient.emit('updatePage', updatePageDto);
@@ -663,10 +680,20 @@ export class WebpageService {
         cloudflare: page.shopProduct.shop.cloudflare,
         variantId: page.variantId,
         headless: page.shopProduct.shop.headless,
+        country: page.shopProduct.shop.country,
+        currency: page.shopProduct.shop.country,
       };
-      if (page.shopProduct.shop.sitemapEntity.isShopifySite === true) {
+      if (
+        (page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
+          page.shopProduct.shop.cloudflare === false) ||
+        (page.shopProduct.shop.cloudflare === false &&
+          page.shopProduct.shop.headless === false)
+      ) {
         this.headlessClient.emit('updatePage', updatePageDto);
-      } else if (page.shopProduct.shop.website.includes('chaoscards.co.uk')) {
+      } else if (
+        page.shopProduct.shop.website.includes('chaoscards.co.uk') ||
+        page.shopProduct.shop.website.includes('magicmadhouse')
+      ) {
         this.headfulSlowClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.headless === true) {
         this.headlessBrowserClient.emit('updatePage', updatePageDto);
@@ -693,9 +720,16 @@ export class WebpageService {
       cloudflare: page.shopProduct.shop.cloudflare,
       variantId: page.variantId,
       headless: page.shopProduct.shop.headless,
+      country: page.shopProduct.shop.country,
+      currency: page.shopProduct.shop.country,
     };
     this.logger.log(page);
-    if (page.shopProduct.shop.sitemapEntity.isShopifySite === true) {
+    if (
+      (page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
+        page.shopProduct.shop.cloudflare === false) ||
+      (page.shopProduct.shop.cloudflare === false &&
+        page.shopProduct.shop.headless === false)
+    ) {
       this.headlessClient.emit('updatePage', updatePageDto);
       this.logger.log('emitting to headlessClient');
     } else {
@@ -729,6 +763,14 @@ export class WebpageService {
       },
     });
     return entity;
+  }
+
+  async updateNormal(id: string, updateWebpageDto: UpdateWebpageDto) {
+    try {
+      return this.webpagesRepository.update(id, updateWebpageDto);
+    } catch (error) {
+      this.logger.error({ error, updateWebpageDto, id });
+    }
   }
 
   async update(
@@ -878,5 +920,26 @@ export class WebpageService {
     return activeShopProducts.length > 0
       ? activeShopProducts.map((shopProduct) => shopProduct.webPage.url)
       : [];
+  }
+
+  @Cron(CronExpression.EVERY_2ND_HOUR)
+  async updateEuroPrice() {
+    const activeWebpages = await this.findAll();
+    for (const webpage of activeWebpages) {
+      const shopCurrency = webpage.shopProduct.shop.currency;
+      if (shopCurrency === 'EUR') {
+        await this.updateNormal(webpage.id, { euroPrice: webpage.price });
+        continue;
+      }
+
+      this.logger.log(shopCurrency);
+
+      const currencyInfo = await this.currencyService.findOneByBaseAndCompare(
+        'EUR',
+        shopCurrency,
+      );
+      const euroPrice = webpage.price / currencyInfo.value;
+      await this.updateNormal(webpage.id, { euroPrice });
+    }
   }
 }

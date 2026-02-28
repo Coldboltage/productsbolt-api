@@ -10,4 +10,5 @@ export class UpdateWebpageDto extends PartialType(CreateWebpageDto) {
   pageAllText?: string;
   pageTitle?: string;
   lastScanned?: Date;
+  euroPrice?: number;
 }

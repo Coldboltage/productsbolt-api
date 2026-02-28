@@ -167,6 +167,11 @@ export class WebpageController {
     return this.webpageService.resetAlertCount();
   }
 
+  @Post(`update-euro-price`)
+  updateEuroPrice() {
+    return this.webpageService.updateEuroPrice();
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,

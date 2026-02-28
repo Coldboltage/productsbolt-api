@@ -129,6 +129,8 @@ export class CandidatePageService {
       cloudflare: page.shopProduct.shop.cloudflare,
       variantId: page.variantId,
       headless: page.shopProduct.shop.headless,
+      country: page.shopProduct.shop.country,
+      currency: page.shopProduct.shop.country,
     };
     console.log(page);
     if (page.shopProduct.shop.sitemapEntity.isShopifySite === true) {

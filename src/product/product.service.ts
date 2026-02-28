@@ -102,6 +102,15 @@ export class ProductService {
     });
   }
 
+  async updatePageForSite(productId: string) {
+    const productEntity = await this.findOne(productId);
+    console.log(productEntity);
+    await fetch(
+      `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${productEntity.urlSafeName}`,
+      { method: 'POST' },
+    );
+  }
+
   update(
     id: string,
     updateProductDto: UpdateProductDto,
