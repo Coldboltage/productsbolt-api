@@ -718,7 +718,8 @@ export class ShopProductService {
         );
       } else if (
         shopProduct.shop.website.includes('chaoscards.co.uk') ||
-        shopProduct.shop.website.includes('magicmadhouse')
+        shopProduct.shop.website.includes('magicmadhouse') ||
+        shopProduct.shop.website.includes('hillscards')
       ) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
@@ -856,7 +857,8 @@ export class ShopProductService {
           );
         } else if (
           shopProduct.shop.website.includes('chaoscards.co.uk') ||
-          shopProduct.shop.website.includes('magicmadhouse')
+          shopProduct.shop.website.includes('magicmadhouse') ||
+          shopProduct.shop.website.includes('hillscards')
         ) {
           this.headfulSlowClient.emit<CreateProcessDto>(
             'webpageDiscovery',
@@ -1045,7 +1047,8 @@ export class ShopProductService {
         );
       } else if (
         shopProduct.shop.website.includes('chaoscards.co.uk') ||
-        shopProduct.shop.website.includes('magicmadhouse')
+        shopProduct.shop.website.includes('magicmadhouse') ||
+        shopProduct.shop.website.includes('hillscards')
       ) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
@@ -1175,7 +1178,8 @@ export class ShopProductService {
         );
       } else if (
         shopProduct.shop.website.includes('chaoscards.co.uk') ||
-        shopProduct.shop.website.includes('magicmadhouse')
+        shopProduct.shop.website.includes('magicmadhouse') ||
+        shopProduct.shop.website.includes('hillscards')
       ) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
@@ -1516,7 +1520,8 @@ export class ShopProductService {
         );
       } else if (
         shopProduct.shop.website.includes('chaoscards.co.uk') ||
-        shopProduct.shop.website.includes('magicmadhouse')
+        shopProduct.shop.website.includes('magicmadhouse') ||
+        shopProduct.shop.website.includes('hillscards')
       ) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',

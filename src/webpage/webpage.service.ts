@@ -646,7 +646,8 @@ export class WebpageService {
         this.headlessClient.emit('updatePage', updatePageDto);
       } else if (
         page.shopProduct.shop.website.includes('chaoscards.co.uk') ||
-        page.shopProduct.shop.website.includes('magicmadhouse')
+        page.shopProduct.shop.website.includes('magicmadhouse') ||
+        page.shopProduct.shop.website.includes('hillscards')
       ) {
         this.headfulSlowClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.headless === true) {
@@ -659,7 +660,7 @@ export class WebpageService {
     }
   }
 
-  @Cron('0 */15 * * * *', {
+  @Cron(CronExpression.EVERY_5_MINUTES, {
     name: 'updateHighPriorityWebpages',
   })
   async updateHighPriorityWebpages(): Promise<void> {
@@ -693,7 +694,8 @@ export class WebpageService {
         this.headlessClient.emit('updatePage', updatePageDto);
       } else if (
         page.shopProduct.shop.website.includes('chaoscards.co.uk') ||
-        page.shopProduct.shop.website.includes('magicmadhouse')
+        page.shopProduct.shop.website.includes('magicmadhouse') ||
+        page.shopProduct.shop.website.includes('hillscards')
       ) {
         this.headfulSlowClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.headless === true) {
