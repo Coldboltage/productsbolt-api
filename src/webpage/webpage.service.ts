@@ -659,7 +659,7 @@ export class WebpageService {
     }
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES, {
+  @Cron('0 */15 * * * *', {
     name: 'updateHighPriorityWebpages',
   })
   async updateHighPriorityWebpages(): Promise<void> {
