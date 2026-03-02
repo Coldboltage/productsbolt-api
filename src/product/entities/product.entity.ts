@@ -28,6 +28,9 @@ export class Product {
   @Column({ default: 0 })
   price: number;
 
+  @Column({ type: 'date', nullable: true })
+  releaseDate: Date;
+
   @OneToMany(() => Alert, (alerts) => alerts.product)
   alerts: Alert[];
 

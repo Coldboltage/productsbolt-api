@@ -46,6 +46,10 @@ export class ProductService {
         brand: true,
         urlSafeName: true,
         imageUrl: true,
+        releaseDate: true,
+      },
+      order: {
+        releaseDate: 'DESC',
       },
     });
     return allProducts;
@@ -62,6 +66,10 @@ export class ProductService {
         brand: true,
         urlSafeName: true,
         imageUrl: true,
+        releaseDate: true,
+      },
+      order: {
+        releaseDate: 'DESC',
       },
     });
     console.log(allProducts);
