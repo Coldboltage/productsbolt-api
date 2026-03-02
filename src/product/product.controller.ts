@@ -27,6 +27,11 @@ export class ProductController {
     return this.productService.updatePageForSite(productId);
   }
 
+  @Post('update-website-product-page-by-safe-name/:urlSafeName')
+  updatePageForSiteSafeName(@Param('urlSafeName') urlSafeName: string) {
+    return this.productService.updatePageForSiteSafeName(urlSafeName);
+  }
+
   @Get()
   findAll(): Promise<Product[]> {
     return this.productService.findAll();

@@ -83,6 +83,13 @@ export class ProductService {
     });
   }
 
+  async findOneByUrlSafeName(urlSafeName: string): Promise<Product> {
+    return this.productsRepository.findOne({
+      where: { urlSafeName },
+      relations: { ebayStat: true },
+    });
+  }
+
   async findOneByProductSafeName(productName: string): Promise<Product> {
     return this.productsRepository.findOne({
       where: { urlSafeName: productName },
@@ -112,6 +119,15 @@ export class ProductService {
 
   async updatePageForSite(productId: string) {
     const productEntity = await this.findOne(productId);
+    console.log(productEntity);
+    await fetch(
+      `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${productEntity.urlSafeName}`,
+      { method: 'POST' },
+    );
+  }
+
+  async updatePageForSiteSafeName(urlSafeName: string) {
+    const productEntity = await this.findOneByUrlSafeName(urlSafeName);
     console.log(productEntity);
     await fetch(
       `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${productEntity.urlSafeName}`,
