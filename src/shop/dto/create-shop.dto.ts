@@ -18,4 +18,16 @@ export class CreateShopDto {
 
   @IsBoolean()
   manual: boolean;
+
+  @IsString()
+  city: string;
+
+  @IsString()
+  province: string;
+
+  @IsString()
+  country: string;
+
+  @IsString()
+  currency: string;
 }
