@@ -194,7 +194,9 @@ export class ShopService implements OnApplicationBootstrap {
         shopProducts: {
           webPage: true,
         },
-        sitemapEntity: true,
+        sitemapEntity: {
+          sitemapUrl: true,
+        },
       },
       order: {
         sitemapEntity: {

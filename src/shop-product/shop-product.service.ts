@@ -70,6 +70,8 @@ export class ShopProductService {
         shopProduct.product.name,
       );
 
+      if (reducedSitemap.length === 0) continue;
+
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
         reducedSitemap,
@@ -101,11 +103,10 @@ export class ShopProductService {
           shopId: shopProduct.shop.id,
           sitemapUrls: limitedUrls,
         },
-        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
-        confirmed:
-          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
-        candidatePages: shopProduct.candidatePages,
+        hash: '0',
+        confirmed: false,
+        count: 0,
+        candidatePages: [],
       };
 
       this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
@@ -283,7 +284,9 @@ export class ShopProductService {
       relations: {
         product: true,
         shop: {
-          sitemapEntity: true,
+          sitemapEntity: {
+            sitemapUrl: true,
+          },
         },
         webPage: true,
         shopProductBlacklistUrls: {

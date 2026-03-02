@@ -61,6 +61,12 @@ export enum ProductType {
   COLLECTION = 'COLLECTION',
 }
 
+export enum Brand {
+  MAGIC = 'magic-the-gathering',
+  POKEMON = 'pokemon',
+  RIFTBOUND = 'riftbound',
+}
+
 export interface ParsedLinks {
   url: string;
   score: number;

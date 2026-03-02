@@ -1,5 +1,5 @@
-import { IsEnum, IsString } from 'class-validator';
-import { ProductType } from '../entities/product.entity';
+import { IsDate, IsEnum, IsString } from 'class-validator';
+import { Brand, ProductType } from '../entities/product.entity';
 
 export class CreateProductDto {
   @IsString()
@@ -7,4 +7,19 @@ export class CreateProductDto {
 
   @IsEnum(ProductType, { message: 'type must be a valid enum value' })
   type: ProductType;
+
+  @IsString()
+  context: string;
+
+  @IsString()
+  urlSafeName: string;
+
+  @IsDate()
+  releaseDate: Date;
+
+  @IsString()
+  imageUrl: string;
+
+  @IsEnum(Brand)
+  brand: Brand;
 }
