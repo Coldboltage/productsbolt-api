@@ -206,6 +206,26 @@ export class ShopService implements OnApplicationBootstrap {
     });
   }
 
+  @Span('ShopService.findAll')
+  async findAllWithoutUrls(): Promise<Shop[]> {
+    return this.shopsRepository.find({
+      where: {
+        active: true,
+      },
+      relations: {
+        shopProducts: {
+          webPage: true,
+        },
+        sitemapEntity: true,
+      },
+      order: {
+        sitemapEntity: {
+          isShopifySite: 'ASC',
+        },
+      },
+    });
+  }
+
   async findAllRegardless(): Promise<Shop[]> {
     return this.shopsRepository.find({
       where: {},

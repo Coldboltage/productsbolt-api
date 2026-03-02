@@ -53,7 +53,7 @@ export class ShopProductService {
 
   @OnEvent('product.created')
   async findShopsToUpdateProducts(product: Product): Promise<ShopProduct[]> {
-    const shopsEntities = await this.shopService.findAll();
+    const shopsEntities = await this.shopService.findAllWithoutUrls();
     const shopProductsPromises = shopsEntities.map((shop) => {
       return this.shopProductRepository.save({
         name: product.name,
@@ -64,7 +64,9 @@ export class ShopProductService {
       });
     });
     const shopProductResponses = await Promise.all(shopProductsPromises);
-    for (const shopProduct of shopProductResponses) {
+    for (const shopProductWithoutUrl of shopProductResponses) {
+      const shopProduct = await this.findOneWithUrls(shopProductWithoutUrl.id);
+
       const reducedSitemap = this.shopService.reduceSitemap(
         shopProduct.shop.sitemapEntity.sitemapUrl.urls,
         shopProduct.product.name,
@@ -99,9 +101,10 @@ export class ShopProductService {
         currency: shopProduct.shop.currency,
         links: [],
         sitemapEntity: {
-          ...shopProduct.shop.sitemapEntity,
+          sitemap: shopProduct.shop.sitemap,
           shopId: shopProduct.shop.id,
           sitemapUrls: limitedUrls,
+          isShopifySite: shopProduct.shop.isShopifySite,
         },
         hash: '0',
         confirmed: false,
@@ -1554,6 +1557,25 @@ export class ShopProductService {
       relations: {
         webPage: {
           webpageCache: true,
+        },
+        candidatePages: {
+          candidatePageCache: true,
+        },
+      },
+    });
+  }
+
+  async findOneWithUrls(id: string): Promise<ShopProduct> {
+    return this.shopProductRepository.findOne({
+      where: { id },
+      relations: {
+        webPage: {
+          webpageCache: true,
+        },
+        shop: {
+          sitemapEntity: {
+            sitemapUrl: true,
+          },
         },
         candidatePages: {
           candidatePageCache: true,
