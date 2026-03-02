@@ -1580,6 +1580,7 @@ export class ShopProductService {
         candidatePages: {
           candidatePageCache: true,
         },
+        product: true,
       },
     });
   }
