@@ -49,9 +49,11 @@ export class Shop {
   @Column({ nullable: true })
   province: string;
 
+  // Country Code
   @Column({ nullable: true })
   country: string;
 
+  // Currency Code
   @Column({ nullable: true })
   currency: string;
 

@@ -1,4 +1,4 @@
-import { IsDate, IsEnum, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsNumber, IsString } from 'class-validator';
 import { Brand, ProductType } from '../entities/product.entity';
 
 export class CreateProductDto {
@@ -22,4 +22,7 @@ export class CreateProductDto {
 
   @IsEnum(Brand)
   brand: Brand;
+
+  @IsNumber()
+  price: number;
 }

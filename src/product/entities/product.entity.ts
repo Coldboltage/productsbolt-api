@@ -25,7 +25,12 @@ export class Product {
   @Column()
   context: string;
 
-  @Column({ default: 0 })
+  @Column({
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
+    default: 0,
+  })
   price: number;
 
   @Column({ type: 'date', nullable: true })

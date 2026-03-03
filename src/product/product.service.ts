@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class ProductService {
+  private logger = new Logger(ProductService.name);
   constructor(
     @InjectRepository(Product) private productsRepository: Repository<Product>,
     private eventEmitter: EventEmitter2,
@@ -17,6 +18,7 @@ export class ProductService {
     try {
       entity = await this.productsRepository.save(createProductDto);
     } catch (error) {
+      this.logger.error(error);
       throw new ConflictException('product_and_type_combo_found');
     }
     this.eventEmitter.emit('product.created', entity);
