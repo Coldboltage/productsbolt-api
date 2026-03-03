@@ -70,6 +70,7 @@ export enum Brand {
   MAGIC = 'magic-the-gathering',
   POKEMON = 'pokemon',
   RIFTBOUND = 'riftbound',
+  ONEPIECE = 'one-piece',
 }
 
 export interface ParsedLinks {
