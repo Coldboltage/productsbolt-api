@@ -96,3 +96,12 @@ export interface AnswerInterface {
   price: number;
   currencyCode: string;
 }
+
+export interface ProductStripped {
+  id: string;
+  name: string;
+  brand: string;
+  urlSafeName: string;
+  imageUrl: string;
+  releaseDate: Date;
+}

@@ -10,6 +10,7 @@ export class CreateShopDto {
   @IsString()
   sitemap: string;
 
+  // https://[websitename]/[category]/[productId]
   @IsString()
   category: string;
 

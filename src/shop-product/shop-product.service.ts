@@ -396,9 +396,7 @@ export class ShopProductService {
       relations: {
         product: true,
         shop: {
-          sitemapEntity: {
-            sitemapUrl: true,
-          },
+          sitemapEntity: true,
         },
         webPage: true,
         shopProductBlacklistUrls: {
@@ -414,13 +412,15 @@ export class ShopProductService {
       whereClause.where['populated'] = false;
     }
 
-    const shopProductsOrphan = await (
+    const shopProductsOrphans = await (
       await this.shopProductRepository.find(whereClause)
     ).sort(() => Math.random() - 0.5);
-    console.log(shopProductsOrphan.length);
+    console.log(shopProductsOrphans.length);
 
-    for (const shopProduct of shopProductsOrphan) {
-      if (!shopProduct) continue;
+    for (const shopProductsOrphan of shopProductsOrphans) {
+      if (!shopProductsOrphan) continue;
+
+      const shopProduct = await this.findOneWithUrls(shopProductsOrphan.id);
 
       const reducedSitemap = this.shopService.reduceSitemap(
         shopProduct.shop.sitemapEntity.sitemapUrl.urls,

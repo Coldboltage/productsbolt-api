@@ -3,8 +3,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Not, Repository, UpdateResult } from 'typeorm';
-import { Product } from './entities/product.entity';
+import { Product, ProductStripped } from './entities/product.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
 
 @Injectable()
 export class ProductService {
@@ -76,6 +77,51 @@ export class ProductService {
     });
     console.log(allProducts);
     return allProducts;
+  }
+
+  async findProductsByBrandWithWebPages(
+    brand: string,
+  ): Promise<ProductStripped[]> {
+    const allProducts = await this.productsRepository.find({
+      where: {
+        brand,
+        shopProducts: {
+          populated: true,
+          webPage: {
+            inStock: true,
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        brand: true,
+        urlSafeName: true,
+        imageUrl: true,
+        releaseDate: true,
+      },
+      relations: {
+        shopProducts: {
+          webPage: true,
+        },
+      },
+      order: {
+        releaseDate: 'DESC',
+      },
+    });
+    const onlyProducts = allProducts.map((product) => {
+      const onlyProduct: ProductStripped = {
+        id: product.id,
+        name: product.name,
+        brand: product.brand,
+        urlSafeName: product.urlSafeName,
+        imageUrl: product.imageUrl,
+        releaseDate: product.releaseDate,
+      };
+
+      return onlyProduct;
+    });
+    return onlyProducts;
   }
 
   async findOne(id: string): Promise<Product> {

@@ -47,6 +47,11 @@ export class ProductController {
     return this.productService.findProductsByBrand(brandName);
   }
 
+  @Get('find-all-product-only-by-brand-with-pages/:brandName')
+  async findProductsByBrandWithWebPages(@Param('brandName') brandName: string) {
+    return this.productService.findProductsByBrandWithWebPages(brandName);
+  }
+
   @Get('find-one-by-product-name/:urlSafeName')
   async findOneByProductName(@Param('urlSafeName') urlSafeName: string) {
     return this.productService.findOneByProductName(urlSafeName);
