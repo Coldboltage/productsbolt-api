@@ -180,6 +180,14 @@ export class WebpageController {
     return this.webpageService.update(id, updateWebpageDto);
   }
 
+  @Patch('update-normal/:id')
+  updateNormal(
+    @Param('id') id: string,
+    @Body() updateWebpageDto: UpdateWebpageDto,
+  ) {
+    return this.webpageService.updateNormal(id, updateWebpageDto);
+  }
+
   @Delete('delete-and-update-shop-product-page-by-shopProductId/:shopProductId')
   removeShopProductWebpages(
     @Param('shopProductId') shopProductId: string,

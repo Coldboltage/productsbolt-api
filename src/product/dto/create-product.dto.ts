@@ -1,5 +1,6 @@
-import { IsDate, IsEnum, IsNumber, IsString } from 'class-validator';
-import { Brand, ProductType } from '../entities/product.entity';
+import { IsDate, IsEnum, IsNumber, IsString, IsUUID } from 'class-validator';
+import { ProductType } from '../entities/product.entity';
+import { Brand } from 'src/brand/entities/brand.entity';
 
 export class CreateProductDto {
   @IsString()
@@ -25,4 +26,7 @@ export class CreateProductDto {
 
   @IsNumber()
   price: number;
+
+  @IsUUID()
+  brandId: string;
 }

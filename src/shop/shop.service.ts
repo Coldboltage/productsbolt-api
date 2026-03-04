@@ -91,10 +91,11 @@ export class ShopService implements OnApplicationBootstrap {
   })
   @Span('ShopService.updateSitemap')
   async updateSitemap(): Promise<void> {
-    const allActiveShops = await this.findAll();
+    const allActiveShops = await this.findAllWithoutUrls();
     // Start a background task and don’t await it
 
-    for (const shop of allActiveShops) {
+    for (const activeShop of allActiveShops) {
+      const shop = await this.findOneWithSitemapUrls(activeShop.id);
       if (
         shop.sitemapEntity.isShopifySite &&
         shop.sitemapEntity.error === false &&

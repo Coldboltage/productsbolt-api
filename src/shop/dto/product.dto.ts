@@ -19,4 +19,6 @@ export class CreateProcessDto {
 
   @IsEnum(ProductType)
   type: ProductType;
+
+  brand?: { id: string };
 }

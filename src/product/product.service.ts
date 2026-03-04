@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Not, Repository, UpdateResult } from 'typeorm';
 import { Product, ProductStripped } from './entities/product.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
+import { BrandService } from 'src/brand/brand.service';
 
 @Injectable()
 export class ProductService {
@@ -13,11 +13,18 @@ export class ProductService {
   constructor(
     @InjectRepository(Product) private productsRepository: Repository<Product>,
     private eventEmitter: EventEmitter2,
+    private brandService: BrandService,
   ) {}
   async create(createProductDto: CreateProductDto): Promise<Product> {
     let entity: Product;
     try {
-      entity = await this.productsRepository.save(createProductDto);
+      const brandEntity = await this.brandService.findOne(
+        createProductDto.brandId,
+      );
+      entity = await this.productsRepository.save({
+        ...createProductDto,
+        brand: brandEntity,
+      });
     } catch (error) {
       this.logger.error(error);
       throw new ConflictException('product_and_type_combo_found');
@@ -61,7 +68,12 @@ export class ProductService {
   async findProductsByBrand(brand: string): Promise<Product[]> {
     const allProducts = await this.productsRepository.find({
       where: {
-        brand,
+        brand: {
+          urlSafeName: brand,
+        },
+      },
+      relations: {
+        brand: true,
       },
       select: {
         id: true,
@@ -84,7 +96,9 @@ export class ProductService {
   ): Promise<ProductStripped[]> {
     const allProducts = await this.productsRepository.find({
       where: {
-        brand,
+        brand: {
+          urlSafeName: brand,
+        },
         shopProducts: {
           populated: true,
           webPage: {
@@ -104,6 +118,7 @@ export class ProductService {
         shopProducts: {
           webPage: true,
         },
+        brand: true,
       },
       order: {
         releaseDate: 'DESC',
@@ -113,7 +128,7 @@ export class ProductService {
       const onlyProduct: ProductStripped = {
         id: product.id,
         name: product.name,
-        brand: product.brand,
+        brand: product.brand.name,
         urlSafeName: product.urlSafeName,
         imageUrl: product.imageUrl,
         releaseDate: product.releaseDate,
@@ -141,7 +156,7 @@ export class ProductService {
   async findOneByProductSafeName(productName: string): Promise<Product> {
     return this.productsRepository.findOne({
       where: { urlSafeName: productName },
-      relations: { ebayStat: true },
+      relations: { ebayStat: true, brand: true },
     });
   }
 

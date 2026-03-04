@@ -5,10 +5,12 @@ import {
   Entity,
   OneToMany,
   OneToOne,
+  ManyToOne,
 } from 'typeorm';
 import { Alert } from '../../alert/entities/alert.entity';
 import { ShopProduct } from '../../shop-product/entities/shop-product.entity';
 import { EbayStat } from '../../ebay/ebay-stats/entities/ebay-stat.entity';
+import { Brand } from 'src/brand/entities/brand.entity';
 
 @Entity()
 @Unique(['name', 'type'])
@@ -48,14 +50,14 @@ export class Product {
   @Column({ default: '' })
   urlSafeName: string;
 
-  @Column({ default: '' })
-  brand: string;
-
   @Column({ nullable: true })
   imageUrl: string;
 
   @OneToOne(() => EbayStat, (ebayStat) => ebayStat.product)
   ebayStat: EbayStat;
+
+  @ManyToOne(() => Brand, (brand) => brand.products)
+  brand: Brand;
 }
 
 export enum ProductType {
@@ -66,7 +68,7 @@ export enum ProductType {
   COLLECTION = 'COLLECTION',
 }
 
-export enum Brand {
+export enum BrandType {
   MAGIC = 'magic-the-gathering',
   POKEMON = 'pokemon',
   RIFTBOUND = 'riftbound',

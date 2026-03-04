@@ -478,6 +478,7 @@ export class WebpageService {
     const response: {
       productName: string;
       productImage: string;
+      productBrand: string;
       webPages: StrippedWebpageSlimWithShop[];
     }[] = [];
 
@@ -510,6 +511,7 @@ export class WebpageService {
     response.push({
       productName: product.name,
       productImage: product.imageUrl,
+      productBrand: product.brand.name,
       webPages: strippedWebpageSlimWithShop,
     });
 
