@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WebpageCache } from './entities/webpage-cache.entity';
 import { UpdateWebpageDto } from 'src/webpage/dto/update-webpage.dto';
+import { ProductService } from 'src/product/product.service';
 
 @Injectable()
 export class WebpageCacheService {
@@ -14,6 +15,7 @@ export class WebpageCacheService {
     @InjectRepository(WebpageCache)
     private webpageCacheRepository: Repository<WebpageCache>,
     private webpageService: WebpageService,
+    private productService: ProductService,
   ) {}
 
   create(createWebpageCacheDto: CreateWebpageCacheDto) {
@@ -87,6 +89,10 @@ export class WebpageCacheService {
 
     await this.webpageService.update(webpageId, { ...updateWebpageDto });
     await this.webpageService.updateEuroPriceForOne(webpageEntity.id);
+
+    const productId = webpageEntity.shopProduct.productId;
+
+    await this.productService.update(productId, { updatedLast: new Date() });
 
     this.logger.log({
       webpageEntityPrice: +webpageEntity.price,

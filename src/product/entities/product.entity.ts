@@ -6,6 +6,8 @@ import {
   OneToMany,
   OneToOne,
   ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Alert } from '../../alert/entities/alert.entity';
 import { ShopProduct } from '../../shop-product/entities/shop-product.entity';
@@ -58,6 +60,12 @@ export class Product {
 
   @ManyToOne(() => Brand, (brand) => brand.products)
   brand: Brand;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedLast: Date;
 }
 
 export enum ProductType {

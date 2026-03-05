@@ -57,6 +57,7 @@ export class ProductService {
         urlSafeName: true,
         imageUrl: true,
         releaseDate: true,
+        updatedLast: true,
       },
       order: {
         releaseDate: 'DESC',
