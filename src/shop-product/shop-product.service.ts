@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { UpdateShopProductDto } from './dto/update-shop-product.dto';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,6 +14,7 @@ import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class ShopProductService {
+  private logger = new Logger(ShopProductService.name);
   constructor(
     @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
     @Inject('HEADLESS_CLIENT') private headlessClient: ClientProxy,
@@ -41,14 +42,14 @@ export class ShopProductService {
 
     // Listen for when it actually connects to the broker
     manager.on('connect', ({ url }) => {
-      console.log('✅ Client connected to', url);
+      this.logger.log('✅ Client connected to', url);
     });
     manager.on('disconnect', (params) => {
-      console.log('❌ Client disconnected', params.err.message);
+      this.logger.log('❌ Client disconnected', params.err.message);
     });
 
     // Inspect the asserted queue options
-    console.log('Client queueOptions:', client.options.queueOptions);
+    this.logger.log('Client queueOptions:', client.options.queueOptions);
   }
 
   @OnEvent('product.created')
@@ -79,7 +80,7 @@ export class ShopProductService {
         reducedSitemap,
       );
 
-      console.log(`Adding new product: ${shopProduct.product.name}`);
+      this.logger.log(`Adding new product: ${shopProduct.product.name}`);
       const createProcess: CreateProcessDto = {
         sitemap: shopProduct.shop.sitemap,
         url: shopProduct.shop.website,
@@ -131,7 +132,7 @@ export class ShopProductService {
 
   @OnEvent('shop.created')
   async newShopCreated(shop: Shop): Promise<ShopProduct[]> {
-    console.log(`Added Shop: ${shop.name}`);
+    this.logger.log(`Added Shop: ${shop.name}`);
     const productEntities = await this.productService.findAll();
     const shopProductsPromises = productEntities.map((product) => {
       return this.shopProductRepository.save({
@@ -144,7 +145,7 @@ export class ShopProductService {
     });
     const response = await Promise.all(shopProductsPromises);
     // Setup a sitemap emit to the worker for this shop
-    console.log(response);
+    this.logger.log(response);
     return response;
   }
 
@@ -184,7 +185,7 @@ export class ShopProductService {
 
     const shopProduct = await this.shopProductRepository.findOne(whereClause);
 
-    // console.log(shopProduct);
+    // this.logger.log(shopProduct);
 
     if (!shopProduct)
       throw new NotFoundException('shop_product_not_found_or_populated');
@@ -194,10 +195,10 @@ export class ShopProductService {
       shopProduct.product.name,
     );
 
-    console.log(shopProduct.product.name);
+    this.logger.log(shopProduct.product.name);
 
-    console.log(shopProduct.shop.sitemapEntity.sitemapUrl.urls.length);
-    console.log(reducedSitemap);
+    this.logger.log(shopProduct.shop.sitemapEntity.sitemapUrl.urls.length);
+    this.logger.log(reducedSitemap);
 
     if (reducedSitemap.length === 0)
       throw new Error('no_urls_found_for_product');
@@ -208,13 +209,13 @@ export class ShopProductService {
     );
 
     if (limitedUrls.length === 0) {
-      console.log(
+      this.logger.log(
         `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name} but was found in reduced sitemap: ${reducedSitemap}`,
       );
       throw new NotFoundException(`No URLs found for ${shopProduct.shop.name}`);
     }
 
-    // console.log(limitedUrls);
+    // this.logger.log(limitedUrls);
     // await new Promise((r) => setTimeout(r, 2000000));
 
     const createProcess: CreateProcessDto = {
@@ -262,10 +263,10 @@ export class ShopProductService {
     this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
 
     // if (shopProduct.shop.isShopifySite === true) {
-    //   console.log('shopifySiteFound');
+    //   this.logger.log('shopifySiteFound');
     //   this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
     // } else {
-    //   console.log('normal setup');
+    //   this.logger.log('normal setup');
     //   this.headfulClient.emit<CreateProcessDto>('findLinks', createProcess);
     // }
     await new Promise((r) => setTimeout(r, 100));
@@ -304,7 +305,7 @@ export class ShopProductService {
     const shopProductsOrphan = await (
       await this.shopProductRepository.find(whereClause)
     ).sort(() => Math.random() - 0.5);
-    console.log(shopProductsOrphan.length);
+    this.logger.log(shopProductsOrphan.length);
 
     for (const shopProduct of shopProductsOrphan) {
       if (!shopProduct) continue;
@@ -322,7 +323,7 @@ export class ShopProductService {
       );
 
       if (limitedUrls.length === 0) {
-        console.log(
+        this.logger.log(
           `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
         );
         continue;
@@ -373,10 +374,10 @@ export class ShopProductService {
       this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
 
       // if (shopProduct.shop.isShopifySite === true) {
-      //   console.log('shopifySiteFound');
+      //   this.logger.log('shopifySiteFound');
       //   this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
       // } else {
-      //   console.log('normal setup');
+      //   this.logger.log('normal setup');
       //   this.headfulClient.emit<CreateProcessDto>('findLinks', createProcess);
       // }
       await new Promise((r) => setTimeout(r, 1));
@@ -415,7 +416,7 @@ export class ShopProductService {
     const shopProductsOrphans = await (
       await this.shopProductRepository.find(whereClause)
     ).sort(() => Math.random() - 0.5);
-    console.log(shopProductsOrphans.length);
+    this.logger.log(shopProductsOrphans.length);
 
     for (const shopProductsOrphan of shopProductsOrphans) {
       if (!shopProductsOrphan) continue;
@@ -435,7 +436,7 @@ export class ShopProductService {
       );
 
       if (limitedUrls.length === 0) {
-        console.log(
+        this.logger.log(
           `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
         );
         continue;
@@ -486,10 +487,10 @@ export class ShopProductService {
       this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
 
       // if (shopProduct.shop.isShopifySite === true) {
-      //   console.log('shopifySiteFound');
+      //   this.logger.log('shopifySiteFound');
       //   this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
       // } else {
-      //   console.log('normal setup');
+      //   this.logger.log('normal setup');
       //   this.headfulClient.emit<CreateProcessDto>('findLinks', createProcess);
       // }
       await new Promise((r) => setTimeout(r, 1));
@@ -531,7 +532,7 @@ export class ShopProductService {
     const shopProductsOrphan = await (
       await this.shopProductRepository.find(whereClause)
     ).sort(() => Math.random() - 0.5);
-    console.log(shopProductsOrphan.length);
+    this.logger.log(shopProductsOrphan.length);
 
     for (const shopProduct of shopProductsOrphan) {
       if (!shopProduct) continue;
@@ -541,7 +542,12 @@ export class ShopProductService {
         shopProduct.product.name,
       );
 
-      if (reducedSitemap.length === 0) continue;
+      if (reducedSitemap.length === 0) {
+        this.logger.error({
+          shopProductId: shopProduct.id,
+          error: `reducedSitemap.length === 0`,
+        });
+      }
 
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
@@ -549,7 +555,7 @@ export class ShopProductService {
       );
 
       if (limitedUrls.length === 0) {
-        console.log(
+        this.logger.log(
           `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name} but was found in reduced sitemap: ${reducedSitemap}`,
         );
         continue;
@@ -600,10 +606,10 @@ export class ShopProductService {
       this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
 
       // if (shopProduct.shop.isShopifySite === true) {
-      //   console.log('shopifySiteFound');
+      //   this.logger.log('shopifySiteFound');
       //   this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
       // } else {
-      //   console.log('normal setup');
+      //   this.logger.log('normal setup');
       //   this.headfulClient.emit<CreateProcessDto>('findLinks', createProcess);
       // }
       await new Promise((r) => setTimeout(r, 1));
@@ -640,7 +646,7 @@ export class ShopProductService {
         },
       })
     ).sort(() => Math.random() - 0.5);
-    console.log(shopProductsOrphan.length);
+    this.logger.log(shopProductsOrphan.length);
 
     for (const shopProduct of shopProductsOrphan) {
       // const reducedSitemap = this.shopService.reduceSitemap(
@@ -658,7 +664,7 @@ export class ShopProductService {
       );
 
       if (limitedUrls.length === 0) {
-        console.log(
+        this.logger.log(
           `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
         );
         continue;
@@ -712,7 +718,7 @@ export class ShopProductService {
         (shopProduct.shop.cloudflare === false &&
           shopProduct.shop.headless === false)
       ) {
-        console.log('shopifySiteFound');
+        this.logger.log('shopifySiteFound');
         this.headlessClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
@@ -732,7 +738,7 @@ export class ShopProductService {
           createProcess,
         );
       } else {
-        console.log('normal setup');
+        this.logger.log('normal setup');
         this.headfulClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
@@ -766,7 +772,7 @@ export class ShopProductService {
         },
       })
     ).sort(() => Math.random() - 0.5);
-    console.log(shopProductsOrphan.length);
+    this.logger.log(shopProductsOrphan.length);
 
     const increment = Math.ceil(shopProductsOrphan.length / 20);
 
@@ -794,14 +800,14 @@ export class ShopProductService {
         );
 
         if (limitedUrls.length === 0) {
-          console.log(
+          this.logger.log(
             `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
           );
           continue;
         }
 
         // if (shopProduct.links.length === 0) {
-        //   console.log(
+        //   this.logger.log(
         //     `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
         //   );
         //   continue;
@@ -856,7 +862,7 @@ export class ShopProductService {
           (shopProduct.shop.cloudflare === false &&
             shopProduct.shop.headless === false)
         ) {
-          console.log('shopifySiteFound');
+          this.logger.log('shopifySiteFound');
           this.headlessClient.emit<CreateProcessDto>(
             'webpageDiscovery',
             createProcess,
@@ -876,7 +882,7 @@ export class ShopProductService {
             createProcess,
           );
         } else {
-          console.log('normal setup');
+          this.logger.log('normal setup');
           this.headfulClient.emit<CreateProcessDto>(
             'webpageDiscovery',
             createProcess,
@@ -888,7 +894,7 @@ export class ShopProductService {
       index += increment;
 
       if (index < shopProductsOrphan.length) {
-        console.log(
+        this.logger.log(
           `Stopped at Index: ${index} Waiting 5 minutes before next batch...`,
         );
         await new Promise((r) => setTimeout(r, 5 * 60 * 1000));
@@ -907,7 +913,7 @@ export class ShopProductService {
       );
     }
 
-    // console.log(blackListUrls);
+    // this.logger.log(blackListUrls);
 
     // await new Promise((r) => setTimeout(r, 20000000));
 
@@ -937,7 +943,7 @@ export class ShopProductService {
     //   'https://bossminis.co.uk/products/magic-the-gathering-edge-of-eternities-collector-booster-pack-releases-01-08-20205',
     // );
 
-    // console.log(momentOfTruth);
+    // this.logger.log(momentOfTruth);
 
     // await new Promise((r) => setTimeout(r, 20000000));
     return limitedUrls;
@@ -945,7 +951,7 @@ export class ShopProductService {
 
   async manualFindShopsToUpdateProducts(productId: string): Promise<void> {
     const product = await this.productService.findOne(productId);
-    console.log(`Adding new product: ${product.name}`);
+    this.logger.log(`Adding new product: ${product.name}`);
 
     const shopProductsOrphan = await this.shopProductRepository.find({
       where: {
@@ -970,7 +976,7 @@ export class ShopProductService {
       },
     });
 
-    console.log(shopProductsOrphan.length);
+    this.logger.log(shopProductsOrphan.length);
 
     for (const shopProduct of shopProductsOrphan) {
       // const reducedSitemap = this.shopService.reduceSitemap(
@@ -986,14 +992,14 @@ export class ShopProductService {
       );
 
       if (limitedUrls.length === 0) {
-        console.log(
+        this.logger.log(
           `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
         );
         continue;
       }
 
       // if (shopProduct.links.length === 0) {
-      //   console.log(
+      //   this.logger.log(
       //     `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
       //   );
       //   continue;
@@ -1076,7 +1082,7 @@ export class ShopProductService {
 
   async manuallyUpdateShopProductsByShopId(shopId: string): Promise<void> {
     const shop = await this.shopService.findOne(shopId);
-    console.log(`Adding new product: ${shop.name}`);
+    this.logger.log(`Adding new product: ${shop.name}`);
 
     const shopProductsOrphan = await this.shopProductRepository.find({
       where: {
@@ -1101,7 +1107,7 @@ export class ShopProductService {
       },
     });
 
-    console.log(shopProductsOrphan.length);
+    this.logger.log(shopProductsOrphan.length);
 
     for (const shopProduct of shopProductsOrphan) {
       // const reducedSitemap = this.shopService.reduceSitemap(
@@ -1117,14 +1123,14 @@ export class ShopProductService {
       );
 
       if (limitedUrls.length === 0) {
-        console.log(
+        this.logger.log(
           `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
         );
         continue;
       }
 
       // if (shopProduct.links.length === 0) {
-      //   console.log(
+      //   this.logger.log(
       //     `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
       //   );
       //   continue;
@@ -1207,7 +1213,7 @@ export class ShopProductService {
 
   // async manualCheckAllShopsShopfiy() {
   //   const shopProdutEntities = await this.findOneWebPageFromShop()
-  //   console.log(shopProdutEntities.length);
+  //   this.logger.log(shopProdutEntities.length);
 
   //   for (const shopProduct of shopProdutEntities) {
   //     const createProcess: CreateProcessDto = {
@@ -1261,10 +1267,10 @@ export class ShopProductService {
       shopProduct.links,
     );
 
-    // console.log(limitedUrls);
+    // this.logger.log(limitedUrls);
 
     if (limitedUrls.length === 0) {
-      console.log(
+      this.logger.log(
         `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
       );
       throw new NotFoundException('no_urls_found_for_product');
@@ -1364,7 +1370,7 @@ export class ShopProductService {
     );
 
     if (limitedUrls.length === 0) {
-      console.log(
+      this.logger.log(
         `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
       );
       throw new NotFoundException('no_urls_found_for_product');
@@ -1444,7 +1450,7 @@ export class ShopProductService {
       },
     });
 
-    console.log(shopProducts.length);
+    this.logger.log(shopProducts.length);
 
     for (const shopProduct of shopProducts) {
       // const reducedSitemap = this.shopService.reduceSitemap(
@@ -1459,14 +1465,14 @@ export class ShopProductService {
       );
 
       if (limitedUrls.length === 0) {
-        console.log(
+        this.logger.log(
           `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
         );
         continue;
       }
 
       // if (shopProduct.links.length === 0) {
-      //   console.log(
+      //   this.logger.log(
       //     `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
       //   );
       //   continue;
@@ -1607,7 +1613,7 @@ export class ShopProductService {
   }
 
   async findOneByShopProductName(name: string): Promise<ShopProduct> {
-    console.log(name);
+    this.logger.log(name);
     return this.shopProductRepository.findOne({
       where: {
         shop: {
@@ -1698,7 +1704,7 @@ export class ShopProductService {
   }
 
   async removeCandidatePageFromShopProduct(webpageUrl: string) {
-    console.log(webpageUrl);
+    this.logger.log(webpageUrl);
     const shopProductEntity = await this.shopProductRepository.findOne({
       where: {
         candidatePages: {
@@ -1710,7 +1716,7 @@ export class ShopProductService {
       },
     });
 
-    console.log(shopProductEntity);
+    this.logger.log(shopProductEntity);
 
     for (const candidatePage of shopProductEntity.candidatePages) {
       this.eventemitter.emit('remove.candidatePage', candidatePage.id);
@@ -1726,7 +1732,7 @@ export class ShopProductService {
     id: string,
     updateShopProductDto: UpdateShopProductDto,
   ): Promise<UpdateResult> {
-    console.log(updateShopProductDto);
+    this.logger.log(updateShopProductDto);
     return this.shopProductRepository.update({ id }, updateShopProductDto);
   }
 
@@ -1738,7 +1744,7 @@ export class ShopProductService {
       { id },
       updateShopProductDto,
     );
-    console.log('updateLinks called');
+    this.logger.log('updateLinks called');
     await this.checkForIndividualShopProduct(id);
     return updateResult;
   }

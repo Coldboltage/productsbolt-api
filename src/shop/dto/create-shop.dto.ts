@@ -4,6 +4,7 @@ export class CreateShopDto {
   @IsString()
   name: string;
 
+  // if www seen, add
   @IsString()
   website: string;
 
@@ -26,9 +27,11 @@ export class CreateShopDto {
   @IsString()
   province: string;
 
+  // Country Code
   @IsString()
   country: string;
 
+  // Currency Code
   @IsString()
   currency: string;
 }

@@ -90,10 +90,6 @@ export class WebpageCacheService {
     await this.webpageService.update(webpageId, { ...updateWebpageDto });
     await this.webpageService.updateEuroPriceForOne(webpageEntity.id);
 
-    const productId = webpageEntity.shopProduct.productId;
-
-    await this.productService.update(productId, { updatedLast: new Date() });
-
     this.logger.log({
       webpageEntityPrice: +webpageEntity.price,
       updatedWebpageDtoPrice: updateWebpageDto.price,
@@ -112,6 +108,10 @@ export class WebpageCacheService {
       +webpageEntity.price !== updateWebpageDto.price ||
       webpageEntity.inStock !== updateWebpageDto.inStock
     ) {
+      const productId = webpageEntity.shopProduct.productId;
+
+      await this.productService.update(productId, { updatedLast: new Date() });
+
       const productName = webpageEntity.shopProduct.product.urlSafeName;
       await fetch(
         `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${productName}`,
