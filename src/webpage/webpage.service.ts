@@ -479,6 +479,7 @@ export class WebpageService {
       productName: string;
       productImage: string;
       productBrand: string;
+      productUrlSafeName: string;
       webPages: StrippedWebpageSlimWithShop[];
     }[] = [];
 
@@ -512,6 +513,7 @@ export class WebpageService {
       productName: product.name,
       productImage: product.imageUrl,
       productBrand: product.brand.name,
+      productUrlSafeName: product.brand.urlSafeName,
       webPages: strippedWebpageSlimWithShop,
     });
 
