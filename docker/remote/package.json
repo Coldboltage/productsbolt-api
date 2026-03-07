@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "deploy:worker": "docker pull coldbolt/productsbolt-worker:latest && docker service update --force productsbolt_worker"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "api": "docker compose -f docker-compose-main.yml pull api && docker compose -f docker-compose-main.yml up -d --no-deps --force-recreate api"
+  }
+}
