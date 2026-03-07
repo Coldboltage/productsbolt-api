@@ -45,7 +45,7 @@ export class CurrencyService {
   }
 
   @Cron(CronExpression.EVERY_2_HOURS)
-  async addAllCurrencies(baseCurrency: string) {
+  async addAllCurrencies(baseCurrency = 'EUR') {
     // Need to get all the currencies that'll matter
     const uniqueCurrencies = await this.shopService.getAllCurrencies();
     const createCurrencyString = uniqueCurrencies.join(',');
