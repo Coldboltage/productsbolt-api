@@ -92,26 +92,30 @@ export class ShopService implements OnApplicationBootstrap {
   @Span('ShopService.updateSitemap')
   async updateSitemap(): Promise<void> {
     const allActiveShops = await this.findAllWithoutUrls();
-    // Start a background task and don’t await it
 
     for (const activeShop of allActiveShops) {
-      const shop = await this.findOneWithSitemapUrls(activeShop.id);
+      // const shop = await this.findOneWithSitemapUrls(activeShop.id);
       if (
-        shop.sitemapEntity.isShopifySite &&
-        shop.sitemapEntity.error === false &&
-        shop.sitemapEntity.manual === false &&
-        shop.sitemapEntity.collections === true
+        activeShop.sitemapEntity.isShopifySite &&
+        activeShop.sitemapEntity.error === false &&
+        activeShop.sitemapEntity.manual === false &&
+        activeShop.sitemapEntity.collections === true
       ) {
-        this.headfulClient.emit('shopifySitemapSearch', shop);
+        this.headfulClient.emit('shopifySitemapSearch', activeShop);
       } else if (
-        shop.sitemapEntity.fast === false &&
-        shop.sitemapEntity.manual === false
+        activeShop.sitemapEntity.fast === false &&
+        activeShop.sitemapEntity.manual === false
       ) {
-        this.slowSitemapClient.emit('sitemapSearch', shop);
-      } else if (shop.sitemapEntity.manual === true) {
-        this.headfulClient.emit('manualSitemapSearch', shop);
+        this.slowSitemapClient.emit('sitemapSearch', activeShop);
+      } else if (activeShop.sitemapEntity.manual === true) {
+        this.headfulClient.emit('manualSitemapSearch', activeShop);
+      } else if (
+        activeShop.sitemapEntity.fast === true &&
+        activeShop.cloudflare === true
+      ) {
+        this.headfulClient.emit('sitemapSearch', activeShop);
       } else {
-        this.sitemapClient.emit('sitemapSearch', shop);
+        this.sitemapClient.emit('sitemapSearch', activeShop);
       }
     }
   }
@@ -159,6 +163,8 @@ export class ShopService implements OnApplicationBootstrap {
       this.slowSitemapClient.emit('sitemapSearch', shop);
     } else if (shop.sitemapEntity.manual === true) {
       this.headfulClient.emit('manualSitemapSearch', shop);
+    } else if (shop.sitemapEntity.fast === true && shop.cloudflare === true) {
+      this.headfulClient.emit('sitemapSearch', shop);
     } else {
       this.sitemapClient.emit('sitemapSearch', shop);
     }
