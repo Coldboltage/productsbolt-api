@@ -18,6 +18,9 @@ export class Brand {
   @Column({ nullable: true })
   creator: string;
 
+  @Column({ nullable: true })
+  mainLogo: string;
+
   @OneToMany(() => Product, (product) => product.brand)
   products: Product[];
 }
