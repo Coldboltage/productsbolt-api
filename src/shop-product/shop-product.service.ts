@@ -1109,6 +1109,103 @@ export class ShopProductService {
 
     this.logger.log(shopProductsOrphan.length);
 
+    const shopOfShopProducts: CreateProcessDto[] = [];
+
+    for (const shopProduct of shopProductsOrphan) {
+      // const reducedSitemap = this.shopService.reduceSitemap(
+      //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+      //   shopProduct.product.name,
+      // );
+
+      await new Promise((r) => setTimeout(r, 6));
+
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        shopProduct.links,
+      );
+
+      if (limitedUrls.length === 0) {
+        this.logger.log(
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
+
+      // if (shopProduct.links.length === 0) {
+      //   this.logger.log(
+      //     `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+      //   );
+      //   continue;
+      // }
+
+      const createProcess: CreateProcessDto = {
+        sitemap: shopProduct.shop.sitemap,
+        url: shopProduct.shop.website,
+        category: shopProduct.shop.category,
+        name: shopProduct.product.name,
+        shopProductId: shopProduct.id,
+        shopWebsite: shopProduct.shop.name,
+        type: shopProduct.product.type,
+        context: shopProduct.product.context,
+        crawlAmount: 90,
+        productId: shopProduct.productId,
+        shopId: shopProduct.shopId,
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType,
+        cloudflare: shopProduct.shop.cloudflare,
+        headless: shopProduct.shop.headless,
+        links: limitedUrls,
+        expectedPrice: shopProduct.product.price,
+        country: shopProduct.shop.country,
+        currency: shopProduct.shop.currency,
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          sitemapUrls: [],
+          shopId: shopProduct.shop.id,
+        },
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
+        confirmed:
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
+      };
+
+      shopOfShopProducts.push(createProcess);
+    }
+
+    this.logger.verbose(shopOfShopProducts);
+
+    if (
+      (shop.isShopifySite === true && shop.cloudflare === false) ||
+      (shop.cloudflare === false && shop.headless === false)
+    ) {
+      this.headlessClient.emit<CreateProcessDto[]>(
+        'webpageDiscovery',
+        shopOfShopProducts,
+      );
+    } else if (
+      shop.website.includes('chaoscards.co.uk') ||
+      shop.website.includes('magicmadhouse') ||
+      shop.website.includes('hillscards')
+    ) {
+      this.headfulSlowClient.emit<CreateProcessDto[]>(
+        'webpageDiscovery',
+        shopOfShopProducts,
+      );
+    } else if (shop.headless === true) {
+      this.headlessBrowserClient.emit<CreateProcessDto[]>(
+        'webpageDiscovery',
+        shopOfShopProducts,
+      );
+    } else {
+      this.headfulClient.emit<CreateProcessDto[]>(
+        'webpageDiscovery',
+        shopOfShopProducts,
+      );
+    }
+
+    throw new Error('ending_test');
+
     for (const shopProduct of shopProductsOrphan) {
       // const reducedSitemap = this.shopService.reduceSitemap(
       //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
