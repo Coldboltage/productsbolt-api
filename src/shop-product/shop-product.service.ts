@@ -731,7 +731,8 @@ export class ShopProductService {
       } else if (
         shopProduct.shop.website.includes('chaoscards.co.uk') ||
         shopProduct.shop.website.includes('magicmadhouse') ||
-        shopProduct.shop.website.includes('hillscards')
+        shopProduct.shop.website.includes('hillscards') ||
+        shopProduct.shop.website.includes('games-island')
       ) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
@@ -870,7 +871,8 @@ export class ShopProductService {
         } else if (
           shopProduct.shop.website.includes('chaoscards.co.uk') ||
           shopProduct.shop.website.includes('magicmadhouse') ||
-          shopProduct.shop.website.includes('hillscards')
+          shopProduct.shop.website.includes('hillscards') ||
+          shopProduct.shop.website.includes('games-island')
         ) {
           this.headfulSlowClient.emit<CreateProcessDto>(
             'webpageDiscovery',
@@ -1060,7 +1062,8 @@ export class ShopProductService {
       } else if (
         shopProduct.shop.website.includes('chaoscards.co.uk') ||
         shopProduct.shop.website.includes('magicmadhouse') ||
-        shopProduct.shop.website.includes('hillscards')
+        shopProduct.shop.website.includes('hillscards') ||
+        shopProduct.shop.website.includes('games-island')
       ) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
@@ -1106,10 +1109,6 @@ export class ShopProductService {
         },
       },
     });
-
-    this.logger.log(shopProductsOrphan.length);
-
-    const shopOfShopProducts: CreateProcessDto[] = [];
 
     for (const shopProduct of shopProductsOrphan) {
       // const reducedSitemap = this.shopService.reduceSitemap(
@@ -1170,10 +1169,148 @@ export class ShopProductService {
         candidatePages: shopProduct.candidatePages,
       };
 
+      if (
+        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+        shopProduct.ebayProductDetail
+      ) {
+        createProcess.ebayProductDetail = {
+          ebayProductDetailId: shopProduct.ebayProductDetail.id,
+          productId: shopProduct.ebayProductDetail.productId,
+        };
+      }
+
+      if (
+        (shopProduct.shop.isShopifySite === true &&
+          shopProduct.shop.cloudflare === false) ||
+        (shopProduct.shop.cloudflare === false &&
+          shopProduct.shop.headless === false)
+      ) {
+        this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else if (
+        shopProduct.shop.website.includes('chaoscards.co.uk') ||
+        shopProduct.shop.website.includes('magicmadhouse') ||
+        shopProduct.shop.website.includes('hillscards') ||
+        shopProduct.shop.website.includes('games-island')
+      ) {
+        this.headfulSlowClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else if (shopProduct.shop.headless === true) {
+        this.headlessBrowserClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else {
+        this.headfulClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      }
+    }
+  }
+
+  async manuallyUpdateShopProductsByShopIdBatch(shopId: string): Promise<void> {
+    const shop = await this.shopService.findOne(shopId);
+    this.logger.log(`Adding new product: ${shop.name}`);
+
+    const shopProductsOrphan = await this.shopProductRepository.find({
+      where: {
+        populated: false,
+        shop: {
+          active: true,
+          id: shopId,
+        },
+      },
+      relations: {
+        shop: {
+          sitemapEntity: true,
+        },
+        webPage: true,
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
+        product: true,
+        candidatePages: {
+          candidatePageCache: true,
+        },
+      },
+    });
+
+    this.logger.debug(shopProductsOrphan.length);
+
+    const shopOfShopProducts: CreateProcessDto[] = [];
+
+    for (const shopProduct of shopProductsOrphan) {
+      // const reducedSitemap = this.shopService.reduceSitemap(
+      //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+      //   shopProduct.product.name,
+      // );
+
+      // await new Promise((r) => setTimeout(r, 6));
+
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        shopProduct.links,
+      );
+
+      // this.logger.debug(limitedUrls.length);
+
+      if (limitedUrls.length === 0) {
+        this.logger.log(
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
+
+      // if (shopProduct.links.length === 0) {
+      //   this.logger.log(
+      //     `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+      //   );
+      //   continue;
+      // }
+
+      const createProcess: CreateProcessDto = {
+        sitemap: shopProduct.shop.sitemap,
+        url: shopProduct.shop.website,
+        category: shopProduct.shop.category,
+        name: shopProduct.product.name,
+        shopProductId: shopProduct.id,
+        shopWebsite: shopProduct.shop.name,
+        type: shopProduct.product.type,
+        context: shopProduct.product.context,
+        crawlAmount: 90,
+        productId: shopProduct.productId,
+        shopId: shopProduct.shopId,
+        shopifySite: shopProduct.shop.isShopifySite,
+        shopType: shopProduct.shop.uniqueShopType,
+        cloudflare: shopProduct.shop.cloudflare,
+        headless: shopProduct.shop.headless,
+        links: limitedUrls,
+        expectedPrice: shopProduct.product.price,
+        country: shopProduct.shop.country,
+        currency: shopProduct.shop.currency,
+        sitemapEntity: {
+          ...shopProduct.shop.sitemapEntity,
+          sitemapUrls: [],
+          shopId: shopProduct.shop.id,
+        },
+        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
+        confirmed:
+          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+        candidatePages: shopProduct.candidatePages,
+      };
+
       shopOfShopProducts.push(createProcess);
     }
 
-    this.logger.verbose(shopOfShopProducts);
+    shopOfShopProducts.forEach((dto) =>
+      dto.links.forEach((link) => this.logger.debug(link)),
+    );
 
     if (
       (shop.isShopifySite === true && shop.cloudflare === false) ||
@@ -1186,10 +1323,11 @@ export class ShopProductService {
     } else if (
       shop.website.includes('chaoscards.co.uk') ||
       shop.website.includes('magicmadhouse') ||
-      shop.website.includes('hillscards')
+      shop.website.includes('hillscards') ||
+      shop.website.includes('games-island')
     ) {
       this.headfulSlowClient.emit<CreateProcessDto[]>(
-        'webpageDiscovery',
+        'webpageDiscoveryHeadful',
         shopOfShopProducts,
       );
     } else if (shop.headless === true) {
@@ -1288,7 +1426,8 @@ export class ShopProductService {
       } else if (
         shopProduct.shop.website.includes('chaoscards.co.uk') ||
         shopProduct.shop.website.includes('magicmadhouse') ||
-        shopProduct.shop.website.includes('hillscards')
+        shopProduct.shop.website.includes('hillscards') ||
+        shopProduct.shop.website.includes('games-island')
       ) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
@@ -1630,7 +1769,8 @@ export class ShopProductService {
       } else if (
         shopProduct.shop.website.includes('chaoscards.co.uk') ||
         shopProduct.shop.website.includes('magicmadhouse') ||
-        shopProduct.shop.website.includes('hillscards')
+        shopProduct.shop.website.includes('hillscards') ||
+        shopProduct.shop.website.includes('games-island')
       ) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',

@@ -78,7 +78,9 @@ export class ShopProductController {
   manuallyUpdateShopProductsByShopId(
     @Param('shopId') shopId: string,
   ): Promise<void> {
-    return this.shopProductService.manuallyUpdateShopProductsByShopId(shopId);
+    return this.shopProductService.manuallyUpdateShopProductsByShopIdBatch(
+      shopId,
+    );
   }
 
   // @Post()

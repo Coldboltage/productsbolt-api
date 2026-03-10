@@ -651,7 +651,8 @@ export class WebpageService {
       } else if (
         page.shopProduct.shop.website.includes('chaoscards.co.uk') ||
         page.shopProduct.shop.website.includes('magicmadhouse') ||
-        page.shopProduct.shop.website.includes('hillscards')
+        page.shopProduct.shop.website.includes('hillscards') ||
+        page.shopProduct.shop.website.includes('games-island')
       ) {
         this.headfulSlowClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.headless === true) {
@@ -699,7 +700,8 @@ export class WebpageService {
       } else if (
         page.shopProduct.shop.website.includes('chaoscards.co.uk') ||
         page.shopProduct.shop.website.includes('magicmadhouse') ||
-        page.shopProduct.shop.website.includes('hillscards')
+        page.shopProduct.shop.website.includes('hillscards') ||
+        page.shopProduct.shop.website.includes('games-island')
       ) {
         this.headfulSlowClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.headless === true) {
