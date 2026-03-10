@@ -1116,7 +1116,7 @@ export class ShopProductService {
       //   shopProduct.product.name,
       // );
 
-      await new Promise((r) => setTimeout(r, 6));
+      // await new Promise((r) => setTimeout(r, 6));
 
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
