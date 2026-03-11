@@ -648,12 +648,7 @@ export class WebpageService {
           page.shopProduct.shop.headless === false)
       ) {
         this.headlessClient.emit('updatePage', updatePageDto);
-      } else if (
-        page.shopProduct.shop.website.includes('chaoscards.co.uk') ||
-        page.shopProduct.shop.website.includes('magicmadhouse') ||
-        page.shopProduct.shop.website.includes('hillscards') ||
-        page.shopProduct.shop.website.includes('games-island')
-      ) {
+      } else if (page.shopProduct.shop.cloudflareEnhanced === true) {
         this.headfulSlowClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.headless === true) {
         this.headlessBrowserClient.emit('updatePage', updatePageDto);
@@ -697,12 +692,7 @@ export class WebpageService {
           page.shopProduct.shop.headless === false)
       ) {
         this.headlessClient.emit('updatePage', updatePageDto);
-      } else if (
-        page.shopProduct.shop.website.includes('chaoscards.co.uk') ||
-        page.shopProduct.shop.website.includes('magicmadhouse') ||
-        page.shopProduct.shop.website.includes('hillscards') ||
-        page.shopProduct.shop.website.includes('games-island')
-      ) {
+      } else if (page.shopProduct.shop.cloudflareEnhanced === true) {
         this.headfulSlowClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.headless === true) {
         this.headlessBrowserClient.emit('updatePage', updatePageDto);

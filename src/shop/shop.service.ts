@@ -307,6 +307,108 @@ export class ShopService implements OnApplicationBootstrap {
     });
   }
 
+  async findActiveCloudflareEnhancedShopsNonPopulatedShopProducts(): Promise<
+    Shop[]
+  > {
+    return this.shopsRepository
+      .createQueryBuilder('shop')
+      .innerJoinAndSelect(
+        'shop.shopProducts',
+        'shopProduct',
+        'shopProduct.populated = :populated',
+        { populated: false },
+      )
+      .leftJoinAndSelect('shopProduct.product', 'product')
+      .leftJoinAndSelect('shopProduct.webPage', 'webPage')
+      .leftJoinAndSelect(
+        'shopProduct.shopProductBlacklistUrls',
+        'shopProductBlacklistUrls',
+      )
+      .leftJoinAndSelect(
+        'shopProductBlacklistUrls.blackListUrl',
+        'blackListUrl',
+      )
+      .leftJoinAndSelect('shopProduct.candidatePages', 'candidatePages')
+      .leftJoinAndSelect(
+        'candidatePages.candidatePageCache',
+        'candidatePageCache',
+      )
+      .where('shop.active = :active', { active: true })
+      .andWhere('shop.cloudflareEnhanced = :cloudflareEnhanced', {
+        cloudflareEnhanced: true,
+      })
+      .getMany();
+  }
+
+  async findActiveCloudflareEnhancedShopsNonPopulatedShopProductsByProductId(
+    productId: string,
+  ): Promise<Shop[]> {
+    return this.shopsRepository
+      .createQueryBuilder('shop')
+      .innerJoinAndSelect(
+        'shop.shopProducts',
+        'shopProduct',
+        'shopProduct.populated = :populated AND shopProduct.productId = :productId',
+        { populated: false, productId },
+      )
+      .leftJoinAndSelect('shop.sitemapEntity', 'sitemapEntity')
+      .leftJoinAndSelect('shopProduct.product', 'product')
+      .leftJoinAndSelect('shopProduct.webPage', 'webPage')
+      .leftJoinAndSelect(
+        'shopProduct.shopProductBlacklistUrls',
+        'shopProductBlacklistUrls',
+      )
+      .leftJoinAndSelect(
+        'shopProductBlacklistUrls.blackListUrl',
+        'blackListUrl',
+      )
+      .leftJoinAndSelect('shopProduct.candidatePages', 'candidatePages')
+      .leftJoinAndSelect(
+        'candidatePages.candidatePageCache',
+        'candidatePageCache',
+      )
+      .where('shop.active = :active', { active: true })
+      .andWhere('shop.cloudflareEnhanced = :cloudflareEnhanced', {
+        cloudflareEnhanced: true,
+      })
+      .getMany();
+  }
+
+  async findActiveCloudflareEnhancedShopsNonPopulatedShopProductsByShopId(
+    shopId: string,
+  ): Promise<Shop> {
+    return this.shopsRepository
+      .createQueryBuilder('shop')
+      .innerJoinAndSelect(
+        'shop.shopProducts',
+        'shopProduct',
+        'shopProduct.populated = :populated',
+        { populated: false },
+      )
+      .leftJoinAndSelect('shop.sitemapEntity', 'sitemapEntity')
+      .leftJoinAndSelect('shopProduct.product', 'product')
+      .leftJoinAndSelect('shopProduct.webPage', 'webPage')
+      .leftJoinAndSelect(
+        'shopProduct.shopProductBlacklistUrls',
+        'shopProductBlacklistUrls',
+      )
+      .leftJoinAndSelect(
+        'shopProductBlacklistUrls.blackListUrl',
+        'blackListUrl',
+      )
+      .leftJoinAndSelect('shopProduct.candidatePages', 'candidatePages')
+      .leftJoinAndSelect(
+        'candidatePages.candidatePageCache',
+        'candidatePageCache',
+      )
+      .where('shop.active = :active', { active: true })
+      .andWhere('shop.cloudflareEnhanced = :cloudflareEnhanced', {
+        cloudflareEnhanced: true,
+      })
+      .andWhere('shop.id = :shopId', { shopId })
+      .getOne();
+  }
+
   async getAllShopifyMetaInformation() {
     const shopifyShops = await this.findAllShopifyShops();
     const filterShops = shopifyShops.filter((shop) => shop.country == null);
