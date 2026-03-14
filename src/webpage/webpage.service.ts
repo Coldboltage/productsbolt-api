@@ -1015,7 +1015,7 @@ export class WebpageService {
     }
   }
 
-  @Cron(CronExpression.EVERY_2ND_HOUR)
+  @Cron(CronExpression.EVERY_2_HOURS)
   async updateEuroPrice() {
     const activeWebpages = await this.findAll();
     for (const webpage of activeWebpages) {
