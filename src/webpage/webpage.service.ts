@@ -10,6 +10,7 @@ import { UpdateWebpageDto } from './dto/update-webpage.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CheckPageDto,
+  FullCheckPageDtoPayloadDto,
   ProductToWebpageInterface,
   ProductToWebpageSlimInterface,
   StrippedWebpage,
@@ -212,6 +213,7 @@ export class WebpageService {
         shopProduct: {
           shop: {
             active: true,
+            cloudflareEnhanced: false,
           },
           product: {
             priority: true,
@@ -239,6 +241,7 @@ export class WebpageService {
         shopProduct: {
           shop: {
             active: true,
+            cloudflareEnhanced: false,
           },
           product: {
             priority: false,
@@ -648,8 +651,6 @@ export class WebpageService {
           page.shopProduct.shop.headless === false)
       ) {
         this.headlessClient.emit('updatePage', updatePageDto);
-      } else if (page.shopProduct.shop.cloudflareEnhanced === true) {
-        this.headfulSlowClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.headless === true) {
         this.headlessBrowserClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.cloudflare === true) {
@@ -657,6 +658,47 @@ export class WebpageService {
       } else {
         this.headfulClient.emit('updatePage', updatePageDto);
       }
+    }
+
+    const shopEnhanced =
+      await this.shopService.findActiveCloudflareEnhancedShopsPopulatedShopProducts(
+        false,
+      );
+    this.logger.log(shopEnhanced.length);
+
+    for (const shop of shopEnhanced) {
+      this.logger.log(shop);
+      const webpagesForShop: CheckPageDto[] = [];
+
+      for (const shopProduct of shop.shopProducts) {
+        const updatePageDto: CheckPageDto = {
+          url: shopProduct.webPage.url,
+          query: shopProduct.name,
+          type: shopProduct.product.type,
+          shopWebsite: shop.name,
+          webPageId: shopProduct.webPage.id,
+          shopifySite: shop.sitemapEntity.isShopifySite,
+          hash: shopProduct.webPage.webpageCache.hash,
+          confirmed: shopProduct.webPage.webpageCache.confirmed,
+          count: shopProduct.webPage.webpageCache.count,
+          cloudflare: shop.cloudflare,
+          variantId: shopProduct.webPage.variantId,
+          headless: shop.headless,
+          country: shop.country,
+          currency: shop.country,
+        };
+        webpagesForShop.push(updatePageDto);
+      }
+
+      const fullCheckPageDtoPayload: FullCheckPageDtoPayloadDto = {
+        waitForPause: true,
+        checkPageDto: webpagesForShop,
+      };
+
+      this.headfulSlowClient.emit<FullCheckPageDtoPayloadDto>(
+        'updatePageBatch',
+        fullCheckPageDtoPayload,
+      );
     }
   }
 
@@ -692,8 +734,6 @@ export class WebpageService {
           page.shopProduct.shop.headless === false)
       ) {
         this.headlessClient.emit('updatePage', updatePageDto);
-      } else if (page.shopProduct.shop.cloudflareEnhanced === true) {
-        this.headfulSlowClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.headless === true) {
         this.headlessBrowserClient.emit('updatePage', updatePageDto);
       } else if (page.shopProduct.shop.cloudflare === true) {
@@ -701,6 +741,49 @@ export class WebpageService {
       } else {
         this.headfulClient.emit('updatePage', updatePageDto);
       }
+    }
+
+    const shopEnhanced =
+      await this.shopService.findActiveCloudflareEnhancedShopsPopulatedShopProducts(
+        true,
+      );
+    this.logger.log(shopEnhanced.length);
+
+    // await new Promise((r) => setTimeout(r, 200000));
+
+    for (const shop of shopEnhanced) {
+      this.logger.log(shop);
+      const webpagesForShop: CheckPageDto[] = [];
+
+      for (const shopProduct of shop.shopProducts) {
+        const updatePageDto: CheckPageDto = {
+          url: shopProduct.webPage.url,
+          query: shopProduct.name,
+          type: shopProduct.product.type,
+          shopWebsite: shop.name,
+          webPageId: shopProduct.webPage.id,
+          shopifySite: shop.sitemapEntity.isShopifySite,
+          hash: shopProduct.webPage.webpageCache.hash,
+          confirmed: shopProduct.webPage.webpageCache.confirmed,
+          count: shopProduct.webPage.webpageCache.count,
+          cloudflare: shop.cloudflare,
+          variantId: shopProduct.webPage.variantId,
+          headless: shop.headless,
+          country: shop.country,
+          currency: shop.country,
+        };
+        webpagesForShop.push(updatePageDto);
+      }
+
+      const fullPayload: FullCheckPageDtoPayloadDto = {
+        waitForPause: false,
+        checkPageDto: webpagesForShop,
+      };
+
+      this.headfulSlowClient.emit<FullCheckPageDtoPayloadDto>(
+        'updatePageBatch',
+        fullPayload,
+      );
     }
   }
 

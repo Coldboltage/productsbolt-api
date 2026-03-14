@@ -337,6 +337,7 @@ export class ShopService implements OnApplicationBootstrap {
       .andWhere('shop.cloudflareEnhanced = :cloudflareEnhanced', {
         cloudflareEnhanced: true,
       })
+      .orderBy('shop.priority', 'DESC')
       .getMany();
   }
 
@@ -407,6 +408,30 @@ export class ShopService implements OnApplicationBootstrap {
       })
       .andWhere('shop.id = :shopId', { shopId })
       .getOne();
+  }
+
+  async findActiveCloudflareEnhancedShopsPopulatedShopProducts(
+    priority: boolean,
+  ): Promise<Shop[]> {
+    return this.shopsRepository
+      .createQueryBuilder('shop')
+      .innerJoinAndSelect(
+        'shop.shopProducts',
+        'shopProduct',
+        'shopProduct.populated = :populated',
+        { populated: true },
+      )
+      .leftJoinAndSelect('shop.sitemapEntity', 'sitemapEntity')
+      .leftJoinAndSelect('shopProduct.product', 'product')
+      .leftJoinAndSelect('shopProduct.webPage', 'webPage')
+      .leftJoinAndSelect('webPage.webpageCache', 'webpageCache')
+      .where('shop.active = :active', { active: true })
+      .andWhere('shop.cloudflareEnhanced = :cloudflareEnhanced', {
+        cloudflareEnhanced: true,
+      })
+      .andWhere('product.priority = :priority', { priority })
+      .orderBy('shop.priority', 'DESC')
+      .getMany();
   }
 
   async getAllShopifyMetaInformation() {

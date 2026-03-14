@@ -95,6 +95,9 @@ export class Shop {
   @Column({ default: true })
   vatShown: boolean;
 
+  @Column({ default: false })
+  priority: false;
+
   @Column({ type: 'jsonb', nullable: true })
   selectors: {
     listItemNameSelector: string;

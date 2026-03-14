@@ -594,7 +594,7 @@ export class ShopProductService {
 
         if (limitedUrls.length === 0) {
           this.logger.log(
-            `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+            `No URLs found for ${shop.name} - ${shopProduct.product.name}`,
           );
           continue;
         }
@@ -611,7 +611,7 @@ export class ShopProductService {
 
       if (shopOfCreateProcess.length > 0) {
         this.logger.log(`webpageDiscoveryHeadful fired for: ${shop.id}`);
-        this.headfulSlowClient.emit<CreateProcessDto>(
+        this.headfulSlowClient.emit<CreateProcessDto[]>(
           'webpageDiscoveryHeadful',
           shopOfCreateProcess,
         );
