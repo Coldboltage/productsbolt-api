@@ -1006,11 +1006,11 @@ export class WebpageService {
 
   async notFoundCounter(id: string) {
     const webpageEntity = await this.findOne(id);
-    if (webpageEntity.noFoundCounter > 1) {
+    if (webpageEntity.notFoundCounter > 1) {
       await this.removeWebpage(id);
     } else {
       await this.updateNormal(id, {
-        notFoundCounter: webpageEntity.noFoundCounter++,
+        notFoundCounter: webpageEntity.notFoundCounter++,
       });
     }
   }
