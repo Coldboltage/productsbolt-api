@@ -1192,6 +1192,9 @@ export class ShopProductService {
     const shopProduct = await this.shopProductRepository.findOne({
       where: {
         id: shopProductId,
+        shop: {
+          cloudflareEnhanced: false,
+        },
       },
       relations: {
         shop: {
@@ -1213,16 +1216,88 @@ export class ShopProductService {
     //   shopProduct.product.name,
     // );
 
-    const limitedUrls = await this.filteredLimitedUrls(
-      shopProduct,
-      shopProduct.links,
+    if (shopProduct) {
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        shopProduct.links,
+      );
+
+      // this.logger.log(limitedUrls);
+
+      if (limitedUrls.length === 0) {
+        this.logger.log(
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        throw new NotFoundException('no_urls_found_for_product');
+      }
+
+      // if (shopProduct.links.length === 0)
+      //   throw new NotFoundException('no_links_found');
+
+      const createProcess =
+        this.createProcessDtoTemplateFromWebpageDiscoveryShopProduct(
+          shopProduct,
+          shopProduct.shop,
+          limitedUrls,
+        );
+
+      if (shopProduct.shop.isShopifySite === true) {
+        this.headlessClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else if (shopProduct.shop.headless === true) {
+        this.headlessBrowserClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else if (shopProduct.shop.cloudflare === true) {
+        this.headfulClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else {
+        this.headfulClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      }
+    }
+
+    const shopProductEnhanced = await this.shopProductRepository.findOne({
+      where: {
+        id: shopProductId,
+        shop: {
+          cloudflareEnhanced: true,
+        },
+      },
+      relations: {
+        shop: {
+          sitemapEntity: true,
+        },
+        product: true,
+        webPage: true,
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
+        candidatePages: {
+          candidatePageCache: true,
+        },
+      },
+    });
+
+    if (!shopProductEnhanced) return;
+
+    const limitedUrlsEnhanced = await this.filteredLimitedUrls(
+      shopProductEnhanced,
+      shopProductEnhanced.links,
     );
 
     // this.logger.log(limitedUrls);
 
-    if (limitedUrls.length === 0) {
+    if (limitedUrlsEnhanced.length === 0) {
       this.logger.log(
-        `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        `No URLs found for ${shopProductEnhanced.shop.name} - ${shopProductEnhanced.product.name}`,
       );
       throw new NotFoundException('no_urls_found_for_product');
     }
@@ -1230,34 +1305,16 @@ export class ShopProductService {
     // if (shopProduct.links.length === 0)
     //   throw new NotFoundException('no_links_found');
 
-    const createProcess =
+    const createProcessEnhanced =
       this.createProcessDtoTemplateFromWebpageDiscoveryShopProduct(
-        shopProduct,
-        shopProduct.shop,
-        limitedUrls,
+        shopProductEnhanced,
+        shopProductEnhanced.shop,
+        limitedUrlsEnhanced,
       );
 
-    if (shopProduct.shop.isShopifySite === true) {
-      this.headlessClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
-    } else if (shopProduct.shop.headless === true) {
-      this.headlessBrowserClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
-    } else if (shopProduct.shop.cloudflare === true) {
-      this.headfulClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
-    } else {
-      this.headfulClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
-    }
+    this.headfulSlowClient.emit<CreateProcessDto>('webpageDiscoveryHeadful', [
+      createProcessEnhanced,
+    ]);
   }
 
   // async checkForIndividualShopProductPriority(
