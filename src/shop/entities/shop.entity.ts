@@ -67,6 +67,9 @@ export class Shop {
   cloudflare: boolean;
 
   @Column({ default: false })
+  cloudflareEnhanced: boolean;
+
+  @Column({ default: false })
   headless: boolean;
 
   @Column({ enum: UniqueShopType, nullable: true })
@@ -91,6 +94,9 @@ export class Shop {
 
   @Column({ default: true })
   vatShown: boolean;
+
+  @Column({ default: false })
+  priority: false;
 
   @Column({ type: 'jsonb', nullable: true })
   selectors: {

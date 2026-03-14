@@ -136,3 +136,8 @@ export class ProductToWebpageSlimInterface {
   productName: string;
   webPages: StrippedWebpageSlim[];
 }
+
+export class FullCheckPageDtoPayloadDto {
+  waitForPause: boolean;
+  checkPageDto: CheckPageDto[];
+}

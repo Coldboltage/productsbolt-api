@@ -81,37 +81,13 @@ export class ShopProductService {
       );
 
       this.logger.log(`Adding new product: ${shopProduct.product.name}`);
-      const createProcess: CreateProcessDto = {
-        sitemap: shopProduct.shop.sitemap,
-        url: shopProduct.shop.website,
-        category: shopProduct.shop.category,
-        name: shopProduct.product.name,
-        shopProductId: shopProduct.id,
-        shopWebsite: shopProduct.shop.name,
-        type: shopProduct.product.type,
-        context: shopProduct.product.context,
-        crawlAmount: 90,
-        productId: shopProduct.product.id,
-        shopId: shopProduct.shop.id,
-        shopifySite: shopProduct.shop.isShopifySite,
-        shopType: shopProduct.shop.uniqueShopType,
-        cloudflare: shopProduct.shop.cloudflare,
-        headless: shopProduct.shop.headless,
-        expectedPrice: shopProduct.product.price,
-        country: shopProduct.shop.country,
-        currency: shopProduct.shop.currency,
-        links: [],
-        sitemapEntity: {
-          sitemap: shopProduct.shop.sitemap,
-          shopId: shopProduct.shop.id,
-          sitemapUrls: limitedUrls,
-          isShopifySite: shopProduct.shop.isShopifySite,
-        },
-        hash: '0',
-        confirmed: false,
-        count: 0,
-        candidatePages: [],
-      };
+
+      const createProcess =
+        this.createProcessDtoTemplateFromFindLinksShopProduct(
+          shopProduct,
+          shopProduct.shop,
+          limitedUrls,
+        );
 
       this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
 
@@ -218,37 +194,11 @@ export class ShopProductService {
     // this.logger.log(limitedUrls);
     // await new Promise((r) => setTimeout(r, 2000000));
 
-    const createProcess: CreateProcessDto = {
-      sitemap: shopProduct.shop.sitemap,
-      url: shopProduct.shop.website,
-      category: shopProduct.shop.category,
-      name: shopProduct.product.name,
-      shopProductId: shopProduct.id,
-      shopWebsite: shopProduct.shop.name,
-      type: shopProduct.product.type,
-      context: shopProduct.product.context,
-      crawlAmount: 90,
-      productId: shopProduct.productId,
-      shopId: shopProduct.shopId,
-      shopifySite: shopProduct.shop.isShopifySite,
-      shopType: shopProduct.shop.uniqueShopType,
-      cloudflare: shopProduct.shop.cloudflare,
-      headless: shopProduct.shop.headless,
-      expectedPrice: shopProduct.product.price,
-      country: shopProduct.shop.country,
-      currency: shopProduct.shop.currency,
-      links: [],
-      sitemapEntity: {
-        ...shopProduct.shop.sitemapEntity,
-        sitemapUrls: limitedUrls,
-        shopId: shopProduct.shop.id,
-      },
-      hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
-      confirmed:
-        shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
-      count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
-      candidatePages: shopProduct.candidatePages,
-    };
+    const createProcess = this.createProcessDtoTemplateFromFindLinksShopProduct(
+      shopProduct,
+      shopProduct.shop,
+      limitedUrls,
+    );
 
     if (
       shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
@@ -329,47 +279,12 @@ export class ShopProductService {
         continue;
       }
 
-      const createProcess: CreateProcessDto = {
-        sitemap: shopProduct.shop.sitemap,
-        url: shopProduct.shop.website,
-        category: shopProduct.shop.category,
-        name: shopProduct.product.name,
-        shopProductId: shopProduct.id,
-        shopWebsite: shopProduct.shop.name,
-        type: shopProduct.product.type,
-        context: shopProduct.product.context,
-        crawlAmount: 90,
-        productId: shopProduct.productId,
-        shopId: shopProduct.shopId,
-        shopifySite: shopProduct.shop.isShopifySite,
-        shopType: shopProduct.shop.uniqueShopType,
-        cloudflare: shopProduct.shop.cloudflare,
-        headless: shopProduct.shop.headless,
-        expectedPrice: shopProduct.product.price,
-        country: shopProduct.shop.country,
-        currency: shopProduct.shop.currency,
-        links: [],
-        sitemapEntity: {
-          ...shopProduct.shop.sitemapEntity,
-          sitemapUrls: limitedUrls,
-          shopId: shopProduct.shop.id,
-        },
-        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
-        confirmed:
-          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
-        candidatePages: shopProduct.candidatePages,
-      };
-
-      if (
-        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
-        shopProduct.ebayProductDetail
-      ) {
-        createProcess.ebayProductDetail = {
-          ebayProductDetailId: shopProduct.ebayProductDetail.id,
-          productId: shopProduct.ebayProductDetail.productId,
-        };
-      }
+      const createProcess =
+        this.createProcessDtoTemplateFromFindLinksShopProduct(
+          shopProduct,
+          shopProduct.shop,
+          limitedUrls,
+        );
 
       this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
 
@@ -442,37 +357,12 @@ export class ShopProductService {
         continue;
       }
 
-      const createProcess: CreateProcessDto = {
-        sitemap: shopProduct.shop.sitemap,
-        url: shopProduct.shop.website,
-        category: shopProduct.shop.category,
-        name: shopProduct.product.name,
-        shopProductId: shopProduct.id,
-        shopWebsite: shopProduct.shop.name,
-        type: shopProduct.product.type,
-        context: shopProduct.product.context,
-        crawlAmount: 90,
-        productId: shopProduct.productId,
-        shopId: shopProduct.shopId,
-        shopifySite: shopProduct.shop.isShopifySite,
-        shopType: shopProduct.shop.uniqueShopType,
-        cloudflare: shopProduct.shop.cloudflare,
-        headless: shopProduct.shop.headless,
-        expectedPrice: shopProduct.product.price,
-        country: shopProduct.shop.country,
-        currency: shopProduct.shop.currency,
-        links: [],
-        sitemapEntity: {
-          ...shopProduct.shop.sitemapEntity,
-          sitemapUrls: limitedUrls,
-          shopId: shopProduct.shop.id,
-        },
-        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
-        confirmed:
-          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
-        candidatePages: shopProduct.candidatePages,
-      };
+      const createProcess =
+        this.createProcessDtoTemplateFromFindLinksShopProduct(
+          shopProduct,
+          shopProduct.shop,
+          limitedUrls,
+        );
 
       if (
         shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
@@ -561,37 +451,12 @@ export class ShopProductService {
         continue;
       }
 
-      const createProcess: CreateProcessDto = {
-        sitemap: shopProduct.shop.sitemap,
-        url: shopProduct.shop.website,
-        category: shopProduct.shop.category,
-        name: shopProduct.product.name,
-        shopProductId: shopProduct.id,
-        shopWebsite: shopProduct.shop.name,
-        type: shopProduct.product.type,
-        context: shopProduct.product.context,
-        crawlAmount: 90,
-        productId: shopProduct.productId,
-        shopId: shopProduct.shopId,
-        shopifySite: shopProduct.shop.isShopifySite,
-        shopType: shopProduct.shop.uniqueShopType,
-        cloudflare: shopProduct.shop.cloudflare,
-        headless: shopProduct.shop.headless,
-        expectedPrice: shopProduct.product.price,
-        country: shopProduct.shop.country,
-        currency: shopProduct.shop.currency,
-        links: [],
-        sitemapEntity: {
-          ...shopProduct.shop.sitemapEntity,
-          sitemapUrls: limitedUrls,
-          shopId: shopProduct.shop.id,
-        },
-        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
-        confirmed:
-          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
-        candidatePages: shopProduct.candidatePages,
-      };
+      const createProcess =
+        this.createProcessDtoTemplateFromFindLinksShopProduct(
+          shopProduct,
+          shopProduct.shop,
+          limitedUrls,
+        );
 
       if (
         shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
@@ -629,6 +494,7 @@ export class ShopProductService {
           populated: false,
           shop: {
             active: true,
+            cloudflareEnhanced: false,
           },
         },
         relations: {
@@ -656,8 +522,6 @@ export class ShopProductService {
 
       // if (reducedSitemap.length === 0) continue;
 
-      await new Promise((r) => setTimeout(r, 6));
-
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
         shopProduct.links,
@@ -670,37 +534,12 @@ export class ShopProductService {
         continue;
       }
 
-      const createProcess: CreateProcessDto = {
-        sitemap: shopProduct.shop.sitemap,
-        url: shopProduct.shop.website,
-        category: shopProduct.shop.category,
-        name: shopProduct.product.name,
-        shopProductId: shopProduct.id,
-        shopWebsite: shopProduct.shop.name,
-        type: shopProduct.product.type,
-        context: shopProduct.product.context,
-        crawlAmount: 90,
-        productId: shopProduct.productId,
-        shopId: shopProduct.shopId,
-        shopifySite: shopProduct.shop.isShopifySite,
-        shopType: shopProduct.shop.uniqueShopType,
-        cloudflare: shopProduct.shop.cloudflare,
-        headless: shopProduct.shop.headless,
-        links: limitedUrls,
-        expectedPrice: shopProduct.product.price,
-        country: shopProduct.shop.country,
-        currency: shopProduct.shop.currency,
-        sitemapEntity: {
-          ...shopProduct.shop.sitemapEntity,
-          sitemapUrls: [],
-          shopId: shopProduct.shop.id,
-        },
-        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
-        confirmed:
-          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
-        candidatePages: shopProduct.candidatePages,
-      };
+      const createProcess =
+        this.createProcessDtoTemplateFromWebpageDiscoveryShopProduct(
+          shopProduct,
+          shopProduct.shop,
+          limitedUrls,
+        );
 
       if (
         shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
@@ -728,11 +567,7 @@ export class ShopProductService {
           'webpageDiscovery',
           createProcess,
         );
-      } else if (
-        shopProduct.shop.website.includes('chaoscards.co.uk') ||
-        shopProduct.shop.website.includes('magicmadhouse') ||
-        shopProduct.shop.website.includes('hillscards')
-      ) {
+      } else if (shopProduct.shop.cloudflareEnhanced === true) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
@@ -744,7 +579,47 @@ export class ShopProductService {
           createProcess,
         );
       }
-      // await new Promise((r) => setTimeout(r, 1));
+    }
+
+    const shopsWithProductsOrphanCloudflareEnhanced =
+      await this.shopService.findActiveCloudflareEnhancedShopsNonPopulatedShopProducts();
+
+    for (const shop of shopsWithProductsOrphanCloudflareEnhanced) {
+      const shopOfCreateProcess: CreateProcessDto[] = [];
+      for (const shopProduct of shop.shopProducts) {
+        const limitedUrls = await this.filteredLimitedUrls(
+          shopProduct,
+          shopProduct.links,
+        );
+
+        if (limitedUrls.length === 0) {
+          this.logger.log(
+            `No URLs found for ${shop.name} - ${shopProduct.product.name}`,
+          );
+          continue;
+        }
+
+        const createProcess =
+          this.createProcessDtoTemplateFromWebpageDiscoveryShopProduct(
+            shopProduct,
+            shop,
+            limitedUrls,
+          );
+
+        shopOfCreateProcess.push(createProcess);
+      }
+
+      if (shopOfCreateProcess.length > 0) {
+        this.logger.log(`webpageDiscoveryHeadful fired for: ${shop.id}`);
+        this.headfulSlowClient.emit<CreateProcessDto[]>(
+          'webpageDiscoveryHeadful',
+          shopOfCreateProcess,
+        );
+      } else {
+        this.logger.log(
+          `no shopProducts found for webpageDiscoveryHeadful: ${shop.id}`,
+        );
+      }
     }
   }
 
@@ -813,38 +688,12 @@ export class ShopProductService {
         //   continue;
         // }
 
-        const createProcess: CreateProcessDto = {
-          sitemap: shopProduct.shop.sitemap,
-          url: shopProduct.shop.website,
-          category: shopProduct.shop.category,
-          name: shopProduct.product.name,
-          shopProductId: shopProduct.id,
-          shopWebsite: shopProduct.shop.name,
-          type: shopProduct.product.type,
-          context: shopProduct.product.context,
-          crawlAmount: 90,
-          productId: shopProduct.productId,
-          shopId: shopProduct.shopId,
-          shopifySite: shopProduct.shop.isShopifySite,
-          shopType: shopProduct.shop.uniqueShopType,
-          cloudflare: shopProduct.shop.cloudflare,
-          expectedPrice: shopProduct.product.price,
-          headless: shopProduct.shop.headless,
-          country: shopProduct.shop.country,
-          currency: shopProduct.shop.currency,
-          links: limitedUrls,
-          sitemapEntity: {
-            ...shopProduct.shop.sitemapEntity,
-            sitemapUrls: [],
-            shopId: shopProduct.shop.id,
-          },
-          hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
-          confirmed:
-            shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ??
-            false,
-          count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
-          candidatePages: shopProduct.candidatePages,
-        };
+        const createProcess =
+          this.createProcessDtoTemplateFromWebpageDiscoveryShopProduct(
+            shopProduct,
+            shopProduct.shop,
+            limitedUrls,
+          );
 
         if (
           shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
@@ -867,11 +716,7 @@ export class ShopProductService {
             'webpageDiscovery',
             createProcess,
           );
-        } else if (
-          shopProduct.shop.website.includes('chaoscards.co.uk') ||
-          shopProduct.shop.website.includes('magicmadhouse') ||
-          shopProduct.shop.website.includes('hillscards')
-        ) {
+        } else if (shopProduct.shop.cloudflareEnhanced === true) {
           this.headfulSlowClient.emit<CreateProcessDto>(
             'webpageDiscovery',
             createProcess,
@@ -958,6 +803,7 @@ export class ShopProductService {
         populated: false,
         shop: {
           active: true,
+          cloudflareEnhanced: false,
         },
         productId: productId,
       },
@@ -1005,37 +851,12 @@ export class ShopProductService {
       //   continue;
       // }
 
-      const createProcess: CreateProcessDto = {
-        sitemap: shopProduct.shop.sitemap,
-        url: shopProduct.shop.website,
-        category: shopProduct.shop.category,
-        name: product.name,
-        shopProductId: shopProduct.id,
-        shopWebsite: shopProduct.shop.name,
-        type: product.type,
-        context: product.context,
-        crawlAmount: 90,
-        productId: shopProduct.productId,
-        shopId: shopProduct.shopId,
-        shopifySite: shopProduct.shop.isShopifySite,
-        shopType: shopProduct.shop.uniqueShopType,
-        cloudflare: shopProduct.shop.cloudflare,
-        headless: shopProduct.shop.headless,
-        links: limitedUrls,
-        expectedPrice: shopProduct.product.price,
-        country: shopProduct.shop.country,
-        currency: shopProduct.shop.currency,
-        sitemapEntity: {
-          ...shopProduct.shop.sitemapEntity,
-          sitemapUrls: [],
-          shopId: shopProduct.shop.id,
-        },
-        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
-        confirmed:
-          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
-        candidatePages: shopProduct.candidatePages,
-      };
+      const createProcess =
+        this.createProcessDtoTemplateFromWebpageDiscoveryShopProduct(
+          shopProduct,
+          shopProduct.shop,
+          limitedUrls,
+        );
 
       if (
         shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
@@ -1057,11 +878,7 @@ export class ShopProductService {
           'webpageDiscovery',
           createProcess,
         );
-      } else if (
-        shopProduct.shop.website.includes('chaoscards.co.uk') ||
-        shopProduct.shop.website.includes('magicmadhouse') ||
-        shopProduct.shop.website.includes('hillscards')
-      ) {
+      } else if (shopProduct.shop.cloudflareEnhanced === true) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
@@ -1078,6 +895,49 @@ export class ShopProductService {
         );
       }
     }
+
+    const shopsWithProductsOrphanCloudflareEnhanced =
+      await this.shopService.findActiveCloudflareEnhancedShopsNonPopulatedShopProductsByProductId(
+        productId,
+      );
+
+    for (const shop of shopsWithProductsOrphanCloudflareEnhanced) {
+      const shopOfCreateProcess: CreateProcessDto[] = [];
+      for (const shopProduct of shop.shopProducts) {
+        const limitedUrls = await this.filteredLimitedUrls(
+          shopProduct,
+          shopProduct.links,
+        );
+
+        if (limitedUrls.length === 0) {
+          this.logger.log(
+            `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+          );
+          continue;
+        }
+
+        const createProcess =
+          this.createProcessDtoTemplateFromWebpageDiscoveryShopProduct(
+            shopProduct,
+            shop,
+            limitedUrls,
+          );
+
+        shopOfCreateProcess.push(createProcess);
+      }
+
+      if (shopOfCreateProcess.length > 0) {
+        this.logger.log(`webpageDiscoveryHeadful fired for: ${shop.id}`);
+        this.headfulSlowClient.emit<CreateProcessDto>(
+          'webpageDiscoveryHeadful',
+          shopOfCreateProcess,
+        );
+      } else {
+        this.logger.log(
+          `no shopProducts found for webpageDiscoveryHeadful: ${shop.id}`,
+        );
+      }
+    }
   }
 
   async manuallyUpdateShopProductsByShopId(shopId: string): Promise<void> {
@@ -1090,6 +950,7 @@ export class ShopProductService {
         shop: {
           active: true,
           id: shopId,
+          cloudflareEnhanced: false,
         },
       },
       relations: {
@@ -1107,15 +968,13 @@ export class ShopProductService {
       },
     });
 
-    this.logger.log(shopProductsOrphan.length);
-
     for (const shopProduct of shopProductsOrphan) {
       // const reducedSitemap = this.shopService.reduceSitemap(
       //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
       //   shopProduct.product.name,
       // );
 
-      await new Promise((r) => setTimeout(r, 6));
+      // await new Promise((r) => setTimeout(r, 6));
 
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
@@ -1136,37 +995,12 @@ export class ShopProductService {
       //   continue;
       // }
 
-      const createProcess: CreateProcessDto = {
-        sitemap: shopProduct.shop.sitemap,
-        url: shopProduct.shop.website,
-        category: shopProduct.shop.category,
-        name: shopProduct.product.name,
-        shopProductId: shopProduct.id,
-        shopWebsite: shopProduct.shop.name,
-        type: shopProduct.product.type,
-        context: shopProduct.product.context,
-        crawlAmount: 90,
-        productId: shopProduct.productId,
-        shopId: shopProduct.shopId,
-        shopifySite: shopProduct.shop.isShopifySite,
-        shopType: shopProduct.shop.uniqueShopType,
-        cloudflare: shopProduct.shop.cloudflare,
-        headless: shopProduct.shop.headless,
-        links: limitedUrls,
-        expectedPrice: shopProduct.product.price,
-        country: shopProduct.shop.country,
-        currency: shopProduct.shop.currency,
-        sitemapEntity: {
-          ...shopProduct.shop.sitemapEntity,
-          sitemapUrls: [],
-          shopId: shopProduct.shop.id,
-        },
-        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
-        confirmed:
-          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
-        candidatePages: shopProduct.candidatePages,
-      };
+      const createProcess =
+        this.createProcessDtoTemplateFromWebpageDiscoveryShopProduct(
+          shopProduct,
+          shopProduct.shop,
+          limitedUrls,
+        );
 
       if (
         shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
@@ -1188,11 +1022,7 @@ export class ShopProductService {
           'webpageDiscovery',
           createProcess,
         );
-      } else if (
-        shopProduct.shop.website.includes('chaoscards.co.uk') ||
-        shopProduct.shop.website.includes('magicmadhouse') ||
-        shopProduct.shop.website.includes('hillscards')
-      ) {
+      } else if (shopProduct.shop.cloudflareEnhanced === true) {
         this.headfulSlowClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
@@ -1209,6 +1039,127 @@ export class ShopProductService {
         );
       }
     }
+
+    const shopsWithProductsOrphanCloudflareEnhanced =
+      await this.shopService.findActiveCloudflareEnhancedShopsNonPopulatedShopProductsByShopId(
+        shopId,
+      );
+
+    const shopOfCreateProcess: CreateProcessDto[] = [];
+    for (const shopProduct of shopsWithProductsOrphanCloudflareEnhanced.shopProducts) {
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        shopProduct.links,
+      );
+
+      if (limitedUrls.length === 0) {
+        this.logger.log(
+          `No URLs found for ${shopsWithProductsOrphanCloudflareEnhanced.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
+
+      const createProcess =
+        this.createProcessDtoTemplateFromWebpageDiscoveryShopProduct(
+          shopProduct,
+          shopsWithProductsOrphanCloudflareEnhanced,
+          limitedUrls,
+        );
+
+      this.logger.debug(createProcess);
+
+      shopOfCreateProcess.push(createProcess);
+    }
+
+    if (shopOfCreateProcess.length > 0) {
+      this.logger.log(`webpageDiscoveryHeadful fired for: ${shop.id}`);
+      this.headfulSlowClient.emit<CreateProcessDto>(
+        'webpageDiscoveryHeadful',
+        shopOfCreateProcess,
+      );
+    } else {
+      this.logger.log(
+        `no shopProducts found for webpageDiscoveryHeadful: ${shop.id}`,
+      );
+    }
+  }
+
+  async manuallyUpdateShopProductsByShopIdBatch(shopId: string): Promise<void> {
+    const shop = await this.shopService.findOne(shopId);
+    this.logger.log(`Adding new product: ${shop.name}`);
+
+    const shopProductsOrphan = await this.shopProductRepository.find({
+      where: {
+        populated: false,
+        shop: {
+          active: true,
+          id: shopId,
+          cloudflare: true,
+          cloudflareEnhanced: true,
+        },
+      },
+      relations: {
+        shop: {
+          sitemapEntity: true,
+        },
+        webPage: true,
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
+        product: true,
+        candidatePages: {
+          candidatePageCache: true,
+        },
+      },
+    });
+
+    this.logger.debug(shopProductsOrphan.length);
+
+    const shopOfShopProducts: CreateProcessDto[] = [];
+
+    for (const shopProduct of shopProductsOrphan) {
+      // const reducedSitemap = this.shopService.reduceSitemap(
+      //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+      //   shopProduct.product.name,
+      // );
+
+      // await new Promise((r) => setTimeout(r, 6));
+
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        shopProduct.links,
+      );
+
+      // this.logger.debug(limitedUrls.length);
+
+      if (limitedUrls.length === 0) {
+        this.logger.log(
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+        );
+        continue;
+      }
+
+      // if (shopProduct.links.length === 0) {
+      //   this.logger.log(
+      //     `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+      //   );
+      //   continue;
+      // }
+
+      const createProcess =
+        this.createProcessDtoTemplateFromWebpageDiscoveryShopProduct(
+          shopProduct,
+          shopProduct.shop,
+          limitedUrls,
+        );
+
+      shopOfShopProducts.push(createProcess);
+    }
+
+    this.headfulSlowClient.emit<CreateProcessDto[]>(
+      'webpageDiscoveryHeadful',
+      shopOfShopProducts,
+    );
   }
 
   // async manualCheckAllShopsShopfiy() {
@@ -1217,7 +1168,7 @@ export class ShopProductService {
 
   //   for (const shopProduct of shopProdutEntities) {
   //     const createProcess: CreateProcessDto = {
-  //       sitemap: shopProduct.shop.sitemap,
+  //       sitemap: shop.sitemap,
   //       url: shopProduct.shop.website,
   //       category: shopProduct.shop.category,
   //       name: shopProduct.product.name,
@@ -1241,107 +1192,8 @@ export class ShopProductService {
     const shopProduct = await this.shopProductRepository.findOne({
       where: {
         id: shopProductId,
-      },
-      relations: {
         shop: {
-          sitemapEntity: true,
-        },
-        product: true,
-        webPage: true,
-        shopProductBlacklistUrls: {
-          blackListUrl: true,
-        },
-        candidatePages: {
-          candidatePageCache: true,
-        },
-      },
-    });
-
-    // const reducedSitemap = this.shopService.reduceSitemap(
-    //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
-    //   shopProduct.product.name,
-    // );
-
-    const limitedUrls = await this.filteredLimitedUrls(
-      shopProduct,
-      shopProduct.links,
-    );
-
-    // this.logger.log(limitedUrls);
-
-    if (limitedUrls.length === 0) {
-      this.logger.log(
-        `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-      );
-      throw new NotFoundException('no_urls_found_for_product');
-    }
-
-    // if (shopProduct.links.length === 0)
-    //   throw new NotFoundException('no_links_found');
-
-    const createProcess: CreateProcessDto = {
-      sitemap: shopProduct.shop.sitemap,
-      url: shopProduct.shop.website,
-      category: shopProduct.shop.category,
-      name: shopProduct.product.name,
-      shopProductId: shopProduct.id,
-      shopWebsite: shopProduct.shop.name,
-      type: shopProduct.product.type,
-      context: shopProduct.product.context,
-      crawlAmount: 90,
-      productId: shopProduct.productId,
-      shopId: shopProduct.shopId,
-      shopifySite: shopProduct.shop.isShopifySite,
-      shopType: shopProduct.shop.uniqueShopType,
-      cloudflare: shopProduct.shop.cloudflare,
-      headless: shopProduct.shop.headless,
-      links: limitedUrls,
-      expectedPrice: shopProduct.product.price,
-      country: shopProduct.shop.country,
-      currency: shopProduct.shop.currency,
-      sitemapEntity: {
-        ...shopProduct.shop.sitemapEntity,
-        shopId: shopProduct.shop.id,
-        sitemapUrls: [],
-      },
-      hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
-      confirmed:
-        shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
-      count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
-      candidatePages: shopProduct.candidatePages,
-    };
-
-    if (shopProduct.shop.isShopifySite === true) {
-      this.headlessClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
-    } else if (shopProduct.shop.headless === true) {
-      this.headlessBrowserClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
-    } else if (shopProduct.shop.cloudflare === true) {
-      this.headfulClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
-    } else {
-      this.headfulClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
-    }
-  }
-
-  async checkForIndividualShopProductPriority(
-    shopProductId: string,
-  ): Promise<void> {
-    const shopProduct = await this.shopProductRepository.findOne({
-      where: {
-        id: shopProductId,
-        product: {
-          priority: true,
+          cloudflareEnhanced: false,
         },
       },
       relations: {
@@ -1364,183 +1216,43 @@ export class ShopProductService {
     //   shopProduct.product.name,
     // );
 
-    const limitedUrls = await this.filteredLimitedUrls(
-      shopProduct,
-      shopProduct.links,
-    );
-
-    if (limitedUrls.length === 0) {
-      this.logger.log(
-        `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-      );
-      throw new NotFoundException('no_urls_found_for_product');
-    }
-
-    // if (shopProduct.links.length === 0)
-    //   throw new NotFoundException('no_links_found');
-
-    const createProcess: CreateProcessDto = {
-      sitemap: shopProduct.shop.sitemap,
-      url: shopProduct.shop.website,
-      category: shopProduct.shop.category,
-      name: shopProduct.product.name,
-      shopProductId: shopProduct.id,
-      shopWebsite: shopProduct.shop.name,
-      type: shopProduct.product.type,
-      context: shopProduct.product.context,
-      crawlAmount: 90,
-      productId: shopProduct.productId,
-      shopId: shopProduct.shopId,
-      shopifySite: shopProduct.shop.isShopifySite,
-      shopType: shopProduct.shop.uniqueShopType,
-      cloudflare: shopProduct.shop.cloudflare,
-      headless: shopProduct.shop.headless,
-      links: limitedUrls,
-      expectedPrice: shopProduct.product.price,
-      country: shopProduct.shop.country,
-      currency: shopProduct.shop.currency,
-      sitemapEntity: {
-        ...shopProduct.shop.sitemapEntity,
-        shopId: shopProduct.shop.id,
-        sitemapUrls: [],
-      },
-      hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
-      confirmed:
-        shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
-      count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
-      candidatePages: shopProduct.candidatePages,
-    };
-
-    if (shopProduct.shop.isShopifySite === true) {
-      this.headlessClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
-    } else if (shopProduct.shop.headless === true) {
-      this.headlessBrowserClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
-    } else {
-      this.headfulClient.emit<CreateProcessDto>(
-        'webpageDiscovery',
-        createProcess,
-      );
-    }
-  }
-
-  // Check all shopProducts for shop
-  async checkForAllShopProductsFromShop(shopId: string): Promise<void> {
-    const shopProducts = await this.shopProductRepository.find({
-      where: {
-        shopId,
-      },
-      relations: {
-        shop: {
-          sitemapEntity: true,
-        },
-        product: true,
-        webPage: true,
-        shopProductBlacklistUrls: {
-          blackListUrl: true,
-        },
-        candidatePages: {
-          candidatePageCache: true,
-        },
-      },
-    });
-
-    this.logger.log(shopProducts.length);
-
-    for (const shopProduct of shopProducts) {
-      // const reducedSitemap = this.shopService.reduceSitemap(
-      //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
-      //   shopProduct.product.name,
-      // );
-      await new Promise((r) => setTimeout(r, 6));
-
+    if (shopProduct) {
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
         shopProduct.links,
       );
 
+      // this.logger.log(limitedUrls);
+
       if (limitedUrls.length === 0) {
         this.logger.log(
           `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
         );
-        continue;
+        throw new NotFoundException('no_urls_found_for_product');
       }
 
-      // if (shopProduct.links.length === 0) {
-      //   this.logger.log(
-      //     `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
-      //   );
-      //   continue;
-      // }
+      // if (shopProduct.links.length === 0)
+      //   throw new NotFoundException('no_links_found');
 
-      const createProcess: CreateProcessDto = {
-        sitemap: shopProduct.shop.sitemap,
-        url: shopProduct.shop.website,
-        category: shopProduct.shop.category,
-        name: shopProduct.product.name,
-        shopProductId: shopProduct.id,
-        shopWebsite: shopProduct.shop.name,
-        type: shopProduct.product.type,
-        context: shopProduct.product.context,
-        crawlAmount: 90,
-        productId: shopProduct.productId,
-        shopId: shopProduct.shopId,
-        shopifySite: shopProduct.shop.isShopifySite,
-        shopType: shopProduct.shop.uniqueShopType,
-        cloudflare: shopProduct.shop.cloudflare,
-        headless: shopProduct.shop.headless,
-        links: limitedUrls,
-        expectedPrice: shopProduct.product.price,
-        country: shopProduct.shop.country,
-        currency: shopProduct.shop.currency,
-        sitemapEntity: {
-          ...shopProduct.shop.sitemapEntity,
-          shopId: shopProduct.shop.id,
-          sitemapUrls: [],
-        },
-        hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
-        confirmed:
-          shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
-        count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
-        candidatePages: shopProduct.candidatePages,
-      };
-
-      if (
-        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
-        shopProduct.ebayProductDetail
-      ) {
-        createProcess.ebayProductDetail = {
-          ebayProductDetailId: shopProduct.ebayProductDetail.id,
-          productId: shopProduct.ebayProductDetail.productId,
-        };
-      }
-
-      if (
-        (shopProduct.shop.isShopifySite === true &&
-          shopProduct.shop.cloudflare === false) ||
-        (shopProduct.shop.cloudflare === false &&
-          shopProduct.shop.headless === false)
-      ) {
-        this.headlessClient.emit<CreateProcessDto>(
-          'webpageDiscovery',
-          createProcess,
+      const createProcess =
+        this.createProcessDtoTemplateFromWebpageDiscoveryShopProduct(
+          shopProduct,
+          shopProduct.shop,
+          limitedUrls,
         );
-      } else if (
-        shopProduct.shop.website.includes('chaoscards.co.uk') ||
-        shopProduct.shop.website.includes('magicmadhouse') ||
-        shopProduct.shop.website.includes('hillscards')
-      ) {
-        this.headfulSlowClient.emit<CreateProcessDto>(
+
+      if (shopProduct.shop.isShopifySite === true) {
+        this.headlessClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
         );
       } else if (shopProduct.shop.headless === true) {
         this.headlessBrowserClient.emit<CreateProcessDto>(
+          'webpageDiscovery',
+          createProcess,
+        );
+      } else if (shopProduct.shop.cloudflare === true) {
+        this.headfulClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
         );
@@ -1551,7 +1263,274 @@ export class ShopProductService {
         );
       }
     }
+
+    const shopProductEnhanced = await this.shopProductRepository.findOne({
+      where: {
+        id: shopProductId,
+        shop: {
+          cloudflareEnhanced: true,
+        },
+      },
+      relations: {
+        shop: {
+          sitemapEntity: true,
+        },
+        product: true,
+        webPage: true,
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
+        candidatePages: {
+          candidatePageCache: true,
+        },
+      },
+    });
+
+    if (!shopProductEnhanced) return;
+
+    const limitedUrlsEnhanced = await this.filteredLimitedUrls(
+      shopProductEnhanced,
+      shopProductEnhanced.links,
+    );
+
+    // this.logger.log(limitedUrls);
+
+    if (limitedUrlsEnhanced.length === 0) {
+      this.logger.log(
+        `No URLs found for ${shopProductEnhanced.shop.name} - ${shopProductEnhanced.product.name}`,
+      );
+      throw new NotFoundException('no_urls_found_for_product');
+    }
+
+    // if (shopProduct.links.length === 0)
+    //   throw new NotFoundException('no_links_found');
+
+    const createProcessEnhanced =
+      this.createProcessDtoTemplateFromWebpageDiscoveryShopProduct(
+        shopProductEnhanced,
+        shopProductEnhanced.shop,
+        limitedUrlsEnhanced,
+      );
+
+    this.headfulSlowClient.emit<CreateProcessDto>('webpageDiscoveryHeadful', [
+      createProcessEnhanced,
+    ]);
   }
+
+  // async checkForIndividualShopProductPriority(
+  //   shopProductId: string,
+  // ): Promise<void> {
+  //   const shopProduct = await this.shopProductRepository.findOne({
+  //     where: {
+  //       id: shopProductId,
+  //       product: {
+  //         priority: true,
+  //       },
+  //     },
+  //     relations: {
+  //       shop: {
+  //         sitemapEntity: true,
+  //       },
+  //       product: true,
+  //       webPage: true,
+  //       shopProductBlacklistUrls: {
+  //         blackListUrl: true,
+  //       },
+  //       candidatePages: {
+  //         candidatePageCache: true,
+  //       },
+  //     },
+  //   });
+
+  //   // const reducedSitemap = this.shopService.reduceSitemap(
+  //   //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+  //   //   shopProduct.product.name,
+  //   // );
+
+  //   const limitedUrls = await this.filteredLimitedUrls(
+  //     shopProduct,
+  //     shopProduct.links,
+  //   );
+
+  //   if (limitedUrls.length === 0) {
+  //     this.logger.log(
+  //       `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+  //     );
+  //     throw new NotFoundException('no_urls_found_for_product');
+  //   }
+
+  //   // if (shopProduct.links.length === 0)
+  //   //   throw new NotFoundException('no_links_found');
+
+  //   const createProcess: CreateProcessDto = {
+  //     sitemap: shop.sitemap,
+  //     url: shopProduct.shop.website,
+  //     category: shopProduct.shop.category,
+  //     name: shopProduct.product.name,
+  //     shopProductId: shopProduct.id,
+  //     shopWebsite: shopProduct.shop.name,
+  //     type: shopProduct.product.type,
+  //     context: shopProduct.product.context,
+  //     crawlAmount: 90,
+  //     productId: shopProduct.productId,
+  //     shopId: shopProduct.shopId,
+  //     shopifySite: shopProduct.shop.isShopifySite,
+  //     shopType: shopProduct.shop.uniqueShopType,
+  //     cloudflare: shopProduct.shop.cloudflare,
+  //     headless: shopProduct.shop.headless,
+  //     links: limitedUrls,
+  //     expectedPrice: shopProduct.product.price,
+  //     country: shopProduct.shop.country,
+  //     currency: shopProduct.shop.currency,
+  //     sitemapEntity: {
+  //       ...shopProduct.shop.sitemapEntity,
+  //       shopId: shop.id,
+  //       sitemapUrls: [],
+  //     },
+  //     hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
+  //     confirmed:
+  //       shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+  //     count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+  //     candidatePages: shopProduct.candidatePages,
+  //   };
+
+  //   if (shopProduct.shop.isShopifySite === true) {
+  //     this.headlessClient.emit<CreateProcessDto>(
+  //       'webpageDiscovery',
+  //       createProcess,
+  //     );
+  //   } else if (shopProduct.shop.headless === true) {
+  //     this.headlessBrowserClient.emit<CreateProcessDto>(
+  //       'webpageDiscovery',
+  //       createProcess,
+  //     );
+  //   } else {
+  //     this.headfulClient.emit<CreateProcessDto>(
+  //       'webpageDiscovery',
+  //       createProcess,
+  //     );
+  //   }
+  // }
+
+  // Check all shopProducts for shop
+  // async checkForAllShopProductsFromShop(shopId: string): Promise<void> {
+  //   const shopProducts = await this.shopProductRepository.find({
+  //     where: {
+  //       shopId,
+  //     },
+  //     relations: {
+  //       shop: {
+  //         sitemapEntity: true,
+  //       },
+  //       product: true,
+  //       webPage: true,
+  //       shopProductBlacklistUrls: {
+  //         blackListUrl: true,
+  //       },
+  //       candidatePages: {
+  //         candidatePageCache: true,
+  //       },
+  //     },
+  //   });
+
+  //   this.logger.log(shopProducts.length);
+
+  //   for (const shopProduct of shopProducts) {
+  //     // const reducedSitemap = this.shopService.reduceSitemap(
+  //     //   shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+  //     //   shopProduct.product.name,
+  //     // );
+  //     await new Promise((r) => setTimeout(r, 6));
+
+  //     const limitedUrls = await this.filteredLimitedUrls(
+  //       shopProduct,
+  //       shopProduct.links,
+  //     );
+
+  //     if (limitedUrls.length === 0) {
+  //       this.logger.log(
+  //         `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+  //       );
+  //       continue;
+  //     }
+
+  //     // if (shopProduct.links.length === 0) {
+  //     //   this.logger.log(
+  //     //     `no_links_found ${shopProduct.shop.name} - ${shopProduct.product.name}`,
+  //     //   );
+  //     //   continue;
+  //     // }
+
+  //     const createProcess: CreateProcessDto = {
+  //       sitemap: shop.sitemap,
+  //       url: shopProduct.shop.website,
+  //       category: shopProduct.shop.category,
+  //       name: shopProduct.product.name,
+  //       shopProductId: shopProduct.id,
+  //       shopWebsite: shopProduct.shop.name,
+  //       type: shopProduct.product.type,
+  //       context: shopProduct.product.context,
+  //       crawlAmount: 90,
+  //       productId: shopProduct.productId,
+  //       shopId: shopProduct.shopId,
+  //       shopifySite: shopProduct.shop.isShopifySite,
+  //       shopType: shopProduct.shop.uniqueShopType,
+  //       cloudflare: shopProduct.shop.cloudflare,
+  //       headless: shopProduct.shop.headless,
+  //       links: limitedUrls,
+  //       expectedPrice: shopProduct.product.price,
+  //       country: shopProduct.shop.country,
+  //       currency: shopProduct.shop.currency,
+  //       sitemapEntity: {
+  //         ...shopProduct.shop.sitemapEntity,
+  //         shopId: shop.id,
+  //         sitemapUrls: [],
+  //       },
+  //       hash: shopProduct.candidatePages[0]?.candidatePageCache?.hash ?? '0',
+  //       confirmed:
+  //         shopProduct.candidatePages[0]?.candidatePageCache?.confirmed ?? false,
+  //       count: shopProduct.candidatePages[0]?.candidatePageCache?.count ?? 0,
+  //       candidatePages: shopProduct.candidatePages,
+  //     };
+
+  //     if (
+  //       shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+  //       shopProduct.ebayProductDetail
+  //     ) {
+  //       createProcess.ebayProductDetail = {
+  //         ebayProductDetailId: shopProduct.ebayProductDetail.id,
+  //         productId: shopProduct.ebayProductDetail.productId,
+  //       };
+  //     }
+
+  //     if (
+  //       (shopProduct.shop.isShopifySite === true &&
+  //         shopProduct.shop.cloudflare === false) ||
+  //       (shopProduct.shop.cloudflare === false &&
+  //         shopProduct.shop.headless === false)
+  //     ) {
+  //       this.headlessClient.emit<CreateProcessDto>(
+  //         'webpageDiscovery',
+  //         createProcess,
+  //       );
+  //     } else if (shopProduct.shop.cloudflareEnhanced === true) {
+  //       this.headfulSlowClient.emit<CreateProcessDto>(
+  //         'webpageDiscovery',
+  //         createProcess,
+  //       );
+  //     } else if (shopProduct.shop.headless === true) {
+  //       this.headlessBrowserClient.emit<CreateProcessDto>(
+  //         'webpageDiscovery',
+  //         createProcess,
+  //       );
+  //     } else {
+  //       this.headfulClient.emit<CreateProcessDto>(
+  //         'webpageDiscovery',
+  //         createProcess,
+  //       );
+  //     }
+  //   }
+  // }
 
   findAll(): Promise<ShopProduct[]> {
     return this.shopProductRepository.find({});
@@ -1752,5 +1731,86 @@ export class ShopProductService {
   async remove(id: string): Promise<ShopProduct> {
     const shopProductEntity = await this.findOne(id);
     return this.shopProductRepository.remove(shopProductEntity);
+  }
+
+  createProcessDtoTemplateFromFindLinksShopProduct(
+    shopProduct: ShopProduct,
+    shop: Shop,
+    urls: string[],
+  ) {
+    const createProcess: CreateProcessDto = {
+      sitemap: shop.sitemap,
+      url: shop.website,
+      category: shop.category,
+      name: shopProduct.product.name,
+      shopProductId: shopProduct.id,
+      shopWebsite: shop.name,
+      type: shopProduct.product.type,
+      context: shopProduct.product.context,
+      crawlAmount: 90,
+      productId: shopProduct.product.id,
+      shopId: shop.id,
+      shopifySite: shop.isShopifySite,
+      shopType: shop.uniqueShopType,
+      cloudflare: shop.cloudflare,
+      headless: shop.headless,
+      expectedPrice: shopProduct.product.price,
+      country: shop.country,
+      currency: shop.currency,
+      links: [],
+      sitemapEntity: {
+        sitemap: shop.sitemap,
+        shopId: shop.id,
+        sitemapUrls: urls,
+        isShopifySite: shop.isShopifySite,
+      },
+      hash: shopProduct.candidatePages?.[0]?.candidatePageCache?.hash ?? '0',
+      confirmed:
+        shopProduct.candidatePages?.[0]?.candidatePageCache?.confirmed ?? false,
+      count: shopProduct.candidatePages?.[0]?.candidatePageCache?.count ?? 0,
+      candidatePages: shopProduct.candidatePages ?? [],
+    };
+    return createProcess;
+  }
+
+  createProcessDtoTemplateFromWebpageDiscoveryShopProduct(
+    shopProduct: ShopProduct,
+    shop: Shop,
+    urls: string[],
+  ) {
+    const createProcess: CreateProcessDto = {
+      sitemap: shop.sitemap,
+      url: shop.website,
+      category: shop.category,
+      name: shopProduct.product.name,
+      shopProductId: shopProduct.id,
+      shopWebsite: shop.name,
+      type: shopProduct.product.type,
+      context: shopProduct.product.context,
+      crawlAmount: 90,
+      productId: shopProduct.product.id,
+      shopId: shop.id,
+      shopifySite: shop.isShopifySite,
+      shopType: shop.uniqueShopType,
+      cloudflare: shop.cloudflare,
+      headless: shop.headless,
+      expectedPrice: shopProduct.product.price,
+      country: shop.country,
+      currency: shop.currency,
+      links: urls,
+
+      sitemapEntity: {
+        sitemap: shop.sitemap,
+        shopId: shop.id,
+        sitemapUrls: [],
+        isShopifySite: shop.isShopifySite,
+      },
+      hash: shopProduct.candidatePages?.[0]?.candidatePageCache?.hash ?? '0',
+      confirmed:
+        shopProduct.candidatePages?.[0]?.candidatePageCache?.confirmed ?? false,
+      count: shopProduct.candidatePages?.[0]?.candidatePageCache?.count ?? 0,
+      candidatePages: shopProduct.candidatePages ?? [],
+    };
+    return createProcess;
   }
 }
