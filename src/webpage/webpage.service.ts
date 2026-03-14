@@ -1004,6 +1004,17 @@ export class WebpageService {
       : [];
   }
 
+  async notFoundCounter(id: string) {
+    const webpageEntity = await this.findOne(id);
+    if (webpageEntity.noFoundCounter > 1) {
+      await this.removeWebpage(id);
+    } else {
+      await this.updateNormal(id, {
+        notFoundCounter: webpageEntity.noFoundCounter++,
+      });
+    }
+  }
+
   @Cron(CronExpression.EVERY_2ND_HOUR)
   async updateEuroPrice() {
     const activeWebpages = await this.findAll();

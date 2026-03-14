@@ -188,6 +188,11 @@ export class WebpageController {
     return this.webpageService.updateNormal(id, updateWebpageDto);
   }
 
+  @Patch('not-found-counter/:id')
+  notFoundCounter(@Param('id') id: string) {
+    return this.webpageService.notFoundCounter(id);
+  }
+
   @Delete('delete-and-update-shop-product-page-by-shopProductId/:shopProductId')
   removeShopProductWebpages(
     @Param('shopProductId') shopProductId: string,

@@ -72,6 +72,9 @@ export class Webpage {
   @Column({ default: false })
   packagingTypeMatch: boolean;
 
+  @Column({ default: 0 })
+  noFoundCounter: number;
+
   @OneToOne(() => WebpageCache, (webpageCache) => webpageCache.webpage, {
     cascade: ['insert', 'update'],
   })
