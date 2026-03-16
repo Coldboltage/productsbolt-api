@@ -271,6 +271,9 @@ export class WebpageService {
     return this.webpagesRepository.find({
       where: {
         shopProduct: {
+          shop: {
+            active: true,
+          },
           product: {
             id: productId,
           },

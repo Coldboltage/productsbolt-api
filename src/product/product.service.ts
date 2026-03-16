@@ -156,11 +156,8 @@ export class ProductService {
 
   async findOneByProductSafeName(productName: string): Promise<Product> {
     return this.productsRepository.findOne({
-      where: {
-        urlSafeName: productName,
-        shopProducts: { shop: { active: true } },
-      },
-      relations: { ebayStat: true, brand: true, shopProducts: { shop: true } },
+      where: { urlSafeName: productName },
+      relations: { ebayStat: true, brand: true },
     });
   }
 
