@@ -1241,7 +1241,7 @@ export class ShopProductService {
           limitedUrls,
         );
 
-      if (shopProduct.shop.isShopifySite === true) {
+      if (shopProduct.shop.sitemapEntity.isShopifySite === true) {
         this.headlessClient.emit<CreateProcessDto>(
           'webpageDiscovery',
           createProcess,
@@ -1791,7 +1791,7 @@ export class ShopProductService {
       crawlAmount: 90,
       productId: shopProduct.product.id,
       shopId: shop.id,
-      shopifySite: shop.isShopifySite,
+      shopifySite: shop.sitemapEntity.isShopifySite,
       shopType: shop.uniqueShopType,
       cloudflare: shop.cloudflare,
       headless: shop.headless,
@@ -1805,7 +1805,7 @@ export class ShopProductService {
         sitemap: shop.sitemap,
         shopId: shop.id,
         sitemapUrls: [],
-        isShopifySite: shop.isShopifySite,
+        isShopifySite: shop.sitemapEntity.isShopifySite,
       },
       hash: shopProduct.candidatePages?.[0]?.candidatePageCache?.hash ?? '0',
       confirmed:
