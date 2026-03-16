@@ -148,7 +148,7 @@ export class ShopService implements OnApplicationBootstrap {
 
   async updateSpecificShopSitemap(shopId: string): Promise<void> {
     const shop = await this.findOneWithSitemapUrls(shopId);
-    this.logger.log(shop.sitemapEntity);
+
     if (
       shop.sitemapEntity.isShopifySite &&
       shop.sitemapEntity.error === false &&

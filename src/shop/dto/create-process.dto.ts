@@ -84,6 +84,9 @@ export class CreateProcessDto {
   @IsString()
   currency: string;
 
+  @IsBoolean()
+  wordpressXml: boolean;
+
   @ValidateNested()
   @Type(() => EbayProductDetailDto)
   @IsOptional()

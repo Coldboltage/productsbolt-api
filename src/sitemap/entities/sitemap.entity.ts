@@ -46,6 +46,9 @@ export class Sitemap {
   @Column({ default: false })
   fast: boolean;
 
+  @Column({ default: false })
+  wordpressXml: boolean;
+
   @Column({ type: 'simple-array', nullable: true })
   additionalSitemaps: string[];
 

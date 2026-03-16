@@ -1758,6 +1758,7 @@ export class ShopProductService {
       country: shop.country,
       currency: shop.currency,
       links: [],
+      wordpressXml: shop.sitemapEntity.wordpressXml,
       sitemapEntity: {
         sitemap: shop.sitemap,
         shopId: shop.id,
@@ -1798,6 +1799,7 @@ export class ShopProductService {
       country: shop.country,
       currency: shop.currency,
       links: urls,
+      wordpressXml: shop.sitemapEntity.wordpressXml,
 
       sitemapEntity: {
         sitemap: shop.sitemap,
