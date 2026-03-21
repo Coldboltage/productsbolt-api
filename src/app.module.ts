@@ -39,6 +39,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CurrencyModule } from './currency/currency.module';
 import { BrandModule } from './brand/brand.module';
+import { UtilsModule } from './utils/utils.module';
 
 @Module({
   imports: [
@@ -119,6 +120,7 @@ import { BrandModule } from './brand/brand.module';
     AuthModule,
     CurrencyModule,
     BrandModule,
+    UtilsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -18,7 +18,7 @@ import {
   StrippedWebpageSlimWithShop,
   Webpage,
 } from './entities/webpage.entity';
-import { IsNull, Not, Repository } from 'typeorm';
+import { IsNull, MoreThan, Not, Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
@@ -29,6 +29,7 @@ import { ShopService } from 'src/shop/shop.service';
 import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CurrencyService } from 'src/currency/currency.service';
+import { UtilsService } from 'src/utils/utils.service';
 
 @Injectable()
 export class WebpageService {
@@ -48,6 +49,7 @@ export class WebpageService {
     private shopService: ShopService,
     private currencyService: CurrencyService,
     private eventEmitter: EventEmitter2,
+    private utilService: UtilsService,
   ) {}
 
   async onApplicationBootstrap() {
@@ -140,24 +142,47 @@ export class WebpageService {
       ...shopProductEntity,
     });
     entity.shopProduct = shopProductEntity;
+    entity.euroPrice = await this.currencyService.updateEuroPriceForOne(
+      createWebpageDto.price,
+      shopProductEntity.shop.currency,
+    );
+
+    const tolerance = 0.45;
+
+    this.logger.log({
+      euroPrice: entity.euroPrice,
+      tolerance,
+      expectedPrice: shopProductEntity.product.price,
+    });
+
+    const unit =
+      Math.abs(entity.euroPrice - shopProductEntity.product.price) /
+      shopProductEntity.product.price;
+    const priceInRange = unit <= tolerance;
+
+    this.logger.log(`princeInRange = ${priceInRange}`);
+
     const webpageEntity = await this.webpagesRepository.save({
       ...entity,
+      priceCheck: priceInRange,
       webpageCache: {},
     });
-    await this.updateEuroPriceForOne(webpageEntity.id);
 
     this.logger.log('Website Revalidate');
 
     const productId = webpageEntity.shopProduct.productId;
     const productName = webpageEntity.shopProduct.product.urlSafeName;
-    await fetch(
-      `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${productName}`,
-      { method: 'POST' },
-    );
 
-    console.log(
-      `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productId=${productId}`,
-    );
+    if (webpageEntity.priceCheck || webpageEntity.inspected) {
+      await fetch(
+        `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${productName}`,
+        { method: 'POST' },
+      );
+
+      console.log(
+        `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productId=${productId}`,
+      );
+    }
 
     this.logger.log(`Page being created: ${createWebpageDto.url}`);
     this.logger.log(webpageEntity);
@@ -497,8 +522,11 @@ export class WebpageService {
     );
     if (specificWebPagesForProduct.length === 0)
       throw new NotFoundException('no_webpages_found_for_product');
-    const strippedWebpageSlimWithShop = specificWebPagesForProduct.map(
-      (webpage) => ({
+    const strippedWebpageSlimWithShop = specificWebPagesForProduct
+      .filter((webpage) => {
+        return webpage.inspected === true || webpage.priceCheck === true;
+      })
+      .map((webpage) => ({
         id: webpage.id,
         url: webpage.url,
         inStock: webpage.inStock,
@@ -513,8 +541,7 @@ export class WebpageService {
           currency: webpage.shopProduct.shop.currency,
           vatShown: webpage.shopProduct.shop.vatShown,
         },
-      }),
-    );
+      }));
     response.push({
       productName: product.name,
       productImage: product.imageUrl,
@@ -602,9 +629,16 @@ export class WebpageService {
         priceCheck: false,
         editionMatch: true,
         inspected: false,
+        shopProduct: {
+          shop: {
+            active: true,
+          },
+        },
       },
       relations: {
-        shopProduct: true,
+        shopProduct: {
+          shop: true,
+        },
       },
       select: {
         id: true,
@@ -617,9 +651,70 @@ export class WebpageService {
           name: true,
           shopId: true,
           links: true,
+          shop: {
+            id: true,
+          },
         },
       },
     });
+  }
+
+  async findAllPriceMatchEditionMatchInStock() {
+    return this.webpagesRepository.find({
+      where: {
+        inStock: true,
+        priceCheck: false,
+        editionMatch: true,
+        inspected: false,
+        notFoundCounter: 0,
+        shopProduct: {
+          shop: {
+            active: true,
+          },
+        },
+      },
+      relations: {
+        shopProduct: {
+          shop: true,
+          product: true,
+        },
+      },
+      select: {
+        id: true,
+        url: true,
+        price: true,
+        euroPrice: true,
+        reason: true,
+        pageTitle: true,
+        shopProduct: {
+          id: true,
+          name: true,
+          shopId: true,
+          links: true,
+          product: {
+            price: true,
+            id: true,
+          },
+          shop: {
+            id: true,
+          },
+        },
+      },
+    });
+  }
+
+  async findAllWebpagesShopProductPopulatedNotInspectedRemove() {
+    const webpages = await this.webpagesRepository.find({
+      where: {
+        inspected: false,
+      },
+      relations: {
+        shopProduct: true,
+      },
+    });
+    for (const page of webpages) {
+      await this.removeWebpage(page.id);
+    }
   }
 
   @Cron(CronExpression.EVERY_2_HOURS, {
@@ -674,6 +769,7 @@ export class WebpageService {
       const webpagesForShop: CheckPageDto[] = [];
 
       for (const shopProduct of shop.shopProducts) {
+        this.logger.log(shopProduct.id);
         const updatePageDto: CheckPageDto = {
           url: shopProduct.webPage.url,
           query: shopProduct.name,
@@ -868,6 +964,8 @@ export class WebpageService {
       pageAllText: updateWebpageDto.pageAllText,
       pageTitle: updateWebpageDto.pageTitle,
       lastScanned: updateWebpageDto.lastScanned,
+      euroPrice: updateWebpageDto.euroPrice,
+      priceCheck: updateWebpageDto.priceCheck,
     });
     const webpageEntity = await this.findOne(id);
     const result = await this.alertService.checkAlert(webpageEntity);
@@ -949,10 +1047,9 @@ export class WebpageService {
     // Update associated shopProduct
     if (webpage.shopProduct) {
       webpage.shopProduct.populated = false;
-      await this.shopProductService.update(
-        webpage.shopProduct.id,
-        webpage.shopProduct,
-      );
+      await this.shopProductService.update(webpage.shopProduct.id, {
+        populated: false,
+      });
     }
     this.eventEmitter.emit('webpage.remove', {
       url: webpage.url,
@@ -1009,11 +1106,11 @@ export class WebpageService {
 
   async notFoundCounter(id: string) {
     const webpageEntity = await this.findOne(id);
-    if (webpageEntity.notFoundCounter > 1) {
+    if (webpageEntity.notFoundCounter > 5) {
       await this.removeWebpage(id);
     } else {
       await this.updateNormal(id, {
-        notFoundCounter: webpageEntity.notFoundCounter++,
+        notFoundCounter: webpageEntity.notFoundCounter + 1,
       });
     }
   }
@@ -1039,21 +1136,33 @@ export class WebpageService {
     }
   }
 
-  async updateEuroPriceForOne(id: string): Promise<void> {
-    const webpage = await this.findOne(id);
-    const shopCurrency = webpage.shopProduct.shop.currency;
-    if (shopCurrency === 'EUR') {
-      await this.updateNormal(webpage.id, { euroPrice: webpage.price });
-      return;
+  // async updateEuroPriceForOne(id: string): Promise<void> {
+  //   const webpage = await this.findOne(id);
+  //   const shopCurrency = webpage.shopProduct.shop.currency;
+  //   if (shopCurrency === 'EUR') {
+  //     await this.updateNormal(webpage.id, { euroPrice: webpage.price });
+  //     return;
+  //   }
+
+  //   this.logger.log(shopCurrency);
+
+  //   const currencyInfo = await this.currencyService.findOneByBaseAndCompare(
+  //     'EUR',
+  //     shopCurrency,
+  //   );
+  //   const euroPrice = webpage.price / currencyInfo.value;
+  //   await this.updateNormal(webpage.id, { euroPrice });
+  // }
+
+  async updatePriceCheck() {
+    const webpages = await this.findAll();
+    for (const page of webpages) {
+      const priceCheck = this.utilService.isPriceInPriceCheck(
+        page.euroPrice,
+        page.shopProduct.product.price,
+      );
+      console.log(priceCheck);
+      await this.updateNormal(page.id, { priceCheck });
     }
-
-    this.logger.log(shopCurrency);
-
-    const currencyInfo = await this.currencyService.findOneByBaseAndCompare(
-      'EUR',
-      shopCurrency,
-    );
-    const euroPrice = webpage.price / currencyInfo.value;
-    await this.updateNormal(webpage.id, { euroPrice });
   }
 }

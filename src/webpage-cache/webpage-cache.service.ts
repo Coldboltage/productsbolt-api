@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { WebpageCache } from './entities/webpage-cache.entity';
 import { UpdateWebpageDto } from 'src/webpage/dto/update-webpage.dto';
 import { ProductService } from 'src/product/product.service';
+import { CurrencyService } from 'src/currency/currency.service';
 
 @Injectable()
 export class WebpageCacheService {
@@ -16,6 +17,7 @@ export class WebpageCacheService {
     private webpageCacheRepository: Repository<WebpageCache>,
     private webpageService: WebpageService,
     private productService: ProductService,
+    private currencyService: CurrencyService,
   ) {}
 
   create(createWebpageCacheDto: CreateWebpageCacheDto) {
@@ -85,10 +87,34 @@ export class WebpageCacheService {
       webpageEntity.webpageCache.confirmed = true;
     }
     // The Webpage will update as per normal
+
     await this.webpageCacheRepository.save(webpageEntity.webpageCache);
 
-    await this.webpageService.update(webpageId, { ...updateWebpageDto });
-    await this.webpageService.updateEuroPriceForOne(webpageEntity.id);
+    const euroPrice = await this.currencyService.updateEuroPriceForOne(
+      updateWebpageDto.price,
+      webpageEntity.shopProduct.shop.currency,
+    );
+
+    const tolerance = 0.45;
+
+    this.logger.log({
+      euroPrice,
+      tolerance,
+      expectedPrice: webpageEntity.shopProduct.product.price,
+    });
+
+    const unit =
+      Math.abs(euroPrice - webpageEntity.shopProduct.product.price) /
+      webpageEntity.shopProduct.product.price;
+    const priceInRange = unit <= tolerance;
+
+    this.logger.log(`princeInRange = ${priceInRange}`);
+
+    await this.webpageService.update(webpageId, {
+      ...updateWebpageDto,
+      euroPrice,
+      priceCheck: priceInRange,
+    });
 
     this.logger.log({
       webpageEntityPrice: +webpageEntity.price,
@@ -99,14 +125,16 @@ export class WebpageCacheService {
 
     this.logger.log(
       `has the page changed: ${
-        +webpageEntity.price !== updateWebpageDto.price ||
-        webpageEntity.inStock !== updateWebpageDto.inStock
+        (+webpageEntity.price !== updateWebpageDto.price ||
+          webpageEntity.inStock !== updateWebpageDto.inStock) &&
+        (webpageEntity.priceCheck || webpageEntity.inspected)
       }`,
     );
 
     if (
-      +webpageEntity.price !== updateWebpageDto.price ||
-      webpageEntity.inStock !== updateWebpageDto.inStock
+      (+webpageEntity.price !== updateWebpageDto.price ||
+        webpageEntity.inStock !== updateWebpageDto.inStock) &&
+      (webpageEntity.priceCheck || webpageEntity.inspected)
     ) {
       const productId = webpageEntity.shopProduct.productId;
 

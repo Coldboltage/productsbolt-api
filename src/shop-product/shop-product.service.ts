@@ -3,7 +3,13 @@ import { UpdateShopProductDto } from './dto/update-shop-product.dto';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ShopProduct } from './entities/shop-product.entity';
-import { FindManyOptions, Repository, UpdateResult } from 'typeorm';
+import {
+  FindManyOptions,
+  IsNull,
+  Not,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { ShopService } from '../shop/shop.service';
 import { Product } from '../product/entities/product.entity';
 import { ClientProxy } from '@nestjs/microservices';
@@ -11,6 +17,7 @@ import { ProductService } from '../product/product.service';
 import { CreateProcessDto } from '../shop/dto/create-process.dto';
 import { Shop, UniqueShopType } from '../shop/entities/shop.entity';
 import { Cron } from '@nestjs/schedule';
+import { populate } from 'dotenv';
 
 @Injectable()
 export class ShopProductService {
@@ -191,8 +198,14 @@ export class ShopProductService {
       throw new NotFoundException(`No URLs found for ${shopProduct.shop.name}`);
     }
 
-    // this.logger.log(limitedUrls);
-    // await new Promise((r) => setTimeout(r, 2000000));
+    // const test = limitedUrls.some((url) =>
+    //   url.includes(
+    //     `trading-card-game-spiritforged-sealed-booster-box-set-2-p88590`,
+    //   ),
+    // );
+
+    // this.logger.debug(test);
+    // throw new Error('test');
 
     const createProcess = this.createProcessDtoTemplateFromFindLinksShopProduct(
       shopProduct,
@@ -1066,8 +1079,6 @@ export class ShopProductService {
           limitedUrls,
         );
 
-      this.logger.debug(createProcess);
-
       shopOfCreateProcess.push(createProcess);
     }
 
@@ -1216,13 +1227,15 @@ export class ShopProductService {
     //   shopProduct.product.name,
     // );
 
+    // this.logger.debug(shopProduct.links);
+
     if (shopProduct) {
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
         shopProduct.links,
       );
 
-      // this.logger.log(limitedUrls);
+      this.logger.debug(limitedUrls);
 
       if (limitedUrls.length === 0) {
         this.logger.log(
@@ -1536,6 +1549,22 @@ export class ShopProductService {
     return this.shopProductRepository.find({});
   }
 
+  async findAllPopulatedWebpageNull() {
+    const shopProducts = await this.shopProductRepository.find({
+      where: {
+        populated: true,
+      },
+      relations: {
+        webPage: true,
+      },
+    });
+
+    const shopProductsFilter = shopProducts.filter((sp) => sp.webPage === null);
+    shopProductsFilter.forEach((sp) => (sp.populated = false));
+
+    await this.shopProductRepository.save(shopProductsFilter);
+  }
+
   async findOne(id: string): Promise<ShopProduct> {
     return this.shopProductRepository.findOne({
       where: { id },
@@ -1546,6 +1575,8 @@ export class ShopProductService {
         candidatePages: {
           candidatePageCache: true,
         },
+        shop: true,
+        product: true,
       },
     });
   }
@@ -1613,6 +1644,7 @@ export class ShopProductService {
       },
       relations: {
         product: true,
+        shop: true,
       },
     });
   }
