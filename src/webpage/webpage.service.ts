@@ -801,7 +801,10 @@ export class WebpageService {
     }
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES, {
+  // @Cron(CronExpression.EVERY_5_MINUTES, {
+  // rate relief
+    @Cron(CronExpression.EVERY_HOUR, {
+
     name: 'updateHighPriorityWebpages',
   })
   async updateHighPriorityWebpages(): Promise<void> {
