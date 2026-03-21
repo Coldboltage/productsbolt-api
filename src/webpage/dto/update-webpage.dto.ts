@@ -12,4 +12,5 @@ export class UpdateWebpageDto extends PartialType(CreateWebpageDto) {
   lastScanned?: Date;
   euroPrice?: number;
   notFoundCounter?: number;
+  priceCheck?: boolean;
 }

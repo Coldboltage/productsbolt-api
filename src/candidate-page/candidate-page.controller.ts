@@ -57,6 +57,11 @@ export class CandidatePageController {
     return this.candidatePageService.updateInspected(id);
   }
 
+  @Patch('update-price-check')
+  updatePriceCheck() {
+    return this.candidatePageService.updatePriceCheck();
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,

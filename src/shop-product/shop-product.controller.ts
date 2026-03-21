@@ -101,6 +101,11 @@ export class ShopProductController {
     return this.shopProductService.findOne(id);
   }
 
+  @Patch('find-all-populated-webpage-null')
+  findAllPopulatedWebpageNull() {
+    return this.shopProductService.findAllPopulatedWebpageNull();
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,

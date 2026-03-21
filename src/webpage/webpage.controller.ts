@@ -157,6 +157,11 @@ export class WebpageController {
     return this.webpageService.findAllPriceMatchEditionMatch();
   }
 
+  @Get('find-all-price-match-edition-match-in-stock')
+  findAllPriceMatchEditionMatchInStock() {
+    return this.webpageService.findAllPriceMatchEditionMatchInStock();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Webpage> {
     return this.webpageService.findOne(id);
@@ -172,14 +177,6 @@ export class WebpageController {
     return this.webpageService.updateEuroPrice();
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateWebpageDto: UpdateWebpageDto,
-  ): Promise<Webpage> {
-    return this.webpageService.update(id, updateWebpageDto);
-  }
-
   @Patch('update-normal/:id')
   updateNormal(
     @Param('id') id: string,
@@ -191,6 +188,19 @@ export class WebpageController {
   @Patch('not-found-counter/:id')
   notFoundCounter(@Param('id') id: string) {
     return this.webpageService.notFoundCounter(id);
+  }
+
+  @Patch('update-price-check')
+  updatePriceCheck() {
+    return this.webpageService.updatePriceCheck();
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateWebpageDto: UpdateWebpageDto,
+  ): Promise<Webpage> {
+    return this.webpageService.update(id, updateWebpageDto);
   }
 
   @Delete('delete-and-update-shop-product-page-by-shopProductId/:shopProductId')
@@ -217,6 +227,11 @@ export class WebpageController {
   removeAllWebPages(@Param('id') id: string): Promise<void> {
     console.log(id);
     return this.webpageService.removeAllWebPages();
+  }
+
+  @Delete('find-all-webpages-shop-product-populated-not-inspected')
+  findAllWebpagesShopProductPopulatedNotInspectedRemove() {
+    return this.webpageService.findAllWebpagesShopProductPopulatedNotInspectedRemove();
   }
 
   @Delete(':id')

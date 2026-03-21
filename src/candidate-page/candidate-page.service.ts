@@ -2,6 +2,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateCandidatePageDto } from './dto/create-candidate-page.dto';
@@ -17,9 +18,12 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { RemoveWebpageDto } from 'src/webpage/dto/remove-webpage.dto';
 import { WebpageService } from 'src/webpage/webpage.service';
 import { CreateWebpageDto } from 'src/webpage/dto/create-webpage.dto';
+import { CurrencyService } from 'src/currency/currency.service';
+import { UtilsService } from 'src/utils/utils.service';
 
 @Injectable()
 export class CandidatePageService {
+  private logger = new Logger(CandidatePageService.name);
   constructor(
     @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
     @Inject('HEADLESS_CLIENT') private readonly headlessClient: ClientProxy,
@@ -28,6 +32,8 @@ export class CandidatePageService {
     private webpageService: WebpageService,
     private shopProductService: ShopProductService,
     private eventEmitter: EventEmitter2,
+    private currencyService: CurrencyService,
+    private utilService: UtilsService,
   ) {}
   async create(
     createCandidatePageDto: CreateCandidatePageDto,
@@ -52,6 +58,26 @@ export class CandidatePageService {
       throw new ConflictException('The URL is already tracked');
     }
 
+    const euroPrice = await this.currencyService.updateEuroPriceForOne(
+      createCandidatePageDto.price,
+      shopProductEntity.shop.currency,
+    );
+
+    const tolerance = 0.45;
+
+    this.logger.log({
+      euroPrice,
+      tolerance,
+      expectedPrice: shopProductEntity.product.price,
+    });
+
+    const unit =
+      Math.abs(euroPrice - shopProductEntity.product.price) /
+      shopProductEntity.product.price;
+    const priceInRange = unit <= tolerance;
+
+    this.logger.log(`princeInRange = ${priceInRange}`);
+
     if (candidatePageExists) {
       console.log('Candidate page already exists, updating instead');
       await this.update(candidatePageExists.id, {
@@ -59,12 +85,13 @@ export class CandidatePageService {
         inStock: createCandidatePageDto.inStock,
         currencyCode: createCandidatePageDto.currencyCode,
         reason: createCandidatePageDto.reason,
-        priceCheck: createCandidatePageDto.priceCheck,
+        priceCheck: priceInRange,
         editionMatch: createCandidatePageDto.editionMatch,
         packagingTypeMatch: createCandidatePageDto.packagingTypeMatch,
         inspected: candidatePageExists.inspected,
         loadedData: createCandidatePageDto.loadedData,
         hasMixedSignals: createCandidatePageDto.hasMixedSignals,
+        euroPrice,
       });
       const createCandidatePageDtoWithId = {
         ...createCandidatePageDto,
@@ -82,6 +109,8 @@ export class CandidatePageService {
         candidatePageEntity = await this.candidatePageRepository.save({
           ...createCandidatePageDto,
           shopProduct: shopProductEntity,
+          priceCheck: priceInRange,
+          euroPrice,
           candidatePageCache: {},
         });
       } catch (error) {
@@ -236,7 +265,7 @@ export class CandidatePageService {
   async findAll(): Promise<CandidatePage[]> {
     return this.candidatePageRepository.find({
       where: {},
-      relations: { shopProduct: true },
+      relations: { shopProduct: { shop: true, product: true } },
     });
   }
 
@@ -283,6 +312,17 @@ export class CandidatePageService {
 
   async update(id: string, updateCandidatePageDto: UpdateCandidatePageDto) {
     return this.candidatePageRepository.update(id, updateCandidatePageDto);
+  }
+
+  async updatePriceCheck() {
+    const webpages = await this.findAll();
+    for (const page of webpages) {
+      const priceCheck = this.utilService.isPriceInPriceCheck(
+        page.euroPrice,
+        page.shopProduct.product.price,
+      );
+      await this.update(page.id, { priceCheck });
+    }
   }
 
   @OnEvent('remove.candidatePage')
@@ -358,6 +398,7 @@ export class CandidatePageService {
         },
       },
     });
+    this.logger.debug(candidatePages);
     await this.candidatePageRepository.remove(candidatePages);
   }
 

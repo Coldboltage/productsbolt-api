@@ -318,6 +318,7 @@ export class ShopService implements OnApplicationBootstrap {
         'shopProduct.populated = :populated',
         { populated: false },
       )
+      .leftJoinAndSelect('shop.sitemapEntity', 'sitemapEntity')
       .leftJoinAndSelect('shopProduct.product', 'product')
       .leftJoinAndSelect('shopProduct.webPage', 'webPage')
       .leftJoinAndSelect(
@@ -540,6 +541,23 @@ export class ShopService implements OnApplicationBootstrap {
     const result = filterProducts(urls, query);
 
     return result;
+  }
+
+  fuseReduce(urls: string[]) {
+    return urls.map((url) => {
+      const slug = decodeURIComponent(url)
+        .toLowerCase()
+        .replace(/^https?:\/\/[^/]+/, '')
+        .replace(/[-_/]/g, ' ')
+        .replace(/[^\w\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      return {
+        url,
+        slug,
+      };
+    });
   }
 
   async cloudflareTest() {

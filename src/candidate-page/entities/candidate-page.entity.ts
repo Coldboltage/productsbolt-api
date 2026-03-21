@@ -66,6 +66,7 @@ export class CandidatePage {
 
   @Column({ default: false })
   packagingTypeMatch: boolean;
+  p;
 
   @Column({ default: false })
   inspecpackagingTypeMatchted: boolean;
@@ -75,6 +76,9 @@ export class CandidatePage {
 
   @Column({ default: false })
   hasMixedSignals: boolean;
+
+  @Column({ type: 'numeric', precision: 10, scale: 2, default: 0 })
+  euroPrice: number;
 
   @OneToOne(
     () => CandidatePageCache,

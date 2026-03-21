@@ -99,6 +99,24 @@ export class CurrencyService {
     });
   }
 
+  async updateEuroPriceForOne(
+    price: number,
+    shopCurrency: string,
+  ): Promise<number> {
+    if (shopCurrency === 'EUR') {
+      return price;
+    }
+
+    this.logger.log(shopCurrency);
+
+    const currencyInfo = await this.findOneByBaseAndCompare(
+      'EUR',
+      shopCurrency,
+    );
+    const euroPrice = price / currencyInfo.value;
+    return euroPrice;
+  }
+
   async update(id: string, updateCurrencyDto: UpdateCurrencyDto) {
     return this.currencyRepository.update(id, updateCurrencyDto);
   }
