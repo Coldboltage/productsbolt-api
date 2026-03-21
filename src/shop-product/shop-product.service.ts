@@ -496,8 +496,7 @@ export class ShopProductService {
 
   // @Cron('0 1,3,5,7,9,11,13,15,17,19,21,23 * * *', { timeZone: 'Europe/London' })
   // Rate relief
-    @Cron(`0 */6 * * *` { timeZone: 'Europe/London' })
-
+  @Cron(`0 */6 * * *`)
   async manualUpdateAllShopProducts(): Promise<string> {
     this.manualUpdateAllShopProductsEvent();
     return 'manualUpdateAllShopProductsEvent fired';
