@@ -398,7 +398,6 @@ export class CandidatePageService {
         },
       },
     });
-    this.logger.debug(candidatePages);
     await this.candidatePageRepository.remove(candidatePages);
   }
 

@@ -1106,7 +1106,6 @@ export class WebpageService {
 
   async notFoundCounter(id: string) {
     const webpageEntity = await this.findOne(id);
-    this.logger.debug('hello alan');
     if (webpageEntity.notFoundCounter > 5) {
       await this.removeWebpage(id);
     } else {

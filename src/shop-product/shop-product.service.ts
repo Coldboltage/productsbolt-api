@@ -1079,8 +1079,6 @@ export class ShopProductService {
           limitedUrls,
         );
 
-      this.logger.debug(createProcess);
-
       shopOfCreateProcess.push(createProcess);
     }
 
