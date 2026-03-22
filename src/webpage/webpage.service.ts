@@ -720,7 +720,7 @@ export class WebpageService {
   // @Cron(CronExpression.EVERY_2_HOURS, {
   //   name: 'updateAllPages',
   // })
-  // rat relief
+  // rate relief
   @Cron(`0 */6 * * *`)
   async updateAllPages(): Promise<void> {
     // Already doing high priority every 5 minutes

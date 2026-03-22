@@ -86,9 +86,10 @@ export class ShopService implements OnApplicationBootstrap {
     });
   }
 
-  @Cron(CronExpression.EVERY_12_HOURS, {
-    name: 'updateSitemap',
-  })
+  // Rate relief enable again
+  // @Cron(CronExpression.EVERY_12_HOURS, {
+  //   name: 'updateSitemap',
+  // })
   @Span('ShopService.updateSitemap')
   async updateSitemap(): Promise<void> {
     const allActiveShops = await this.findAllWithoutUrls();
