@@ -503,7 +503,7 @@ export class ShopProductService {
   }
 
   // Rate relief delete cron below
-  @Cron(`0 */8 * * *`)
+  @Cron(`0 */24 * * *`)
   async manualUpdateAllShopProductsImmediate(): Promise<void> {
     const shopProductsOrphan = await (
       await this.shopProductRepository.find({
