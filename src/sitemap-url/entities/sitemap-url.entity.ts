@@ -17,6 +17,9 @@ export class SitemapUrl {
   @Column({ type: 'simple-array', default: '' })
   urls: string[];
 
+  @Column({ type: 'simple-array', default: '' })
+  freshUrls: string[];
+
   @OneToOne(() => Sitemap, (sitemap) => sitemap.sitemapUrl, {
     onDelete: 'CASCADE',
   })
