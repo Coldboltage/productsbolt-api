@@ -441,7 +441,7 @@ export class ShopProductService {
       if (!shopProduct) continue;
 
       const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+        shopProduct.shop.sitemapEntity.sitemapUrl.freshUrls,
         shopProduct.product.name,
       );
 
@@ -449,6 +449,7 @@ export class ShopProductService {
         this.logger.error({
           shopProductId: shopProduct.id,
           error: `reducedSitemap.length === 0`,
+          freshUrls: shopProduct.shop.sitemapEntity.sitemapUrl.freshUrls.length,
         });
       }
 

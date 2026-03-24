@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { CreateSitemapDto } from './dto/create-sitemap.dto';
 import { UpdateSitemapDto } from './dto/update-sitemap.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,6 +10,7 @@ import { SitemapUrl } from 'src/sitemap-url/entities/sitemap-url.entity';
 
 @Injectable()
 export class SitemapService {
+  private logger = new Logger(SitemapService.name);
   constructor(
     @InjectRepository(Sitemap) private sitemapRepository: Repository<Sitemap>,
     @InjectRepository(SitemapUrl)
@@ -93,13 +94,14 @@ export class SitemapService {
   async checkSiteMapLoop(
     sitemapEntity: Sitemap,
     updateSitemapDto: UpdateSitemapDto,
-  ): Promise<boolean> {
+  ): Promise<{ unchanged: boolean; newUrls: string[] }> {
+    const newUrls: string[] = [];
+    let unchanged = true;
     if (
-      sitemapEntity.sitemapUrl?.urls?.length !==
+      sitemapEntity.sitemapUrl?.urls?.length ===
       updateSitemapDto.sitemapUrls.length
     )
-      return false;
-    console.time('checkSites');
+      return { unchanged: false, newUrls };
 
     const dbUrls = new Set(sitemapEntity.sitemapUrl.urls);
 
@@ -107,8 +109,12 @@ export class SitemapService {
       const url = updateSitemapDto.sitemapUrls[i];
 
       if (!dbUrls.has(url)) {
-        console.timeEnd('checkSites');
-        return false;
+        newUrls.push(url);
+
+        this.logger.debug(`new url: ${url}`);
+        // await new Promise((r) => setTimeout(r, 20000));
+
+        unchanged = false;
       }
 
       if ((i + 1) % 10_000 === 0) {
@@ -118,8 +124,7 @@ export class SitemapService {
     }
 
     console.log('✅ Done checking, result is: ', true);
-    console.timeEnd('checkSites');
-    return true;
+    return { unchanged, newUrls };
   }
 
   async checkSiteMap(
@@ -129,15 +134,18 @@ export class SitemapService {
     const sitemapEntity = await this.findOne(id);
     console.log('checking sitemap urls');
     console.time('checkSites');
-    let sameSites = true;
 
-    sameSites = await this.checkSiteMapLoop(sitemapEntity, updateSitemapDto);
+    const sameSites = await this.checkSiteMapLoop(
+      sitemapEntity,
+      updateSitemapDto,
+    );
     console.log(sameSites);
 
-    if (!sameSites) {
+    if (!sameSites.unchanged) {
       console.log(sitemapEntity.sitemapUrl.id);
       await this.sitemapUrlRepository.update(sitemapEntity.sitemapUrl.id, {
         urls: updateSitemapDto.sitemapUrls || [''],
+        freshUrls: sameSites.newUrls,
       });
       await this.update(id, {
         ...updateSitemapDto,
