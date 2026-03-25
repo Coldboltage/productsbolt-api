@@ -9,7 +9,7 @@ import {
 
 @Entity()
 @Index(['url', 'id'])
-export class SitemapUrlEntry {
+export class Url {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

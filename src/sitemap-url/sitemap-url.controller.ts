@@ -35,6 +35,11 @@ export class SitemapUrlController {
     return this.sitemapUrlService.findOne(+id);
   }
 
+  @Patch('backup-urls')
+  backupUrls() {
+    return this.sitemapUrlService.backupUrls();
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,

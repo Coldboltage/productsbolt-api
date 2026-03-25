@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateSitemapUrlDto } from './dto/create-sitemap-url.dto';
 import { UpdateSitemapUrlDto } from './dto/update-sitemap-url.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,7 @@ import { SitemapService } from 'src/sitemap/sitemap.service';
 
 @Injectable()
 export class SitemapUrlService {
+  private readonly logger = new Logger(SitemapUrlService.name);
   constructor(
     @InjectRepository(SitemapUrl)
     private sitemapUrlRepository: Repository<SitemapUrl>,
@@ -26,6 +27,19 @@ export class SitemapUrlService {
       await this.sitemapUrlRepository.save({
         urls: [''],
         sitemap,
+      });
+    }
+  }
+
+  async backupUrls() {
+    this.logger.log(`backing up urls`);
+    const sitemapUrlsList = await this.sitemapUrlRepository.find();
+    for (const sitemapUrl of sitemapUrlsList) {
+      this.logger.log(
+        `backing up urls for ${sitemapUrl.id} with ${sitemapUrl.urls.length} urls`,
+      );
+      await this.sitemapUrlRepository.update(sitemapUrl.id, {
+        backupUrls: sitemapUrl.urls,
       });
     }
   }
