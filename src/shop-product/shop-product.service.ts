@@ -76,7 +76,7 @@ export class ShopProductService {
       const shopProduct = await this.findOneWithUrls(shopProductWithoutUrl.id);
 
       const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+        shopProduct.shop.sitemapEntity.sitemapUrl.urls.map((urls) => urls.url),
         shopProduct.product.name,
       );
 
@@ -174,7 +174,8 @@ export class ShopProductService {
       throw new NotFoundException('shop_product_not_found_or_populated');
 
     const reducedSitemap = this.shopService.reduceSitemap(
-      shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+      // eslint-disable-next-line prettier/prettier
+      shopProduct.shop.sitemapEntity.sitemapUrl.urls.map((urls) => urls.url),
       shopProduct.product.name,
     );
 
@@ -273,8 +274,10 @@ export class ShopProductService {
     for (const shopProduct of shopProductsOrphan) {
       if (!shopProduct) continue;
 
+      shopProduct.shop.sitemapEntity.sitemapUrl;
+
       const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+        shopProduct.shop.sitemapEntity.sitemapUrl.urls.map((urls) => urls.url),
         shopProduct.product.name,
       );
 
@@ -352,7 +355,7 @@ export class ShopProductService {
       const shopProduct = await this.findOneWithUrls(shopProductsOrphan.id);
 
       const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrl.urls,
+        shopProduct.shop.sitemapEntity.sitemapUrl.urls.map((urls) => urls.url),
         shopProduct.product.name,
       );
 
@@ -432,10 +435,21 @@ export class ShopProductService {
       whereClause.where['populated'] = false;
     }
 
-    const shopProductsOrphan = await (
-      await this.shopProductRepository.find(whereClause)
-    ).sort(() => Math.random() - 0.5);
-    this.logger.log(shopProductsOrphan.length);
+    // const shopProductsOrphan = await (
+    //   await this.shopProductRepository.find(whereClause)
+    // ).sort(() => Math.random() - 0.5);
+    // this.logger.log(shopProductsOrphan.length);
+
+    this.logger.debug(['before shopProduct find', process.memoryUsage()]);
+    const shopProductsOrphan =
+      await this.shopProductRepository.find(whereClause);
+    this.logger.debug(['after shopProduct find', process.memoryUsage()]);
+
+    this.logger.debug(['before shuffle', process.memoryUsage()]);
+    shopProductsOrphan.sort(() => Math.random() - 0.5);
+    this.logger.debug(['after shuffle', process.memoryUsage()]);
+
+    // await new Promise((r) => setTimeout(r, 200000000));
 
     for (const shopProduct of shopProductsOrphan) {
       if (!shopProduct) continue;
@@ -481,7 +495,7 @@ export class ShopProductService {
           productId: shopProduct.ebayProductDetail.productId,
         };
       }
-
+      this.logger.debug(`shopProduct updating: ${shopProduct.id}`);
       this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
 
       // if (shopProduct.shop.isShopifySite === true) {
@@ -493,6 +507,8 @@ export class ShopProductService {
       // }
       await new Promise((r) => setTimeout(r, 1));
     }
+
+    this.logger.verbose('everything completed');
   }
 
   // @Cron('0 1,3,5,7,9,11,13,15,17,19,21,23 * * *', { timeZone: 'Europe/London' })
@@ -1595,7 +1611,9 @@ export class ShopProductService {
         },
         shop: {
           sitemapEntity: {
-            sitemapUrl: true,
+            sitemapUrl: {
+              urls: true,
+            },
           },
         },
         candidatePages: {

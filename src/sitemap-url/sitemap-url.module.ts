@@ -4,9 +4,10 @@ import { SitemapUrlController } from './sitemap-url.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SitemapUrl } from './entities/sitemap-url.entity';
 import { SitemapModule } from 'src/sitemap/sitemap.module';
+import { UrlModule } from 'src/url/url.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SitemapUrl]), SitemapModule],
+  imports: [TypeOrmModule.forFeature([SitemapUrl]), SitemapModule, UrlModule],
   controllers: [SitemapUrlController],
   providers: [SitemapUrlService],
 })

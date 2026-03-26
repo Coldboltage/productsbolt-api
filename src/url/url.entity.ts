@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-@Index(['url', 'id'])
+@Index(['sitemapUrl', 'url'], { unique: true })
 export class Url {
   @PrimaryGeneratedColumn('uuid')
   id: string;

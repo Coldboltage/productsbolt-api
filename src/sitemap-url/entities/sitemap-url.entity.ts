@@ -1,8 +1,10 @@
 import { Sitemap } from 'src/sitemap/entities/sitemap.entity';
+import { Url } from 'src/url/url.entity';
 import {
   Column,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   Unique,
@@ -14,8 +16,10 @@ export class SitemapUrl {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'simple-array', default: '' })
-  urls: string[];
+  @OneToMany(() => Url, (url) => url.sitemapUrl)
+  urls: Url[];
+  // @Column({ type: 'simple-array', default: '' })
+  // urls: string[];
 
   @Column({ type: 'simple-array', default: '' })
   backupUrls: string[];

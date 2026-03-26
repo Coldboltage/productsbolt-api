@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SitemapUrl } from './entities/sitemap-url.entity';
 import { Repository } from 'typeorm';
 import { SitemapService } from 'src/sitemap/sitemap.service';
+import { CreateUrlDto } from 'src/url/dto/create-url.dto';
 
 @Injectable()
 export class SitemapUrlService {
@@ -18,30 +19,34 @@ export class SitemapUrlService {
     return 'This action adds a new sitemapUrl';
   }
 
-  async createAndPairSitemap() {
-    const sitemaps = await this.sitemapService.findAll();
-    const filteredSitemaps = sitemaps.filter((sitemap) => {
-      return !sitemap.sitemapUrl ? true : false;
-    });
-    for (const sitemap of filteredSitemaps) {
-      await this.sitemapUrlRepository.save({
-        urls: [''],
-        sitemap,
-      });
-    }
-  }
+  // async createAndPairSitemap() {
+  //   const sitemaps = await this.sitemapService.findAll();
+  //   const filteredSitemaps = sitemaps.filter((sitemap) => {
+  //     return !sitemap.sitemapUrl ? true : false;
+  //   });
+  //   for (const sitemap of filteredSitemaps) {
+  //     await this.sitemapUrlRepository.save({
+  //       urls: [''],
+  //       sitemap,
+  //     });
+  //   }
+  // }
 
-  async backupUrls() {
-    this.logger.log(`backing up urls`);
-    const sitemapUrlsList = await this.sitemapUrlRepository.find();
-    for (const sitemapUrl of sitemapUrlsList) {
-      this.logger.log(
-        `backing up urls for ${sitemapUrl.id} with ${sitemapUrl.urls.length} urls`,
-      );
-      await this.sitemapUrlRepository.update(sitemapUrl.id, {
-        backupUrls: sitemapUrl.urls,
-      });
-    }
+  // async backupUrls() {
+  //   this.logger.log(`backing up urls`);
+  //   const sitemapUrlsList = await this.sitemapUrlRepository.find();
+  //   for (const sitemapUrl of sitemapUrlsList) {
+  //     this.logger.log(
+  //       `backing up urls for ${sitemapUrl.id} with ${sitemapUrl.urls.length} urls`,
+  //     );
+  //     await this.sitemapUrlRepository.update(sitemapUrl.id, {
+  //       backupUrls: sitemapUrl.urls,
+  //     });
+  //   }
+  // }
+
+  async createUrl(createUrls: CreateUrlDto[]) {
+    console.log(createUrls);
   }
 
   findAll() {
