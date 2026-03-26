@@ -18,7 +18,7 @@ import {
   StrippedWebpageSlimWithShop,
   Webpage,
 } from './entities/webpage.entity';
-import { IsNull, MoreThan, Not, Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';

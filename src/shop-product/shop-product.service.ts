@@ -440,14 +440,9 @@ export class ShopProductService {
     // ).sort(() => Math.random() - 0.5);
     // this.logger.log(shopProductsOrphan.length);
 
-    this.logger.debug(['before shopProduct find', process.memoryUsage()]);
     const shopProductsOrphan =
       await this.shopProductRepository.find(whereClause);
-    this.logger.debug(['after shopProduct find', process.memoryUsage()]);
-
-    this.logger.debug(['before shuffle', process.memoryUsage()]);
     shopProductsOrphan.sort(() => Math.random() - 0.5);
-    this.logger.debug(['after shuffle', process.memoryUsage()]);
 
     // await new Promise((r) => setTimeout(r, 200000000));
 
