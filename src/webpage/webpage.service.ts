@@ -805,8 +805,7 @@ export class WebpageService {
 
   // @Cron(CronExpression.EVERY_5_MINUTES, {
   // rate relief
-    @Cron(CronExpression.EVERY_HOUR, {
-
+  @Cron(CronExpression.EVERY_HOUR, {
     name: 'updateHighPriorityWebpages',
   })
   async updateHighPriorityWebpages(): Promise<void> {
@@ -1084,7 +1083,9 @@ export class WebpageService {
     this.logger.log(shopEntities.length);
     const activeShopProducts: ShopProduct[] = [];
     for (const shop of shopEntities) {
-      const sitemapUrls = new Set(shop.sitemapEntity.sitemapUrl.urls);
+      const sitemapUrls = new Set(
+        shop.sitemapEntity.sitemapUrl.urls.map((urls) => urls.url),
+      );
       const shopActiveShopProducts = shop.shopProducts.filter((shopProduct) => {
         const populated = shopProduct.populated;
         if (populated) {

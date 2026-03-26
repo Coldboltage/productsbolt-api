@@ -20,10 +20,10 @@ export class SitemapUrlController {
     return this.sitemapUrlService.create(createSitemapUrlDto);
   }
 
-  @Post('/create-and-pair-sitemap')
-  createAndPairSitemap() {
-    return this.sitemapUrlService.createAndPairSitemap();
-  }
+  // @Post('/create-and-pair-sitemap')
+  // createAndPairSitemap() {
+  //   return this.sitemapUrlService.createAndPairSitemap();
+  // }
 
   @Get()
   findAll() {
@@ -34,6 +34,11 @@ export class SitemapUrlController {
   findOne(@Param('id') id: string) {
     return this.sitemapUrlService.findOne(+id);
   }
+
+  // @Patch('backup-urls')
+  // backupUrls() {
+  //   return this.sitemapUrlService.backupUrls();
+  // }
 
   @Patch(':id')
   update(

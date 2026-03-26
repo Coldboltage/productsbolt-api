@@ -40,6 +40,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { CurrencyModule } from './currency/currency.module';
 import { BrandModule } from './brand/brand.module';
 import { UtilsModule } from './utils/utils.module';
+import { UrlModule } from './url/url.module';
 
 @Module({
   imports: [
@@ -121,6 +122,7 @@ import { UtilsModule } from './utils/utils.module';
     CurrencyModule,
     BrandModule,
     UtilsModule,
+    UrlModule,
   ],
   controllers: [AppController],
   providers: [

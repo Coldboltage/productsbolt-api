@@ -64,9 +64,7 @@ export class ShopService implements OnApplicationBootstrap {
         sitemapEntity: {
           sitemap: createShopDto.sitemap,
           manual: createShopDto.manual,
-          sitemapUrl: {
-            urls: [''],
-          },
+          sitemapUrl: {},
         } as Partial<Sitemap>,
       });
       await this.updateSpecificShopSitemap(entity.id);
@@ -255,7 +253,9 @@ export class ShopService implements OnApplicationBootstrap {
           webPage: true,
         },
         sitemapEntity: {
-          sitemapUrl: true,
+          sitemapUrl: {
+            urls: true,
+          },
         },
       },
     });
