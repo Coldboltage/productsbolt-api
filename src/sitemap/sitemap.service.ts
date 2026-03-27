@@ -259,10 +259,16 @@ export class SitemapService {
     // this.logger.debug(
     //   'manualUpdateAllShopProductsForShopImmediateLinks blocked',
     // );
-    await this.shopProductService.manualUpdateAllShopProductsForShopImmediateLinks(
+
+    // Rate relief RTX 4090 delete
+    await this.shopProductService.manualUpdateAllShopProductsForShopImmediateLinksPriority(
       sitemapEntity.shop.id,
       false,
     );
+    // await this.shopProductService.manualUpdateAllShopProductsForShopImmediateLinks(
+    //   sitemapEntity.shop.id,
+    //   false,
+    // );
     return result;
   }
 

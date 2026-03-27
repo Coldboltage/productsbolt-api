@@ -115,20 +115,31 @@ export class ShopProductController {
     return this.shopProductService.findAllPopulatedWebpageNull();
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateShopProductDto: UpdateShopProductDto,
-  ): Promise<UpdateResult> {
-    return this.shopProductService.update(id, updateShopProductDto);
-  }
-
   @Patch('shop-product-links/:id')
   updateLinks(
     @Param('id') id: string,
     @Body() updateShopProductDto: UpdateShopProductDto,
   ): Promise<UpdateResult> {
     return this.shopProductService.updateLinks(id, updateShopProductDto);
+  }
+
+  @Patch('shop-product-links-priority/:id')
+  updateLinksPriority(
+    @Param('id') id: string,
+    @Body() updateShopProductDto: UpdateShopProductDto,
+  ): Promise<UpdateResult> {
+    return this.shopProductService.updateLinksPriority(
+      id,
+      updateShopProductDto,
+    );
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateShopProductDto: UpdateShopProductDto,
+  ): Promise<UpdateResult> {
+    return this.shopProductService.update(id, updateShopProductDto);
   }
 
   @Delete(':id')

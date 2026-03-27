@@ -569,6 +569,112 @@ export class ShopProductService {
     });
   }
 
+  async manualUpdateAllShopProductsForShopImmediateLinksPriority(
+    shopId: string,
+    scanAll: boolean,
+  ): Promise<void> {
+    const whereClause: FindManyOptions<ShopProduct> = {
+      where: {
+        shop: {
+          id: shopId,
+          active: true,
+        },
+        product: {
+          priority: true,
+        },
+      },
+      relations: {
+        product: true,
+        shop: {
+          sitemapEntity: {
+            sitemapUrl: true,
+          },
+        },
+        webPage: true,
+        shopProductBlacklistUrls: {
+          blackListUrl: true,
+        },
+        candidatePages: {
+          candidatePageCache: true,
+        },
+      },
+    };
+
+    if (!scanAll) {
+      whereClause.where['populated'] = false;
+    }
+
+    // const shopProductsOrphan = await (
+    //   await this.shopProductRepository.find(whereClause)
+    // ).sort(() => Math.random() - 0.5);
+    // this.logger.log(shopProductsOrphan.length);
+
+    const shopProductsOrphan =
+      await this.shopProductRepository.find(whereClause);
+    shopProductsOrphan.sort(() => Math.random() - 0.5);
+
+    // await new Promise((r) => setTimeout(r, 200000000));
+
+    for (const shopProduct of shopProductsOrphan) {
+      if (!shopProduct) continue;
+
+      const reducedSitemap = this.shopService.reduceSitemap(
+        shopProduct.shop.sitemapEntity.sitemapUrl.freshUrls,
+        shopProduct.product.name,
+      );
+
+      if (reducedSitemap.fuseWords.length === 0) {
+        this.logger.error({
+          shopProductId: shopProduct.id,
+          error: `reducedSitemap.length === 0`,
+          freshUrls: shopProduct.shop.sitemapEntity.sitemapUrl.freshUrls.length,
+        });
+      }
+
+      const limitedUrls = await this.filteredLimitedUrls(
+        shopProduct,
+        reducedSitemap.fuseWords,
+      );
+
+      if (limitedUrls.length === 0) {
+        this.logger.log(
+          `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name} but was found in reduced sitemap: ${reducedSitemap}`,
+        );
+        continue;
+      }
+
+      const createProcess =
+        this.createProcessDtoTemplateFromFindLinksShopProduct(
+          shopProduct,
+          shopProduct.shop,
+          limitedUrls,
+        );
+
+      if (
+        shopProduct.shop.uniqueShopType === UniqueShopType.EBAY &&
+        shopProduct.ebayProductDetail
+      ) {
+        createProcess.ebayProductDetail = {
+          ebayProductDetailId: shopProduct.ebayProductDetail.id,
+          productId: shopProduct.ebayProductDetail.productId,
+        };
+      }
+      this.logger.debug(`shopProduct updating: ${shopProduct.id}`);
+      this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
+
+      // if (shopProduct.shop.isShopifySite === true) {
+      //   this.logger.log('shopifySiteFound');
+      //   this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
+      // } else {
+      //   this.logger.log('normal setup');
+      //   this.headfulClient.emit<CreateProcessDto>('findLinks', createProcess);
+      // }
+      await new Promise((r) => setTimeout(r, 1));
+    }
+
+    this.logger.verbose('everything completed');
+  }
+
   async manualUpdateAllShopProductsForShopImmediateLinks(
     shopId: string,
     scanAll: boolean,
@@ -2076,8 +2182,21 @@ export class ShopProductService {
       updateShopProductDto,
     );
     this.logger.log('updateLinks called');
+    await this.checkForIndividualShopProduct(id);
+    // await this.checkForIndividualShopProductPriority(id);
+    return updateResult;
+  }
+
+  async updateLinksPriority(
+    id: string,
+    updateShopProductDto: UpdateShopProductDto,
+  ): Promise<UpdateResult> {
+    const updateResult = await this.shopProductRepository.update(
+      { id },
+      updateShopProductDto,
+    );
+    this.logger.log('updateLinks called');
     // await this.checkForIndividualShopProduct(id);
-    // Rate relief please delete when RTX 4090 returns
     await this.checkForIndividualShopProductPriority(id);
     return updateResult;
   }
