@@ -177,6 +177,11 @@ export class WebpageController {
     return this.webpageService.updateEuroPrice();
   }
 
+  @Post('webpage-slug-test')
+  pageUrlTest() {
+    return this.webpageService.pageUrlTest();
+  }
+
   @Patch('update-normal/:id')
   updateNormal(
     @Param('id') id: string,

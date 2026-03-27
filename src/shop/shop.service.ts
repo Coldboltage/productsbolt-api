@@ -19,7 +19,7 @@ import { ProductListingsCheckInterface } from './dto/product-listings-check.dto'
 import { Span } from 'nestjs-otel/lib/tracing/decorators/span';
 import { ShopifyMetaDto } from './dto/shopify-meta.dto';
 import { VAT_INCLUDED_BY_DEFAULT } from './shop.vat.constant';
-
+const Fuse = require('fuse.js');
 @Injectable()
 export class ShopService implements OnApplicationBootstrap {
   private logger = new Logger(ShopService.name);
@@ -491,7 +491,16 @@ export class ShopService implements OnApplicationBootstrap {
     return this.shopsRepository.remove(shopEntity);
   }
 
-  reduceSitemap(urls: string[], query: string): string[] {
+  reduceSitemap(
+    urls: string[],
+    query: string,
+  ): {
+    query: string;
+    fuse: number;
+    fuseWords: string[];
+    result: number;
+    resultWords: string[];
+  } {
     const extractKeywords = (rawUrl: string): string[] => {
       const noQuery = rawUrl.split(/[?#]/)[0].replace(/\/+$/, '');
       const parts = noQuery.split('/').filter(Boolean);
@@ -541,7 +550,55 @@ export class ShopService implements OnApplicationBootstrap {
     };
     const result = filterProducts(urls, query);
 
-    return result;
+    const normalizeText = (value: string): string =>
+      value
+        .toLowerCase()
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[’'`]/g, '')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
+
+    const fuse = new Fuse(
+      result.map((url) => ({
+        url,
+        slug: normalizeText(
+          decodeURIComponent(
+            url
+              .split(/[?#]/)[0]
+              .replace(/\/+$/, '')
+              .split('/')
+              .filter(Boolean)
+              .pop() || '',
+          ),
+        ),
+      })),
+      {
+        includeScore: true,
+        threshold: 0.35,
+        ignoreLocation: true,
+        minMatchCharLength: 3,
+        keys: ['slug'],
+      },
+    );
+
+    const fuseResult = fuse.search(normalizeText(query)).map((r) => r.item.url);
+
+    // this.logger.debug({
+    //   query,
+    //   fuse: fuseResult.length,
+    //   fuseWords: fuseResult,
+    //   result: result.length,
+    //   resultWords: result,
+    // });
+
+    return {
+      query,
+      fuse: fuseResult.length,
+      fuseWords: fuseResult,
+      result: result.length,
+      resultWords: result,
+    };
   }
 
   fuseReduce(urls: string[]) {

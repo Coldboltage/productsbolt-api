@@ -42,6 +42,15 @@ export class ShopProductController {
     );
   }
 
+  @Post('manual-update-shops-all-products-links-priority/:scanAll')
+  manualUpdateAllShopProductsImmediateLinksPriority(
+    @Param('scanAll', ParseBoolPipe) scanAll: boolean,
+  ): Promise<void> {
+    return this.shopProductService.manualUpdateAllShopProductsImmediateLinksPriority(
+      scanAll,
+    );
+  }
+
   @Post('manual-update-links-for-specific-product/:productId')
   manuallyUpdateLinksForSpecificProduct(
     @Param('productId') productId: string,
