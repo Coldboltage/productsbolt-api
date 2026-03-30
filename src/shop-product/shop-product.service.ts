@@ -212,6 +212,8 @@ export class ShopProductService {
       throw new NotFoundException(`No URLs found for ${shopProduct.shop.name}`);
     }
 
+    limitedUrls.push(...shopProduct.links);
+
     // const test = limitedUrls.some((url) =>
     //   url.includes(
     //     `trading-card-game-spiritforged-sealed-booster-box-set-2-p88590`,
@@ -307,6 +309,8 @@ export class ShopProductService {
         );
         continue;
       }
+
+      limitedUrls.push(...shopProduct.links);
 
       const createProcess =
         this.createProcessDtoTemplateFromFindLinksShopProduct(
@@ -405,6 +409,8 @@ export class ShopProductService {
         );
         continue;
       }
+
+      limitedUrls.push(...shopProductsOrphan.links);
 
       const createProcess =
         this.createProcessDtoTemplateFromFindLinksShopProduct(
@@ -528,6 +534,8 @@ export class ShopProductService {
         continue;
       }
 
+      limitedUrls.push(...shopProductsOrphan.links);
+
       const createProcess =
         this.createProcessDtoTemplateFromFindLinksShopProduct(
           shopProductsOrphan,
@@ -618,8 +626,19 @@ export class ShopProductService {
     for (const shopProduct of shopProductsOrphan) {
       if (!shopProduct) continue;
 
+      const freshUrls = await this.urlRepository.find({
+        where: {
+          sitemapUrl: {
+            id: shopProduct.shop.sitemapEntity.sitemapUrl.id,
+          },
+          freshUrl: true,
+        },
+      });
+
+      const freshUrlsList = freshUrls.map((freshUrls) => freshUrls.url);
+
       const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrl.freshUrls,
+        freshUrlsList,
         shopProduct.product.name,
       );
 
@@ -627,7 +646,7 @@ export class ShopProductService {
         this.logger.error({
           shopProductId: shopProduct.id,
           error: `reducedSitemap.length === 0`,
-          freshUrls: shopProduct.shop.sitemapEntity.sitemapUrl.freshUrls.length,
+          freshUrls: freshUrlsList,
         });
       }
 
@@ -642,6 +661,8 @@ export class ShopProductService {
         );
         continue;
       }
+
+      limitedUrls.push(...shopProduct.links);
 
       const createProcess =
         this.createProcessDtoTemplateFromFindLinksShopProduct(
@@ -721,8 +742,37 @@ export class ShopProductService {
     for (const shopProduct of shopProductsOrphan) {
       if (!shopProduct) continue;
 
+      const freshUrls = await this.urlRepository.find({
+        where: {
+          sitemapUrl: {
+            id: shopProduct.shop.sitemapEntity.sitemapUrl.id,
+          },
+          freshUrl: true,
+        },
+      });
+
+      const freshUrlsList = freshUrls.map((freshUrls) => freshUrls.url);
+
+      this.logger.debug({
+        freshUrlsList: freshUrlsList.length,
+        sitemapUrlId: shopProduct.shop.sitemapEntity.sitemapUrl.id,
+      });
+
+      // const urls = await this.urlRepository.find({
+      //   where: {
+      //     sitemapUrl: {
+      //       id: shopProduct.shop.sitemapEntity.sitemapUrl.id,
+      //     },
+      //   },
+      // });
+
+      // const reducedSitemap = this.shopService.reduceSitemap(
+      //   urls.map((urls) => urls.url),
+      //   shopProduct.product.name,
+      // );
+
       const reducedSitemap = this.shopService.reduceSitemap(
-        shopProduct.shop.sitemapEntity.sitemapUrl.freshUrls,
+        freshUrlsList,
         shopProduct.product.name,
       );
 
@@ -730,7 +780,7 @@ export class ShopProductService {
         this.logger.error({
           shopProductId: shopProduct.id,
           error: `reducedSitemap.length === 0`,
-          freshUrls: shopProduct.shop.sitemapEntity.sitemapUrl.freshUrls.length,
+          freshUrls: freshUrlsList.length,
         });
       }
 
@@ -745,6 +795,8 @@ export class ShopProductService {
         );
         continue;
       }
+
+      limitedUrls.push(...shopProduct.links);
 
       const createProcess =
         this.createProcessDtoTemplateFromFindLinksShopProduct(
@@ -763,7 +815,7 @@ export class ShopProductService {
         };
       }
       this.logger.debug(`shopProduct updating: ${shopProduct.id}`);
-      this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
+      // this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
 
       // if (shopProduct.shop.isShopifySite === true) {
       //   this.logger.log('shopifySiteFound');

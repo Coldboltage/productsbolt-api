@@ -145,8 +145,6 @@ export class SitemapService {
     id: string,
     updateSitemapDto: UpdateSitemapDto,
   ): Promise<void> {
-    this.logger.debug(['before findOneForCheck', process.memoryUsage()]);
-
     const sitemapEntity = await this.findOneForCheck(id);
     const dbUrls = (
       await this.urlRepository.find({
@@ -159,12 +157,8 @@ export class SitemapService {
       })
     ).map(({ url }) => url);
 
-    this.logger.debug(['after find', process.memoryUsage()]);
-
     console.log('checking sitemap urls');
     console.time('checkSites');
-
-    this.logger.debug(['before checkSiteMapLoop', process.memoryUsage()]);
 
     const sameSites = await this.checkSiteMapLoop(dbUrls, updateSitemapDto);
     console.log({
@@ -172,27 +166,46 @@ export class SitemapService {
       newUrls: sameSites.newUrls.length,
       deleteUrls: sameSites.deleteUrls.length,
     });
-
-    this.logger.debug(['after checkSiteMapLoop', process.memoryUsage()]);
-
     // await new Promise((r) => setTimeout(r, 200000000));
 
     if (!sameSites.unchanged) {
       console.log(sitemapEntity.sitemapUrl.id);
-      await this.sitemapUrlRepository.update(sitemapEntity.sitemapUrl.id, {
-        // urls: updateSitemapDto.sitemapUrls || [''],
-        freshUrls: sameSites.newUrls,
-      });
+
       this.logger.debug(`deleting urls for shopId: ${updateSitemapDto.shopId}`);
       await this.urlRepository.delete({
         sitemapUrl: { id: sitemapEntity.sitemapUrl.id },
         url: In(sameSites.deleteUrls),
       });
+      await this.urlRepository.update(
+        {
+          sitemapUrl: {
+            id: sitemapEntity.sitemapUrl.id,
+          },
+        },
+        { freshUrl: false },
+      );
+      // await this.sitemapUrlRepository.update(sitemapEntity.sitemapUrl.id, {
+      //   // urls: updateSitemapDto.sitemapUrls || [''],
+      //   freshUrls: sameSites.newUrls,
+      // });
+
+      // const newUrlsBatch: DeepPartial<Url>[] = [];
+      // for (const newUrl of sameSites.newUrls) {
+      //   const url: DeepPartial<Url> = {
+      //     url: newUrl,
+      //     freshUrl: true,
+      //     sitemapUrl: {
+      //       id: sitemapEntity.sitemapUrl.id,
+      //     },
+      //   };
+      //   newUrlsBatch.push(url);
+      // }
+
+      // await this.urlRepository.save(newUrlsBatch);
+
       this.logger.debug(`creating urls for shopId: ${updateSitemapDto.shopId}`);
 
       const chunkSize = 10000;
-
-      this.logger.debug(['before chunking', process.memoryUsage()]);
 
       // await new Promise((r) => setTimeout(r, 200000000));
 
@@ -213,8 +226,6 @@ export class SitemapService {
           .orIgnore()
           .execute();
       }
-
-      this.logger.debug(['after urlRepository', process.memoryUsage()]);
 
       // await new Promise((r) => setTimeout(r, 200000000));
 
@@ -259,16 +270,10 @@ export class SitemapService {
     // this.logger.debug(
     //   'manualUpdateAllShopProductsForShopImmediateLinks blocked',
     // );
-
-    // Rate relief RTX 4090 delete
-    await this.shopProductService.manualUpdateAllShopProductsForShopImmediateLinksPriority(
+    await this.shopProductService.manualUpdateAllShopProductsForShopImmediateLinks(
       sitemapEntity.shop.id,
       false,
     );
-    // await this.shopProductService.manualUpdateAllShopProductsForShopImmediateLinks(
-    //   sitemapEntity.shop.id,
-    //   false,
-    // );
     return result;
   }
 
