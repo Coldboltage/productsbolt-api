@@ -815,7 +815,7 @@ export class ShopProductService {
         };
       }
       this.logger.debug(`shopProduct updating: ${shopProduct.id}`);
-      // this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
+      this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
 
       // if (shopProduct.shop.isShopifySite === true) {
       //   this.logger.log('shopifySiteFound');
@@ -832,14 +832,13 @@ export class ShopProductService {
 
   // @Cron('0 1,3,5,7,9,11,13,15,17,19,21,23 * * *', { timeZone: 'Europe/London' })
   // Rate relief
-  // @Cron(`0 */6 * * *`)
+  @Cron(`0 */6 * * *`)
   async manualUpdateAllShopProducts(): Promise<string> {
     this.manualUpdateAllShopProductsEvent();
     return 'manualUpdateAllShopProductsEvent fired';
   }
 
-  // Rate relief delete cron below
-  @Cron(`0 */24 * * *`)
+  // @Cron(`0 */24 * * *`)
   async manualUpdateAllShopProductsImmediate(): Promise<void> {
     const shopProductsOrphan = await (
       await this.shopProductRepository.find({
