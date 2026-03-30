@@ -171,7 +171,7 @@ export class SitemapService {
     if (!sameSites.unchanged) {
       console.log(sitemapEntity.sitemapUrl.id);
 
-      this.logger.debug(`deleting urls for shopId: ${updateSitemapDto.shopId}`);
+      this.logger.debug(`deleting urls for shopId: ${sitemapEntity.shop.id}`);
       await this.urlRepository.delete({
         sitemapUrl: { id: sitemapEntity.sitemapUrl.id },
         url: In(sameSites.deleteUrls),
