@@ -18,7 +18,7 @@ import {
   StrippedWebpageSlimWithShop,
   Webpage,
 } from './entities/webpage.entity';
-import { IsNull, MoreThan, Not, Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
@@ -30,6 +30,7 @@ import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CurrencyService } from 'src/currency/currency.service';
 import { UtilsService } from 'src/utils/utils.service';
+import { Url } from 'src/url/url.entity';
 
 @Injectable()
 export class WebpageService {
@@ -37,6 +38,7 @@ export class WebpageService {
 
   constructor(
     @InjectRepository(Webpage) private webpagesRepository: Repository<Webpage>,
+    @InjectRepository(Url) private urlsRepository: Repository<Url>,
     @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
     @Inject('HEADFUL_SLOW_CLIENT') private headfulSlowClient: ClientProxy,
 
@@ -1170,5 +1172,69 @@ export class WebpageService {
       console.log(priceCheck);
       await this.updateNormal(page.id, { priceCheck });
     }
+  }
+
+  async pageUrlTest() {
+    const webpages = await this.webpagesRepository.find({
+      relations: {
+        shopProduct: {
+          product: true,
+          shop: {
+            sitemapEntity: {
+              sitemapUrl: true,
+            },
+          },
+        },
+      },
+      where: {
+        inStock: true,
+      },
+    });
+
+    const afterPages = [];
+    const totalAmount = [];
+    const failed = [];
+
+    for (const page of webpages) {
+      // const urls = await this.urlsRepository.find({
+      //   where: {
+      //     sitemapUrl: {
+      //       id: page?.shopProduct?.shop?.sitemapEntity?.sitemapUrl?.id,
+      //     },
+      //   },
+      //   select: {
+      //     id: true,
+      //     url: true,
+      //   },
+      // });
+
+      const test = this.utilService.reduceSitemap(
+        [page.url],
+        page.shopProduct.product.name,
+      );
+
+      if (test.fuseWords.length > 0) {
+        totalAmount.push({
+          name: page.shopProduct.product.name,
+          url: page.url,
+        });
+      } else {
+        failed.push({ name: page.shopProduct.product.name, url: page.url });
+      }
+      if (test.fuseWords.length > 0 && test.fuseWords.includes(page.url)) {
+        this.logger.debug({
+          url: page.url,
+          name: page.shopProduct.product.name,
+        });
+        afterPages.push(page.url);
+      }
+    }
+
+    this.logger.debug({
+      before: webpages.length,
+      after: afterPages.length,
+      totalAmount: totalAmount.length,
+    });
+    this.logger.debug(failed);
   }
 }

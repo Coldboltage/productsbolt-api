@@ -16,6 +16,12 @@ export class Url {
   @Column()
   url: string;
 
+  @Column({ default: false })
+  scanned: boolean;
+
+  @Column({ default: true })
+  freshUrl: boolean;
+
   @ManyToOne(() => SitemapUrl, (sitemapUrl) => sitemapUrl.urls)
   sitemapUrl: SitemapUrl;
 }

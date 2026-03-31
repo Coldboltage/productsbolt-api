@@ -11,10 +11,11 @@ import { WebpageTools } from './webpage.tools';
 import { ShopModule } from 'src/shop/shop.module';
 import { CurrencyModule } from 'src/currency/currency.module';
 import { UtilsModule } from 'src/utils/utils.module';
+import { Url } from 'src/url/url.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Webpage]),
+    TypeOrmModule.forFeature([Webpage, Url]),
     ShopProductModule,
     ClientsModule,
     ProductModule,
