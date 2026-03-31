@@ -70,6 +70,16 @@ export class CandidatePageController {
     return this.candidatePageService.update(id, updateCandidatePageDto);
   }
 
+  @Delete('batch-updated-inspected-price-match-edition-match')
+  batchRemoveCandidatePagesPriceMatchEditionMatch() {
+    return this.candidatePageService.batchRemoveCandidatePagesPriceMatchEditionMatch();
+  }
+
+  @Delete('batch-updated-inspected-mixed-signals-edition-match')
+  batchRemoveCandidatePagesMixedSignalsEditionMatch() {
+    return this.candidatePageService.batchRemoveCandidatePagesMixedSignalsEditionMatch();
+  }
+
   @Delete('batch-updated-inspected')
   batchRemoveCandidatePages() {
     return this.candidatePageService.batchRemoveCandidatePages();

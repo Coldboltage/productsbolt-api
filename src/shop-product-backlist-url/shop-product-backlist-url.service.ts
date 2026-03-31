@@ -9,7 +9,6 @@ import { PageType } from './shop-product-blacklist-url.types';
 import { BlackListUrl } from 'src/blacklist-url/entities/blacklist-url.entity';
 import { ShopProduct } from 'src/shop-product/entities/shop-product.entity';
 import { OnEvent } from '@nestjs/event-emitter';
-import { CandidatePageService } from 'src/candidate-page/candidate-page.service';
 
 @Injectable()
 export class ShopProductBacklistUrlService {
@@ -18,7 +17,6 @@ export class ShopProductBacklistUrlService {
     private shopProductBlacklistRepository: Repository<ShopProductBlacklistUrl>,
     private shopProductService: ShopProductService,
     private blacklistUrlService: BlackListUrlService,
-    private candidatePageService: CandidatePageService,
   ) {}
   @OnEvent('blacklist.candidate.pages')
   async create(
@@ -53,6 +51,13 @@ export class ShopProductBacklistUrlService {
         shopProduct: shopProductEntity,
         blackListUrl: blackListUrlEntity,
       });
+
+    const filteredLinks = shopProductEntity.links.filter(
+      (link) => link !== blackListUrlEntity.url,
+    );
+    await this.shopProductService.update(shopProductEntity.id, {
+      links: filteredLinks,
+    });
 
     await this.shopProductService.checkForIndividualShopProduct(
       shopProductEntity.id,
