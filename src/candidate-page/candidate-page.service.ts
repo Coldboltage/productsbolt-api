@@ -251,6 +251,40 @@ export class CandidatePageService {
     });
   }
 
+  async batchRemoveCandidatePagesPriceMatchEditionMatch() {
+    const candidatePagesToInspect = await this.findAllPriceMatchEditionMatch();
+    for (const page of candidatePagesToInspect) {
+      this.eventEmitter.emit('blacklist.candidate.pages', {
+        pageId: page.id,
+        pageType: 'CP',
+      });
+    }
+    return true;
+  }
+
+  async batchRemoveCandidatePagesMixedSignalsEditionMatch() {
+    const candidatePagesToInspect =
+      await this.findAllMixedSignalsEditionMatch();
+    for (const page of candidatePagesToInspect) {
+      this.eventEmitter.emit('blacklist.candidate.pages', {
+        pageId: page.id,
+        pageType: 'CP',
+      });
+    }
+    return true;
+  }
+
+  async batchRemoveCandidatePagesEditionMatchOnly() {
+    const candidatePagesToInspect = await this.findAllEditionMatch();
+    for (const page of candidatePagesToInspect) {
+      this.eventEmitter.emit('blacklist.candidate.pages', {
+        pageId: page.id,
+        pageType: 'CP',
+      });
+    }
+    return true;
+  }
+
   async batchRemoveCandidatePages() {
     const candidatePagesToInspect = await this.findAllLoaded();
     for (const page of candidatePagesToInspect) {
