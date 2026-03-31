@@ -416,7 +416,9 @@ export class CandidatePageService {
       reason: candidatePage.reason,
     };
     await this.webpageService.create(webpageDto);
-    return this.remove(id);
+    const result = await this.remove(id);
+    await this.removeCandidatePagesWithWebpages();
+    return result;
   }
 
   async removeCandidatePagesWithWebpages() {
