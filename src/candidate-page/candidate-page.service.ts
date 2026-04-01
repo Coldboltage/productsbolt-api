@@ -184,6 +184,7 @@ export class CandidatePageService {
         id: true,
         url: true,
         price: true,
+        priceCheck: true,
         reason: true,
         pageTitle: true,
         shopProduct: {
@@ -306,7 +307,7 @@ export class CandidatePageService {
 
   async findAllLoaded(): Promise<CandidatePage[]> {
     return this.candidatePageRepository.find({
-      where: { loadedData: true },
+      where: { loadedData: true, price: MoreThan(0), editionMatch: true },
       relations: { shopProduct: true },
     });
   }
@@ -357,6 +358,27 @@ export class CandidatePageService {
         page.shopProduct.product.price,
       );
       await this.update(page.id, { priceCheck });
+    }
+  }
+
+  @Cron(CronExpression.EVERY_2_HOURS)
+  async updateEuroPrice() {
+    const activeWebpages = await this.findAll();
+    for (const webpage of activeWebpages) {
+      const shopCurrency = webpage.shopProduct.shop.currency;
+      if (shopCurrency === 'EUR') {
+        await this.update(webpage.id, { euroPrice: webpage.price });
+        continue;
+      }
+
+      this.logger.log(shopCurrency);
+
+      const currencyInfo = await this.currencyService.findOneByBaseAndCompare(
+        'EUR',
+        shopCurrency,
+      );
+      const euroPrice = webpage.price / currencyInfo.value;
+      await this.update(webpage.id, { euroPrice });
     }
   }
 

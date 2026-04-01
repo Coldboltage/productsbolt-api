@@ -62,6 +62,11 @@ export class CandidatePageController {
     return this.candidatePageService.updatePriceCheck();
   }
 
+  @Post(`update-euro-price`)
+  updateEuroPrice() {
+    return this.candidatePageService.updateEuroPrice();
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -78,6 +83,11 @@ export class CandidatePageController {
   @Delete('batch-updated-inspected-mixed-signals-edition-match')
   batchRemoveCandidatePagesMixedSignalsEditionMatch() {
     return this.candidatePageService.batchRemoveCandidatePagesMixedSignalsEditionMatch();
+  }
+
+  @Delete('batch-updated-inspected-edition-match-only')
+  batchRemoveCandidatePagesEditionMatchOnly() {
+    return this.candidatePageService.batchRemoveCandidatePagesEditionMatchOnly();
   }
 
   @Delete('batch-updated-inspected')
