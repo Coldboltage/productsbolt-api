@@ -117,11 +117,6 @@ export class WebpageCacheService {
       notFoundCounter: 0,
     });
 
-    this.logger.debug({
-      priceCheck: priceInRange,
-      notFoundCounter: 0,
-    });
-
     this.logger.log({
       webpageEntityPrice: +webpageEntity.price,
       updatedWebpageDtoPrice: updateWebpageDto.price,
