@@ -9,7 +9,7 @@ import { CreateCandidatePageDto } from './dto/create-candidate-page.dto';
 import { UpdateCandidatePageDto } from './dto/update-candidate-page.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CandidatePage } from './entities/candidate-page.entity';
-import { IsNull, Repository } from 'typeorm';
+import { IsNull, MoreThan, Repository } from 'typeorm';
 import { ShopProductService } from 'src/shop-product/shop-product.service';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { CheckPageDto } from 'src/webpage/entities/webpage.entity';
@@ -203,6 +203,7 @@ export class CandidatePageService {
         // packagingTypeMatch: true,
         inspected: false,
         loadedData: true,
+        price: MoreThan(0),
       },
       relations: {
         shopProduct: true,
