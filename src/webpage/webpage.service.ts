@@ -972,6 +972,7 @@ export class WebpageService {
       lastScanned: updateWebpageDto.lastScanned,
       euroPrice: updateWebpageDto.euroPrice,
       priceCheck: updateWebpageDto.priceCheck,
+      notFoundCounter: 0,
     });
     const webpageEntity = await this.findOne(id);
     const result = await this.alertService.checkAlert(webpageEntity);
