@@ -226,6 +226,34 @@ export class CandidatePageService {
     });
   }
 
+  async findAllPartial() {
+    return this.candidatePageRepository.find({
+      where: {
+        // packagingTypeMatch: true,
+        inspected: false,
+        loadedData: true,
+        price: MoreThan(0),
+      },
+      relations: {
+        shopProduct: true,
+      },
+      select: {
+        id: true,
+        url: true,
+        price: true,
+        reason: true,
+        pageTitle: true,
+        priceCheck: true,
+        shopProduct: {
+          id: true,
+          name: true,
+          shopId: true,
+          links: true,
+        },
+      },
+    });
+  }
+
   async findAllMixedSignalsEditionMatch() {
     return this.candidatePageRepository.find({
       where: {

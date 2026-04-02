@@ -33,13 +33,19 @@ export class CandidatePageController {
     return this.candidatePageService.findAllPriceMatchEditionMatch();
   }
 
+  @Get('find-all-mixed-signals-edition-match')
+  findAllMixedSignalsEditionMatch() {
+    return this.candidatePageService.findAllMixedSignalsEditionMatch();
+  }
+
   @Get('find-all-edition-match-only')
   findAllEditionMatch() {
     return this.candidatePageService.findAllEditionMatch();
   }
-  @Get('find-all-mixed-signals-edition-match')
-  findAllMixedSignalsEditionMatch() {
-    return this.candidatePageService.findAllMixedSignalsEditionMatch();
+
+  @Get('find-all-edition-partial')
+  findAllPartial() {
+    return this.candidatePageService.findAllPartial();
   }
 
   @Get()
