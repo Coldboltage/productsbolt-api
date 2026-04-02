@@ -66,7 +66,6 @@ export class CandidatePage {
 
   @Column({ default: false })
   packagingTypeMatch: boolean;
-  p;
 
   @Column({ default: false })
   inspecpackagingTypeMatchted: boolean;

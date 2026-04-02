@@ -96,9 +96,9 @@ export class CandidatePageController {
     return this.candidatePageService.batchRemoveCandidatePagesEditionMatchOnly();
   }
 
-  @Delete('batch-updated-inspected')
-  batchRemoveCandidatePages() {
-    return this.candidatePageService.batchRemoveCandidatePages();
+  @Delete('batch-updated-inspected-partial')
+  batchRemoveCandidatePagesPartial() {
+    return this.candidatePageService.batchRemoveCandidatePagesPartial();
   }
 
   @Delete('remove-shop-product-null')

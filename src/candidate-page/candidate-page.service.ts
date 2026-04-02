@@ -20,6 +20,7 @@ import { WebpageService } from 'src/webpage/webpage.service';
 import { CreateWebpageDto } from 'src/webpage/dto/create-webpage.dto';
 import { CurrencyService } from 'src/currency/currency.service';
 import { UtilsService } from 'src/utils/utils.service';
+import { count } from 'node:console';
 
 @Injectable()
 export class CandidatePageService {
@@ -230,12 +231,17 @@ export class CandidatePageService {
     return this.candidatePageRepository.find({
       where: {
         // packagingTypeMatch: true,
+        editionMatch: false,
         inspected: false,
         loadedData: true,
         price: MoreThan(0),
+        candidatePageCache: {
+          count: MoreThan(2),
+        },
       },
       relations: {
         shopProduct: true,
+        candidatePageCache: true,
       },
       select: {
         id: true,
@@ -249,6 +255,9 @@ export class CandidatePageService {
           name: true,
           shopId: true,
           links: true,
+        },
+        candidatePageCache: {
+          count: true,
         },
       },
     });
@@ -315,8 +324,8 @@ export class CandidatePageService {
     return true;
   }
 
-  async batchRemoveCandidatePages() {
-    const candidatePagesToInspect = await this.findAllLoaded();
+  async batchRemoveCandidatePagesPartial() {
+    const candidatePagesToInspect = await this.findAllLoadedPartial();
     for (const page of candidatePagesToInspect) {
       this.eventEmitter.emit('blacklist.candidate.pages', {
         pageId: page.id,
@@ -333,10 +342,15 @@ export class CandidatePageService {
     });
   }
 
-  async findAllLoaded(): Promise<CandidatePage[]> {
+  async findAllLoadedPartial(): Promise<CandidatePage[]> {
     return this.candidatePageRepository.find({
-      where: { loadedData: true, price: MoreThan(0), editionMatch: true },
-      relations: { shopProduct: true },
+      where: {
+        loadedData: true,
+        price: MoreThan(0),
+        editionMatch: true,
+        candidatePageCache: { count: MoreThan(2) },
+      },
+      relations: { shopProduct: true, candidatePageCache: true },
     });
   }
 
