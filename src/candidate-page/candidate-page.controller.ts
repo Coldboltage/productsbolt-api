@@ -43,7 +43,7 @@ export class CandidatePageController {
     return this.candidatePageService.findAllEditionMatch();
   }
 
-  @Get('find-all-edition-partial')
+  @Get('find-all-partial')
   findAllPartial() {
     return this.candidatePageService.findAllPartial();
   }
