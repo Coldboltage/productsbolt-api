@@ -347,9 +347,10 @@ export class CandidatePageService {
       where: {
         loadedData: true,
         price: MoreThan(0),
-        editionMatch: true,
+        editionMatch: false,
         candidatePageCache: { count: MoreThan(2) },
       },
+
       relations: { shopProduct: true, candidatePageCache: true },
     });
   }
