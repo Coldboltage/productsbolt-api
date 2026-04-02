@@ -202,7 +202,7 @@ export class WebpageService {
       order: {
         price: 'ASC',
       },
-      where: { shopProduct: { shop: { active: true } } },
+      where: { disable: false, shopProduct: { shop: { active: true } } },
       relations: {
         shopProduct: {
           product: true,
@@ -237,6 +237,7 @@ export class WebpageService {
   async findAllHighPriority(): Promise<Webpage[]> {
     return this.webpagesRepository.find({
       where: {
+        disable: false,
         shopProduct: {
           shop: {
             active: true,
@@ -265,6 +266,7 @@ export class WebpageService {
   async findAllNonHighPriority(): Promise<Webpage[]> {
     return this.webpagesRepository.find({
       where: {
+        disable: false,
         shopProduct: {
           shop: {
             active: true,
@@ -1115,8 +1117,8 @@ export class WebpageService {
 
   async notFoundCounter(id: string) {
     const webpageEntity = await this.findOne(id);
-    if (webpageEntity.notFoundCounter > 5) {
-      await this.removeWebpage(id);
+    if (webpageEntity.notFoundCounter > 3) {
+      await this.updateNormal(id, { disable: true });
     } else {
       await this.updateNormal(id, {
         notFoundCounter: webpageEntity.notFoundCounter + 1,
