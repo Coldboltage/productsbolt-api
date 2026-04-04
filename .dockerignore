@@ -6,3 +6,4 @@ dist
 backups
 db_backup
 diagnostics
+docker

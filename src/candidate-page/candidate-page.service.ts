@@ -238,7 +238,7 @@ export class CandidatePageService {
           count: MoreThan(2),
         },
         shopProduct: {
-          disabledAt: Not(IsNull()),
+          disabledAt: IsNull(),
         },
       },
       relations: {
@@ -351,7 +351,7 @@ export class CandidatePageService {
         price: MoreThan(0),
         editionMatch: false,
         candidatePageCache: { count: MoreThan(2) },
-        shopProduct: { disabledAt: Not(IsNull()) },
+        shopProduct: { disabledAt: IsNull() },
       },
 
       relations: { shopProduct: true, candidatePageCache: true },
