@@ -182,6 +182,14 @@ export class WebpageController {
     return this.webpageService.pageUrlTest();
   }
 
+  @Patch('update-inspected/:id/:state')
+  updateInspected(
+    @Param('id') id: string,
+    @Param('state', ParseBoolPipe) state: boolean,
+  ) {
+    return this.webpageService.updateInspected(id, state);
+  }
+
   @Patch('update-normal/:id')
   updateNormal(
     @Param('id') id: string,

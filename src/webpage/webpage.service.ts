@@ -954,6 +954,19 @@ export class WebpageService {
     return entity;
   }
 
+  async updateInspected(id: string, state: boolean) {
+    try {
+      await this.webpagesRepository.update(id, { inspected: state });
+      const webpageEntity = await this.findOne(id);
+      await fetch(
+        `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${webpageEntity.shopProduct.product.urlSafeName}`,
+        { method: 'POST' },
+      );
+    } catch (error) {
+      this.logger.error({ error, id });
+    }
+  }
+
   async updateNormal(id: string, updateWebpageDto: UpdateWebpageDto) {
     try {
       return this.webpagesRepository.update(id, updateWebpageDto);

@@ -38,6 +38,9 @@ export class ShopProduct {
   @Column({ default: '', type: 'simple-array' })
   links: string[];
 
+  @Column({ nullable: true, default: null })
+  disabledAt: Date;
+
   @ManyToOne(() => Shop, (shop) => shop.shopProducts, {
     onDelete: 'CASCADE',
   })

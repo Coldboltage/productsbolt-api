@@ -9,7 +9,7 @@ import { CreateCandidatePageDto } from './dto/create-candidate-page.dto';
 import { UpdateCandidatePageDto } from './dto/update-candidate-page.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CandidatePage } from './entities/candidate-page.entity';
-import { IsNull, MoreThan, Repository } from 'typeorm';
+import { IsNull, MoreThan, Not, Repository } from 'typeorm';
 import { ShopProductService } from 'src/shop-product/shop-product.service';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { CheckPageDto } from 'src/webpage/entities/webpage.entity';
@@ -20,7 +20,6 @@ import { WebpageService } from 'src/webpage/webpage.service';
 import { CreateWebpageDto } from 'src/webpage/dto/create-webpage.dto';
 import { CurrencyService } from 'src/currency/currency.service';
 import { UtilsService } from 'src/utils/utils.service';
-import { count } from 'node:console';
 
 @Injectable()
 export class CandidatePageService {
@@ -238,6 +237,9 @@ export class CandidatePageService {
         candidatePageCache: {
           count: MoreThan(2),
         },
+        shopProduct: {
+          disabledAt: Not(IsNull()),
+        },
       },
       relations: {
         shopProduct: true,
@@ -349,6 +351,7 @@ export class CandidatePageService {
         price: MoreThan(0),
         editionMatch: false,
         candidatePageCache: { count: MoreThan(2) },
+        shopProduct: { disabledAt: Not(IsNull()) },
       },
 
       relations: { shopProduct: true, candidatePageCache: true },
