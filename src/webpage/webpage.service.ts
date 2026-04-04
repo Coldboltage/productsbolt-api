@@ -18,7 +18,7 @@ import {
   StrippedWebpageSlimWithShop,
   Webpage,
 } from './entities/webpage.entity';
-import { IsNull, Not, Repository } from 'typeorm';
+import { IsNull, LessThanOrEqual, Not, Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
@@ -202,7 +202,7 @@ export class WebpageService {
       order: {
         price: 'ASC',
       },
-      where: { disable: false, shopProduct: { shop: { active: true } } },
+      where: { shopProduct: { shop: { active: true } } },
       relations: {
         shopProduct: {
           product: true,
@@ -237,7 +237,7 @@ export class WebpageService {
   async findAllHighPriority(): Promise<Webpage[]> {
     return this.webpagesRepository.find({
       where: {
-        disable: false,
+        notFoundCounter: LessThanOrEqual(3),
         shopProduct: {
           shop: {
             active: true,
@@ -266,7 +266,7 @@ export class WebpageService {
   async findAllNonHighPriority(): Promise<Webpage[]> {
     return this.webpagesRepository.find({
       where: {
-        disable: false,
+        notFoundCounter: LessThanOrEqual(3),
         shopProduct: {
           shop: {
             active: true,
@@ -1131,7 +1131,7 @@ export class WebpageService {
   async notFoundCounter(id: string) {
     const webpageEntity = await this.findOne(id);
     if (webpageEntity.notFoundCounter > 3) {
-      await this.updateNormal(id, { disable: true });
+      // await this.updateNormal(id, { disable: true });
     } else {
       await this.updateNormal(id, {
         notFoundCounter: webpageEntity.notFoundCounter + 1,
