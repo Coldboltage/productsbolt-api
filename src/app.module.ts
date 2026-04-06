@@ -41,6 +41,7 @@ import { CurrencyModule } from './currency/currency.module';
 import { BrandModule } from './brand/brand.module';
 import { UtilsModule } from './utils/utils.module';
 import { UrlModule } from './url/url.module';
+import { WebpageSnapshotModule } from './webpage-snapshot/webpage-snapshot.module';
 
 @Module({
   imports: [
@@ -123,6 +124,7 @@ import { UrlModule } from './url/url.module';
     BrandModule,
     UtilsModule,
     UrlModule,
+    WebpageSnapshotModule,
   ],
   controllers: [AppController],
   providers: [

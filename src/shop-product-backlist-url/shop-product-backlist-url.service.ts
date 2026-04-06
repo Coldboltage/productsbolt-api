@@ -64,9 +64,11 @@ export class ShopProductBacklistUrlService {
     //   links: filteredLinks,
     // });
 
-    await this.shopProductService.checkForIndividualShopProduct(
-      shopProductEntity.id,
-    );
+    // ShopProductsLinks are all checked, thus this is checking for something which has already been checked at this point
+
+    // await this.shopProductService.checkForIndividualShopProduct(
+    //   shopProductEntity.id,
+    // );
 
     return shopProductBlackListEntity;
   }
