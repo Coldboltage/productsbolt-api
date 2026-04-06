@@ -2339,4 +2339,16 @@ export class ShopProductService {
     };
     return createProcess;
   }
+
+  async removeBlacklistUrl(id: string, blackListUrl: string) {
+    await this.shopProductRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        links: () => `array_remove(links, :url)`,
+      })
+      .where('id = :id', { id })
+      .setParameters({ url: blackListUrl })
+      .execute();
+  }
 }

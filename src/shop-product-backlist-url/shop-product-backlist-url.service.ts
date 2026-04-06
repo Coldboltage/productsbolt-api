@@ -52,12 +52,17 @@ export class ShopProductBacklistUrlService {
         blackListUrl: blackListUrlEntity,
       });
 
-    const filteredLinks = shopProductEntity.links.filter(
-      (link) => link !== blackListUrlEntity.url,
+    await this.shopProductService.removeBlacklistUrl(
+      shopProductEntity.id,
+      blackListUrlEntity.url,
     );
-    await this.shopProductService.update(shopProductEntity.id, {
-      links: filteredLinks,
-    });
+
+    // const filteredLinks = shopProductEntity.links.filter(
+    //   (link) => link !== blackListUrlEntity.url,
+    // );
+    // await this.shopProductService.update(shopProductEntity.id, {
+    //   links: filteredLinks,
+    // });
 
     await this.shopProductService.checkForIndividualShopProduct(
       shopProductEntity.id,

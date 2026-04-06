@@ -299,6 +299,7 @@ export class WebpageService {
   ): Promise<Webpage[]> {
     return this.webpagesRepository.find({
       where: {
+        notFoundCounter: LessThanOrEqual(3),
         shopProduct: {
           shop: {
             active: true,
