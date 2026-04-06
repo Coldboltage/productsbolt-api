@@ -11,26 +11,81 @@ export class WebpageSnapshotService {
     @InjectRepository(WebpageSnapshot)
     private webpageSnapshotRepository: Repository<WebpageSnapshot>,
   ) {}
-  create(createWebpageSnapshotDto: CreateWebpageSnapshotDto) {
+  async create(createWebpageSnapshotDto: CreateWebpageSnapshotDto) {
     return this.webpageSnapshotRepository.save({
       ...createWebpageSnapshotDto,
       webpage: { id: createWebpageSnapshotDto.webpageId },
     });
   }
 
-  findAll() {
-    return `This action returns all webpageSnapshot`;
+  async findAll() {
+    return this.webpageSnapshotRepository.find({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} webpageSnapshot`;
+  async findAllByWebpageId(webpageId: string) {
+    return this.webpageSnapshotRepository.find({
+      where: {
+        webpage: {
+          id: webpageId,
+        },
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
   }
 
-  update(id: number, updateWebpageSnapshotDto: UpdateWebpageSnapshotDto) {
-    return `This action updates a #${id} webpageSnapshot`;
+  async findAllByProductId(productId: string) {
+    return this.webpageSnapshotRepository.find({
+      where: {
+        webpage: {
+          shopProduct: {
+            product: {
+              id: productId,
+            },
+          },
+        },
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} webpageSnapshot`;
+  async findAllByProductIdRelations(productId: string) {
+    return this.webpageSnapshotRepository.find({
+      where: {
+        webpage: {
+          shopProduct: {
+            product: {
+              id: productId,
+            },
+          },
+        },
+      },
+      relations: {
+        webpage: {
+          shopProduct: {
+            product: true,
+          },
+        },
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+  }
+
+  async findOne(id: string) {
+    return this.webpageSnapshotRepository.findOne({ where: { id } });
+  }
+
+  async update(id: string, updateWebpageSnapshotDto: UpdateWebpageSnapshotDto) {
+    return this.webpageSnapshotRepository.update(id, updateWebpageSnapshotDto);
+  }
+
+  async remove(id: string) {
+    const snapshotEntity = await this.findOne(id);
+    return this.webpageSnapshotRepository.remove(snapshotEntity);
   }
 }
