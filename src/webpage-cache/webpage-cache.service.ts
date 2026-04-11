@@ -120,17 +120,6 @@ export class WebpageCacheService {
       notFoundCounter: 0,
     });
 
-    const snapshotDto: CreateWebpageSnapshotDto = {
-      url: updateWebpageDto.url,
-      inStock: updateWebpageDto.inStock,
-      price: updateWebpageDto.price,
-      euroPrice,
-      currencyCode: webpageEntity.currencyCode,
-      webpageId: webpageEntity.id,
-    };
-
-    await this.webpageSnapshotService.create(snapshotDto);
-
     this.logger.log({
       webpageEntityPrice: +webpageEntity.price,
       updatedWebpageDtoPrice: updateWebpageDto.price,
@@ -151,6 +140,16 @@ export class WebpageCacheService {
         webpageEntity.inStock !== updateWebpageDto.inStock) &&
       (webpageEntity.priceCheck || webpageEntity.inspected)
     ) {
+      const snapshotDto: CreateWebpageSnapshotDto = {
+        url: updateWebpageDto.url,
+        inStock: updateWebpageDto.inStock,
+        price: updateWebpageDto.price,
+        euroPrice,
+        currencyCode: webpageEntity.currencyCode,
+        webpageId: webpageEntity.id,
+      };
+
+      await this.webpageSnapshotService.create(snapshotDto);
       const productId = webpageEntity.shopProduct.productId;
 
       await this.productService.update(productId, { updatedLast: new Date() });
