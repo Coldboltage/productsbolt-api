@@ -78,7 +78,7 @@ import { WebpageSnapshotModule } from './webpage-snapshot/webpage-snapshot.modul
       password: process.env.TYPEORM_PASSWORD,
       database: process.env.TYPEORM_DATABASE,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: process.env.TYPEORM_SYNC === 'true' ? true : false,
     }),
     ScheduleModule.forRoot({
       cronJobs: process.env.ENABLE_JOBS === 'true' ? true : false,
