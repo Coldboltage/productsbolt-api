@@ -8,6 +8,8 @@ import { WebpageCache } from './entities/webpage-cache.entity';
 import { UpdateWebpageDto } from 'src/webpage/dto/update-webpage.dto';
 import { ProductService } from 'src/product/product.service';
 import { CurrencyService } from 'src/currency/currency.service';
+import { WebpageSnapshotService } from 'src/webpage-snapshot/webpage-snapshot.service';
+import { CreateWebpageSnapshotDto } from 'src/webpage-snapshot/dto/create-webpage-snapshot.dto';
 
 @Injectable()
 export class WebpageCacheService {
@@ -18,6 +20,7 @@ export class WebpageCacheService {
     private webpageService: WebpageService,
     private productService: ProductService,
     private currencyService: CurrencyService,
+    private webpageSnapshotService: WebpageSnapshotService,
   ) {}
 
   create(createWebpageCacheDto: CreateWebpageCacheDto) {
@@ -137,6 +140,16 @@ export class WebpageCacheService {
         webpageEntity.inStock !== updateWebpageDto.inStock) &&
       (webpageEntity.priceCheck || webpageEntity.inspected)
     ) {
+      const snapshotDto: CreateWebpageSnapshotDto = {
+        url: updateWebpageDto.url,
+        inStock: updateWebpageDto.inStock,
+        price: updateWebpageDto.price,
+        euroPrice,
+        currencyCode: webpageEntity.currencyCode,
+        webpageId: webpageEntity.id,
+      };
+
+      await this.webpageSnapshotService.create(snapshotDto);
       const productId = webpageEntity.shopProduct.productId;
 
       await this.productService.update(productId, { updatedLast: new Date() });

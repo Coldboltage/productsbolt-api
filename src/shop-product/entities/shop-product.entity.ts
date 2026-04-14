@@ -35,7 +35,7 @@ export class ShopProduct {
   @Column({ default: false })
   populated: boolean;
 
-  @Column({ default: '', type: 'simple-array' })
+  @Column('text', { array: true, default: '{}' })
   links: string[];
 
   @Column({ nullable: true, default: null })

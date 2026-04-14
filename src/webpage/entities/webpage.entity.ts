@@ -3,6 +3,7 @@ import {
   Entity,
   Index,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   Unique,
@@ -10,6 +11,7 @@ import {
 import { ShopProduct } from '../../shop-product/entities/shop-product.entity';
 import { WebpageCache } from '../../webpage-cache/entities/webpage-cache.entity';
 import { ProductType } from 'src/product/entities/product.entity';
+import { WebpageSnapshot } from 'src/webpage-snapshot/entities/webpage-snapshot.entity';
 
 @Entity()
 @Unique(['url'])
@@ -79,6 +81,12 @@ export class Webpage {
     cascade: ['insert', 'update'],
   })
   webpageCache: WebpageCache;
+
+  @OneToMany(
+    () => WebpageSnapshot,
+    (webpageSnapshot) => webpageSnapshot.webpage,
+  )
+  webpageSnapshots: WebpageSnapshot[];
 }
 
 export interface StrippedWebpage {

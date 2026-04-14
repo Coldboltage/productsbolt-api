@@ -31,6 +31,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CurrencyService } from 'src/currency/currency.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { Url } from 'src/url/url.entity';
+import { WebpageSnapshot } from 'src/webpage-snapshot/entities/webpage-snapshot.entity';
 
 @Injectable()
 export class WebpageService {
@@ -39,9 +40,10 @@ export class WebpageService {
   constructor(
     @InjectRepository(Webpage) private webpagesRepository: Repository<Webpage>,
     @InjectRepository(Url) private urlsRepository: Repository<Url>,
+    @InjectRepository(WebpageSnapshot)
+    private webpageSnapshotRepository: Repository<WebpageSnapshot>,
     @Inject('HEADFUL_CLIENT') private headfulClient: ClientProxy,
     @Inject('HEADFUL_SLOW_CLIENT') private headfulSlowClient: ClientProxy,
-
     @Inject('HEADLESS_BROWSER_CLIENT')
     private headlessBrowserClient: ClientProxy,
     @Inject('HEADLESS_CLIENT') private readonly headlessClient: ClientProxy,
@@ -168,6 +170,12 @@ export class WebpageService {
       ...entity,
       priceCheck: priceInRange,
       webpageCache: {},
+    });
+
+    await this.webpageSnapshotRepository.save({
+      ...entity,
+      date: new Date(),
+      webpage: webpageEntity,
     });
 
     this.logger.log('Website Revalidate');

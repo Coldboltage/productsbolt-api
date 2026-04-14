@@ -41,6 +41,7 @@ import { CurrencyModule } from './currency/currency.module';
 import { BrandModule } from './brand/brand.module';
 import { UtilsModule } from './utils/utils.module';
 import { UrlModule } from './url/url.module';
+import { WebpageSnapshotModule } from './webpage-snapshot/webpage-snapshot.module';
 
 @Module({
   imports: [
@@ -77,7 +78,7 @@ import { UrlModule } from './url/url.module';
       password: process.env.TYPEORM_PASSWORD,
       database: process.env.TYPEORM_DATABASE,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: process.env.TYPEORM_SYNC === 'true' ? true : false,
     }),
     ScheduleModule.forRoot({
       cronJobs: process.env.ENABLE_JOBS === 'true' ? true : false,
@@ -123,6 +124,7 @@ import { UrlModule } from './url/url.module';
     BrandModule,
     UtilsModule,
     UrlModule,
+    WebpageSnapshotModule,
   ],
   controllers: [AppController],
   providers: [
