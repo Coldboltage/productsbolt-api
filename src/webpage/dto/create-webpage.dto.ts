@@ -27,4 +27,7 @@ export class CreateWebpageDto {
 
   @IsString()
   reason: string;
+
+  @IsString()
+  variantId: string;
 }

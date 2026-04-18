@@ -1262,4 +1262,26 @@ export class WebpageService {
     });
     this.logger.debug(failed);
   }
+
+  async addMissingVariantId() {
+    const shopifyPages = await this.webpagesRepository.find({
+      where: {
+        variantId: IsNull(),
+        shopProduct: {
+          shop: {
+            sitemapEntity: {
+              isShopifySite: true,
+            },
+          },
+        },
+      },
+      relations: {
+        shopProduct: {
+          shop: {
+            sitemapEntity: true,
+          },
+        },
+      },
+    });
+  }
 }

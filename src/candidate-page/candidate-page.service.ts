@@ -483,6 +483,7 @@ export class CandidatePageService {
       productId: candidatePage.shopProduct.productId,
       shopId: candidatePage.shopProduct.shop.id,
       reason: candidatePage.reason,
+      variantId: candidatePage.variantId,
     };
     await this.webpageService.create(webpageDto);
     const result = await this.remove(id);
