@@ -111,6 +111,7 @@ export interface StrippedWebpageSlimWithShop {
   url: string;
   inStock: boolean;
   price: number;
+  euroPrice: number;
   currencyCode: string;
   shop: {
     name: string;
@@ -120,6 +121,13 @@ export interface StrippedWebpageSlimWithShop {
     currency: string;
     vatShown: boolean;
   };
+}
+
+export interface StrippedWebpageSlimWithShopMinimal {
+  inStock: boolean;
+  price: number;
+  euroPrice: number;
+  currencyCode: string;
 }
 export class CheckPageDto {
   url: string;
@@ -146,6 +154,11 @@ export class ProductToWebpageInterface {
 export class ProductToWebpageSlimInterface {
   productName: string;
   webPages: StrippedWebpageSlim[];
+}
+
+export class ProductToWebpageSlimInterfaceMinimal {
+  productName: string;
+  webPages: StrippedWebpageSlimWithShopMinimal[];
 }
 
 export class FullCheckPageDtoPayloadDto {

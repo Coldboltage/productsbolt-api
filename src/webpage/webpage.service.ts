@@ -13,9 +13,11 @@ import {
   FullCheckPageDtoPayloadDto,
   ProductToWebpageInterface,
   ProductToWebpageSlimInterface,
+  ProductToWebpageSlimInterfaceMinimal,
   StrippedWebpage,
   StrippedWebpageSlim,
   StrippedWebpageSlimWithShop,
+  StrippedWebpageSlimWithShopMinimal,
   Webpage,
 } from './entities/webpage.entity';
 import { IsNull, LessThanOrEqual, Not, Repository } from 'typeorm';
@@ -554,6 +556,52 @@ export class WebpageService {
           currency: webpage.shopProduct.shop.currency,
           vatShown: webpage.shopProduct.shop.vatShown,
         },
+      }));
+    response.push({
+      productName: product.name,
+      productImage: product.imageUrl,
+      productBrand: product.brand.name,
+      productUrlSafeName: product.brand.urlSafeName,
+      webPages: strippedWebpageSlimWithShop,
+    });
+
+    this.logger.log(response[0].webPages.length);
+    return response[0];
+  }
+
+  async findAllWebpagesDividedByProductsStockStateShopInfoSlimMinimal(
+    state: boolean,
+    productName: string,
+  ): Promise<ProductToWebpageSlimInterfaceMinimal> {
+    console.log({ state, productName });
+    this.logger.log('fired findAllWebpagesDividedByProductNameStockStateSlim');
+    const product =
+      await this.productService.findOneByProductSafeName(productName);
+    const response: {
+      productName: string;
+      productImage: string;
+      productBrand: string;
+      productUrlSafeName: string;
+      webPages: StrippedWebpageSlimWithShopMinimal[];
+    }[] = [];
+
+    console.log(product);
+
+    const specificWebPagesForProduct = await this.findAllByProductStock(
+      state,
+      product.id,
+    );
+    if (specificWebPagesForProduct.length === 0)
+      throw new NotFoundException('no_webpages_found_for_product');
+    const strippedWebpageSlimWithShop = specificWebPagesForProduct
+      .filter((webpage) => {
+        return webpage.inspected === true || webpage.priceCheck === true;
+      })
+      .map((webpage) => ({
+        inStock: webpage.inStock,
+        price: webpage.price,
+        euroPrice: webpage.euroPrice,
+        currencyCode: webpage.currencyCode,
       }));
     response.push({
       productName: product.name,
