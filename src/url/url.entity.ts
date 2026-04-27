@@ -22,6 +22,8 @@ export class Url {
   @Column({ default: true })
   freshUrl: boolean;
 
-  @ManyToOne(() => SitemapUrl, (sitemapUrl) => sitemapUrl.urls)
+  @ManyToOne(() => SitemapUrl, (sitemapUrl) => sitemapUrl.urls, {
+    onDelete: 'CASCADE',
+  })
   sitemapUrl: SitemapUrl;
 }
