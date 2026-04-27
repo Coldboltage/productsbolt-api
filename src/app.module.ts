@@ -42,6 +42,7 @@ import { BrandModule } from './brand/brand.module';
 import { UtilsModule } from './utils/utils.module';
 import { UrlModule } from './url/url.module';
 import { WebpageSnapshotModule } from './webpage-snapshot/webpage-snapshot.module';
+import { MarketModule } from './market/market.module';
 
 @Module({
   imports: [
@@ -125,6 +126,7 @@ import { WebpageSnapshotModule } from './webpage-snapshot/webpage-snapshot.modul
     UtilsModule,
     UrlModule,
     WebpageSnapshotModule,
+    MarketModule,
   ],
   controllers: [AppController],
   providers: [
