@@ -1,9 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMarketDto } from './dto/create-market.dto';
 import { UpdateMarketDto } from './dto/update-market.dto';
+import { WebpageSnapshotService } from 'src/webpage-snapshot/webpage-snapshot.service';
+import { ProductService } from 'src/product/product.service';
+import { WebpageService } from 'src/webpage/webpage.service';
 
 @Injectable()
 export class MarketService {
+  constructor(
+    private productService: ProductService,
+    private webpageService: WebpageService,
+    private webpageSnapshotService: WebpageSnapshotService,
+  ) {}
   create(createMarketDto: CreateMarketDto) {
     return 'This action adds a new market';
   }
@@ -23,4 +31,6 @@ export class MarketService {
   remove(id: number) {
     return `This action removes a #${id} market`;
   }
+
+  async marketResearch() {}
 }
