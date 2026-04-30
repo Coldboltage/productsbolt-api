@@ -140,6 +140,49 @@ export class ProductService {
     return onlyProducts;
   }
 
+  async findAllProductsWithWebPages(): Promise<ProductStripped[]> {
+    const allProducts = await this.productsRepository.find({
+      where: {
+        shopProducts: {
+          populated: true,
+          webPage: {
+            inStock: true,
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        brand: true,
+        urlSafeName: true,
+        imageUrl: true,
+        releaseDate: true,
+      },
+      relations: {
+        shopProducts: {
+          webPage: true,
+        },
+        brand: true,
+      },
+      order: {
+        releaseDate: 'DESC',
+      },
+    });
+    const onlyProducts = allProducts.map((product) => {
+      const onlyProduct: ProductStripped = {
+        id: product.id,
+        name: product.name,
+        brand: product.brand.name,
+        urlSafeName: product.urlSafeName,
+        imageUrl: product.imageUrl,
+        releaseDate: product.releaseDate,
+      };
+
+      return onlyProduct;
+    });
+    return onlyProducts;
+  }
+
   async findOne(id: string): Promise<Product> {
     return this.productsRepository.findOne({
       where: { id },
