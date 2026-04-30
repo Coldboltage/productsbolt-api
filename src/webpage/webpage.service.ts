@@ -602,6 +602,7 @@ export class WebpageService {
         price: webpage.price,
         euroPrice: webpage.euroPrice,
         currencyCode: webpage.currencyCode,
+        shopId: webpage.shopProduct.shop.id,
       }));
     response.push({
       productName: product.name,
@@ -1005,6 +1006,7 @@ export class WebpageService {
       relations: {
         shopProduct: {
           shopProductBlacklistUrls: true,
+          shop: true,
         },
       },
     });

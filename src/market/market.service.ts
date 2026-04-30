@@ -6,6 +6,8 @@ import { ProductService } from 'src/product/product.service';
 import { WebpageService } from 'src/webpage/webpage.service';
 import { MarketPayload } from './entities/market.entity';
 import { stringify } from 'yaml';
+import { encode, decode } from '@toon-format/toon';
+import { SnapshotSlim } from 'src/webpage-snapshot/entities/webpage-snapshot.entity';
 
 @Injectable()
 export class MarketService {
@@ -40,6 +42,10 @@ export class MarketService {
 
     const payload: MarketPayload[] = [];
 
+    function shortId(uuid: string, length = 8) {
+      return uuid.replaceAll('-', '').slice(0, length);
+    }
+
     for (const product of populatedProducts) {
       try {
         const webpages =
@@ -47,14 +53,42 @@ export class MarketService {
             true,
             product.urlSafeName,
           );
-        const snapshots = await this.webpageSnapshotService.findAllByProductId(
-          product.id,
+        const snapshots =
+          await this.webpageSnapshotService.findAllByProductIdRelations(
+            product.id,
+          );
+
+        const amendedSnapshot: SnapshotSlim[] = await Promise.all(
+          snapshots.map(async ({ webpage, ...snapshot }) => {
+            const { inStock, price, euroPrice, currencyCode, createdAt } =
+              snapshot;
+
+            const shopId = (
+              await this.webpageService.findOneByUrl(snapshot.url)
+            ).shopProduct.shop.id;
+
+            return {
+              inStock,
+              price,
+              euroPrice,
+              currencyCode,
+              createdAt,
+              shopId: shortId(shopId),
+            };
+          }),
         );
+
+        const uuidUpdatedWebpages = webpages.webPages.map((webpage) => {
+          return {
+            ...webpage,
+            shopId: shortId(webpage.shopId),
+          };
+        });
 
         const marketSnapshot: MarketPayload = {
           productName: product.name,
-          webpages: webpages.webPages,
-          snapshots,
+          webpages: uuidUpdatedWebpages,
+          snapshots: await amendedSnapshot,
         };
 
         payload.push(marketSnapshot);
@@ -67,6 +101,9 @@ export class MarketService {
     const text = stringify(payload, {
       lineWidth: 0,
     });
-    return text;
+
+    const toon = encode(payload);
+
+    return toon;
   }
 }

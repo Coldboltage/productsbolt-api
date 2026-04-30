@@ -37,3 +37,12 @@ export class WebpageSnapshot {
   })
   webpage: Webpage;
 }
+
+export interface SnapshotSlim {
+  inStock: boolean;
+  price: number;
+  euroPrice: number;
+  currencyCode: string;
+  createdAt: Date;
+  shopId: string;
+}

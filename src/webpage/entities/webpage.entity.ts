@@ -128,6 +128,7 @@ export interface StrippedWebpageSlimWithShopMinimal {
   price: number;
   euroPrice: number;
   currencyCode: string;
+  shopId: string;
 }
 export class CheckPageDto {
   url: string;
