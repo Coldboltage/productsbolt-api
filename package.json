@@ -23,7 +23,10 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "docker:build": "docker build . -t coldbolt/productsbolt-api:latest",
     "docker:push": "docker push coldbolt/productsbolt-api:latest",
-    "docker:combine": "npm run docker:build && npm run docker:push"
+    "docker:combine": "npm run docker:build && npm run docker:push",
+    "docker:build:x86": "docker buildx build --platform linux/amd64 . -t coldbolt/productsbolt-api:latest",
+    "docker:push:x86": "docker push coldbolt/productsbolt-api:latest",
+    "docker:combine:x86": "npm run docker:build:x86 && npm run docker:push:x86"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.2",
