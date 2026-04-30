@@ -185,16 +185,18 @@ export class WebpageService {
     const productId = webpageEntity.shopProduct.productId;
     const productName = webpageEntity.shopProduct.product.urlSafeName;
 
-    if (webpageEntity.priceCheck || webpageEntity.inspected) {
-      await fetch(
-        `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${productName}`,
-        { method: 'POST' },
-      );
+    // I don't believe this is required anymore as the page is not reliable for up to date information.
 
-      console.log(
-        `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productId=${productId}`,
-      );
-    }
+    // if (webpageEntity.priceCheck || webpageEntity.inspected) {
+    //   await fetch(
+    //     `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${productName}`,
+    //     { method: 'POST' },
+    //   );
+
+    //   console.log(
+    //     `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productId=${productId}`,
+    //   );
+    // }
 
     this.logger.log(`Page being created: ${createWebpageDto.url}`);
     this.logger.log(webpageEntity);
@@ -203,6 +205,8 @@ export class WebpageService {
         webpageEntity.url,
       );
     }
+
+    await this.updatePage(webpageEntity.id);
 
     return webpageEntity;
   }
