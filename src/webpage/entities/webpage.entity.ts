@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   Index,
   JoinColumn,
@@ -62,6 +63,9 @@ export class Webpage {
   @Column({ default: null, nullable: true })
   variantId: string;
 
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   lastScanned: Date;
 
@@ -76,6 +80,9 @@ export class Webpage {
 
   @Column({ default: 0 })
   notFoundCounter: number;
+
+  @Column({ default: true })
+  new: boolean;
 
   @OneToOne(() => WebpageCache, (webpageCache) => webpageCache.webpage, {
     cascade: ['insert', 'update'],

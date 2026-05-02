@@ -136,9 +136,11 @@ export class WebpageCacheService {
     );
 
     if (
-      (+webpageEntity.price !== updateWebpageDto.price ||
+      ((+webpageEntity.price !== updateWebpageDto.price ||
         webpageEntity.inStock !== updateWebpageDto.inStock) &&
-      (webpageEntity.priceCheck || webpageEntity.inspected)
+        (webpageEntity.priceCheck || webpageEntity.inspected)) ||
+      // If the webpage is new, we need to get a snapshot regardless
+      webpageEntity.new
     ) {
       const snapshotDto: CreateWebpageSnapshotDto = {
         url: updateWebpageDto.url,
@@ -153,6 +155,12 @@ export class WebpageCacheService {
       const productId = webpageEntity.shopProduct.productId;
 
       await this.productService.update(productId, { updatedLast: new Date() });
+
+      if (webpageEntity.new) {
+        await this.webpageService.updateNormal(webpageEntity.id, {
+          new: false,
+        });
+      }
 
       const productName = webpageEntity.shopProduct.product.urlSafeName;
       await fetch(
