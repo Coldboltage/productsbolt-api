@@ -84,11 +84,11 @@ export class ShopProductService {
         shopProduct.product.name,
       );
 
-      if (reducedSitemap.fuseWords.length === 0) continue;
+      if (reducedSitemap.resultWords.length === 0) continue;
 
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
-        reducedSitemap.fuseWords,
+        reducedSitemap.resultWords,
       );
 
       this.logger.log(`Adding new product: ${shopProduct.product.name}`);
@@ -197,12 +197,12 @@ export class ShopProductService {
     this.logger.log(urls.length);
     this.logger.log(reducedSitemap);
 
-    if (reducedSitemap.fuseWords.length === 0)
+    if (reducedSitemap.resultWords.length === 0)
       throw new Error('no_urls_found_for_product');
 
     const limitedUrls = await this.filteredLimitedUrls(
       shopProduct,
-      reducedSitemap.fuseWords,
+      reducedSitemap.resultWords,
     );
 
     if (limitedUrls.length === 0) {
@@ -296,11 +296,11 @@ export class ShopProductService {
         shopProduct.product.name,
       );
 
-      if (reducedSitemap.fuseWords.length === 0) continue;
+      if (reducedSitemap.resultWords.length === 0) continue;
 
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
-        reducedSitemap.fuseWords,
+        reducedSitemap.resultWords,
       );
 
       if (limitedUrls.length === 0) {
@@ -394,13 +394,13 @@ export class ShopProductService {
         shopProductsOrphan.product.name,
       );
 
-      totalUrls.push(...reducedSitemap.fuseWords);
+      totalUrls.push(...reducedSitemap.resultWords);
 
-      if (reducedSitemap.fuseWords.length === 0) continue;
+      if (reducedSitemap.resultWords.length === 0) continue;
 
       const limitedUrls = await this.filteredLimitedUrls(
         shopProductsOrphan,
-        reducedSitemap.fuseWords,
+        reducedSitemap.resultWords,
       );
 
       if (limitedUrls.length === 0) {
@@ -518,13 +518,13 @@ export class ShopProductService {
         shopProductsOrphan.product.name,
       );
 
-      totalUrls.push(...reducedSitemap.fuseWords);
+      totalUrls.push(...reducedSitemap.resultWords);
 
-      if (reducedSitemap.fuseWords.length === 0) continue;
+      if (reducedSitemap.resultWords.length === 0) continue;
 
       const limitedUrls = await this.filteredLimitedUrls(
         shopProductsOrphan,
-        reducedSitemap.fuseWords,
+        reducedSitemap.resultWords,
       );
 
       if (limitedUrls.length === 0) {
@@ -642,7 +642,7 @@ export class ShopProductService {
         shopProduct.product.name,
       );
 
-      if (reducedSitemap.fuseWords.length === 0) {
+      if (reducedSitemap.resultWords.length === 0) {
         this.logger.error({
           shopProductId: shopProduct.id,
           error: `reducedSitemap.length === 0`,
@@ -652,7 +652,7 @@ export class ShopProductService {
 
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
-        reducedSitemap.fuseWords,
+        reducedSitemap.resultWords,
       );
 
       if (limitedUrls.length === 0) {
@@ -776,7 +776,7 @@ export class ShopProductService {
         shopProduct.product.name,
       );
 
-      if (reducedSitemap.fuseWords.length === 0) {
+      if (reducedSitemap.resultWords.length === 0) {
         this.logger.error({
           shopProductId: shopProduct.id,
           error: `reducedSitemap.length === 0`,
@@ -786,7 +786,7 @@ export class ShopProductService {
 
       const limitedUrls = await this.filteredLimitedUrls(
         shopProduct,
-        reducedSitemap.fuseWords,
+        reducedSitemap.resultWords,
       );
 
       if (limitedUrls.length === 0) {
