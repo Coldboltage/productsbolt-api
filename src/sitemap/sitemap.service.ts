@@ -126,10 +126,14 @@ export class SitemapService {
     const crawledUrls = new Set(updateSitemapDto.sitemapUrls ?? []);
     const deleteUrls: string[] = [];
 
+    // Check to see if the urls in the DB are new or not
     for (const url of dbUrls) {
+      // newly crawled urls checking url on db
       if (crawledUrls.has(url)) {
+        // not a new url
         crawledUrls.delete(url);
       } else {
+        // crawled urls didn't have a url in our db. Url doesn't exist on their site anymore
         deleteUrls.push(url);
       }
     }
