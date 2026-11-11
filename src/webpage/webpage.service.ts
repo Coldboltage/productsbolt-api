@@ -20,7 +20,7 @@ import {
   StrippedWebpageSlimWithShopMinimal,
   Webpage,
 } from './entities/webpage.entity';
-import { IsNull, LessThanOrEqual, Not, Repository } from 'typeorm';
+import { In, IsNull, LessThanOrEqual, Not, Repository } from 'typeorm';
 import { ShopProductService } from '../shop-product/shop-product.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { ProductService } from '../product/product.service';
@@ -220,7 +220,11 @@ export class WebpageService {
       relations: {
         shopProduct: {
           product: true,
-          shop: true,
+          shop: {
+            sitemapEntity: {
+              sitemapUrl: true,
+            },
+          },
         },
         webpageCache: true,
       },
@@ -1337,5 +1341,58 @@ export class WebpageService {
         },
       },
     });
+  }
+
+  // A webpage without a URL in UrlRepo
+  async deleteWebpagesWithoutUrl() {
+    const webpages = await this.findAll();
+
+    const webpageUrl = webpages.map((webpage) => webpage.url);
+
+    const existingUrls = await this.urlsRepository.find({
+      where: {
+        url: In(webpageUrl),
+      },
+    });
+
+    const existingUrlsMap = new Set(
+      existingUrls.map((existUrl) => existUrl.url),
+    );
+
+    const deadWebsitePages = webpages.filter(
+      (webpage) => !existingUrlsMap.has(webpage.url),
+    );
+
+    // const urls = await this.urlsRepository.find({
+    //   where: {
+    //     sitemapUrl: webpages[2].shopProduct.shop.sitemapEntity.sitemapUrl,
+    //   },
+    // });
+
+    console.log({
+      webpagesFound: webpages.length,
+      urlsFound: existingUrls.length,
+      deadWebsitesUrl: deadWebsitePages.length,
+      combined:
+        existingUrls.length + deadWebsitePages.length === webpages.length,
+    });
+
+    deadWebsitePages.forEach((wp) => console.log(wp.url));
+
+    await Promise.allSettled(
+      deadWebsitePages.map((deadPage) => {
+        return this.shopProductService.manualUpdateIndividualShopProductsImmediateLinks(
+          deadPage.shopProduct.id,
+          true,
+        );
+      }),
+    );
+
+    await Promise.allSettled(
+      deadWebsitePages.map((deadPage) => this.removeWebpage(deadPage.id)),
+    );
+
+    // await Promise.allSettled(deadwebpagePromisesNewLinks);
+    // await Promise.allSettled(deadwebpagePromises);
   }
 }

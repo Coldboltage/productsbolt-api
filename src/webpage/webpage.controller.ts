@@ -247,6 +247,11 @@ export class WebpageController {
     return this.webpageService.findAllWebpagesShopProductPopulatedNotInspectedRemove();
   }
 
+  @Delete('delete-webpages-without-url')
+  deleteWebpagesWithoutUrl() {
+    return this.webpageService.deleteWebpagesWithoutUrl();
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string): Promise<Webpage> {
     return this.webpageService.remove(id);
