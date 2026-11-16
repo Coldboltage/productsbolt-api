@@ -1369,7 +1369,7 @@ export class WebpageService {
     //   },
     // });
 
-    console.log({
+    this.logger.log({
       webpagesFound: webpages.length,
       urlsFound: existingUrls.length,
       deadWebsitesUrl: deadWebsitePages.length,
