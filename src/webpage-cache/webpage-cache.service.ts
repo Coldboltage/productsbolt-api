@@ -167,10 +167,6 @@ export class WebpageCacheService {
         `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${productName}`,
         { method: 'POST' },
       );
-
-      this.logger.log(
-        `${process.env.WEBSITE_URL}/api/revalidate?secret=${process.env.WEBSITE_SECRET}&productName=${productName}`,
-      );
     }
   }
 
