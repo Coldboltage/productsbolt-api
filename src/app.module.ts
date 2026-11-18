@@ -43,6 +43,9 @@ import { UtilsModule } from './utils/utils.module';
 import { UrlModule } from './url/url.module';
 import { WebpageSnapshotModule } from './webpage-snapshot/webpage-snapshot.module';
 import { MarketModule } from './market/market.module';
+import { SentryModule } from '@sentry/nestjs/setup';
+import { APP_FILTER } from '@nestjs/core';
+import { SentryGlobalFilter } from '@sentry/nestjs/setup';
 
 @Module({
   imports: [
@@ -68,6 +71,7 @@ import { MarketModule } from './market/market.module';
         };
       },
     }),
+    SentryModule.forRoot(),
     PrometheusModule.register({
       defaultLabels: { app: 'productsbolt' },
     }),
@@ -135,6 +139,7 @@ import { MarketModule } from './market/market.module';
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
+    { provide: APP_FILTER, useClass: SentryGlobalFilter },
   ],
 })
 export class AppModule {}

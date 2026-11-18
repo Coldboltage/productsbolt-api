@@ -88,7 +88,6 @@ export class ProductService {
         releaseDate: 'DESC',
       },
     });
-    console.log(allProducts);
     return allProducts;
   }
 
