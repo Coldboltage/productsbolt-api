@@ -14,6 +14,7 @@ import { UpdateWebpageDto } from './dto/update-webpage.dto';
 import {
   ProductToWebpageInterface,
   ProductToWebpageSlimInterface,
+  ProductToWebpageSlimWithImageInterface,
   StrippedWebpageSlim,
   Webpage,
 } from './entities/webpage.entity';
@@ -82,7 +83,7 @@ export class WebpageController {
   findAllWebpagesDividedByProductNameStockStateSlim(
     @Param('stockState') stockState: boolean,
     @Param('productName') productName: string,
-  ): Promise<ProductToWebpageSlimInterface> {
+  ): Promise<ProductToWebpageSlimWithImageInterface> {
     console.log(productName);
     return this.webpageService.findAllWebpagesDividedByProductNameStockStateSlim(
       stockState,

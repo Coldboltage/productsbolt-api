@@ -1,4 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import * as Sentry from '@sentry/nestjs';
 const Fuse = require('fuse.js');
 
 @Injectable()

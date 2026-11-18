@@ -14,6 +14,7 @@ import {
   ProductToWebpageInterface,
   ProductToWebpageSlimInterface,
   ProductToWebpageSlimInterfaceMinimal,
+  ProductToWebpageSlimWithImageInterface,
   StrippedWebpage,
   StrippedWebpageSlim,
   StrippedWebpageSlimWithShop,
@@ -34,6 +35,7 @@ import { CurrencyService } from 'src/currency/currency.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { Url } from 'src/url/url.entity';
 import { WebpageSnapshot } from 'src/webpage-snapshot/entities/webpage-snapshot.entity';
+import * as Sentry from '@sentry/nestjs';
 
 @Injectable()
 export class WebpageService {
@@ -344,6 +346,37 @@ export class WebpageService {
     });
   }
 
+  @Span('WebpageService.findAllByProductStockWebpageOnly')
+  async findAllByProductStockWebpageOnly(
+    state: boolean,
+    productId: string,
+  ): Promise<Webpage[]> {
+    return this.webpagesRepository.find({
+      where: {
+        notFoundCounter: LessThanOrEqual(3),
+        shopProduct: {
+          shop: {
+            active: true,
+          },
+          product: {
+            id: productId,
+          },
+        },
+        inStock: state,
+        price: Not(0),
+        euroPrice: Not(0),
+      },
+      relations: {
+        shopProduct: {
+          shop: true,
+        },
+      },
+      order: {
+        euroPrice: 'ASC',
+      },
+    });
+  }
+
   async findAllWebpagesDividedByProduct(): Promise<
     ProductToWebpageInterface[]
   > {
@@ -457,8 +490,6 @@ export class WebpageService {
   ): Promise<ProductToWebpageSlimInterface> {
     this.logger.log('fired findAllWebpagesDividedByProductIdStockStateSlim');
     const product = await this.productService.findOne(productId);
-    const response: { productName: string; webPages: StrippedWebpageSlim[] }[] =
-      [];
 
     const specificWebPagesForProduct = await this.findAllByProductStock(
       state,
@@ -474,33 +505,41 @@ export class WebpageService {
       currencyCode: webpage.currencyCode,
       shop: webpage.shopProduct.shop.name,
     }));
-    response.push({
+
+    return {
       productName: product.name,
       webPages: strippedWebpages,
-    });
-
-    this.logger.log(response[0].webPages.length);
-    return response[0];
+    };
   }
 
   async findAllWebpagesDividedByProductNameStockStateSlim(
     state: boolean,
     productName: string,
-  ): Promise<ProductToWebpageSlimInterface> {
+  ): Promise<ProductToWebpageSlimWithImageInterface> {
     console.log({ state, productName });
     this.logger.log('fired findAllWebpagesDividedByProductNameStockStateSlim');
     const product =
       await this.productService.findOneByProductSafeName(productName);
-    const response: {
-      productName: string;
-      productImage: string;
-      webPages: StrippedWebpageSlim[];
-    }[] = [];
 
-    const specificWebPagesForProduct = await this.findAllByProductStock(
-      state,
-      product.id,
-    );
+    if (!product) {
+      Sentry.captureMessage('product-not-found', {
+        level: 'warning',
+        tags: {
+          module: 'webpage',
+        },
+        extra: {
+          productName,
+          stockState: state,
+        },
+      });
+
+      this.logger.warn({ code: 'product-not-found' });
+      throw new NotFoundException('product-not-found');
+    }
+
+    const specificWebPagesForProduct =
+      await this.findAllByProductStockWebpageOnly(state, product.id);
+
     if (specificWebPagesForProduct.length === 0)
       throw new NotFoundException('no_webpages_found_for_product');
     const strippedWebpages = specificWebPagesForProduct.map((webpage) => ({
@@ -511,14 +550,11 @@ export class WebpageService {
       currencyCode: webpage.currencyCode,
       shop: webpage.shopProduct.shop.name,
     }));
-    response.push({
+    return {
       productName: product.name,
       productImage: product.imageUrl,
       webPages: strippedWebpages,
-    });
-
-    this.logger.log(response[0].webPages.length);
-    return response[0];
+    };
   }
 
   async findAllWebpagesDividedByProductsStockStateShopInfoSlim(
@@ -538,6 +574,8 @@ export class WebpageService {
     }[] = [];
 
     console.log(product);
+
+    if (!product) throw new NotFoundException('no_product_found');
 
     const specificWebPagesForProduct = await this.findAllByProductStock(
       state,

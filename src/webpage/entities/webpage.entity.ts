@@ -164,6 +164,10 @@ export class ProductToWebpageSlimInterface {
   webPages: StrippedWebpageSlim[];
 }
 
+export class ProductToWebpageSlimWithImageInterface extends ProductToWebpageSlimInterface {
+  productImage: string;
+}
+
 export class ProductToWebpageSlimInterfaceMinimal {
   productName: string;
   webPages: StrippedWebpageSlimWithShopMinimal[];

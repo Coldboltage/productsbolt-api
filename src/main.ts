@@ -1,5 +1,7 @@
 import 'dotenv/config'; // This loads .env automatically
 import './tracing';
+import './instrument';
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as bodyParser from 'body-parser';
