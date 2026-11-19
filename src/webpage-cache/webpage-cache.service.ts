@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { CreateWebpageCacheDto } from './dto/create-webpage-cache.dto';
 import { UpdateWebpageCacheDto } from './dto/update-webpage-cache.dto';
 import { WebpageService } from '../webpage/webpage.service';
@@ -9,7 +9,11 @@ import { UpdateWebpageDto } from 'src/webpage/dto/update-webpage.dto';
 import { ProductService } from 'src/product/product.service';
 import { CurrencyService } from 'src/currency/currency.service';
 import { WebpageSnapshotService } from 'src/webpage-snapshot/webpage-snapshot.service';
-import { CreateWebpageSnapshotDto } from 'src/webpage-snapshot/dto/create-webpage-snapshot.dto';
+import {
+  CreateWebpageSnapshotDto,
+  CreateWebpageSnapshotDtoSchema,
+} from 'src/webpage-snapshot/dto/create-webpage-snapshot.dto';
+import * as Sentry from '@sentry/nestjs';
 
 @Injectable()
 export class WebpageCacheService {
@@ -151,6 +155,21 @@ export class WebpageCacheService {
         webpageId: webpageEntity.id,
       };
 
+      const result = CreateWebpageSnapshotDtoSchema.safeParse(snapshotDto);
+
+      if (!result.success) {
+        console.error(result.error.issues);
+        Sentry.captureMessage('operation_failed', {
+          level: 'warning',
+          tags: {
+            module: 'webpage',
+          },
+          extra: {
+            result,
+          },
+        });
+        throw new BadRequestException('webpage-snapshot-validation-failed');
+      }
       await this.webpageSnapshotService.create(snapshotDto);
       const productId = webpageEntity.shopProduct.productId;
 

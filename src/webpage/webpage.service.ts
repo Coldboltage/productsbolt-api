@@ -570,6 +570,7 @@ export class WebpageService {
       productImage: string;
       productBrand: string;
       productUrlSafeName: string;
+      productBrandUrlSafeName: string;
       webPages: StrippedWebpageSlimWithShop[];
     }[] = [];
 
@@ -607,7 +608,8 @@ export class WebpageService {
       productName: product.name,
       productImage: product.imageUrl,
       productBrand: product.brand.name,
-      productUrlSafeName: product.brand.urlSafeName,
+      productBrandUrlSafeName: product.brand.urlSafeName,
+      productUrlSafeName: productName,
       webPages: strippedWebpageSlimWithShop,
     });
 
@@ -833,9 +835,7 @@ export class WebpageService {
   async updateAllPages(): Promise<void> {
     // Already doing high priority every 5 minutes
     const webPages = await this.findAllNonHighPriority();
-    this.logger.log(webPages.length);
     for (const page of webPages) {
-      this.logger.log(page);
       const updatePageDto: CheckPageDto = {
         url: page.url,
         query: page.shopProduct.name,

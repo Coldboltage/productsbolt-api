@@ -1,4 +1,5 @@
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
+import * as z from 'zod';
 
 export class CreateWebpageSnapshotDto {
   @IsString()
@@ -19,3 +20,16 @@ export class CreateWebpageSnapshotDto {
   @IsString()
   webpageId: string;
 }
+
+export const CreateWebpageSnapshotDtoSchema = z.object({
+  url: z.string(),
+  inStock: z.boolean(),
+  price: z.number(),
+  euroPrice: z.number(),
+  currencyCode: z.string(),
+  webpageId: z.string(),
+});
+
+export type CreateWebpageSnapshotDtoInfer = z.infer<
+  typeof CreateWebpageSnapshotDtoSchema
+>;
