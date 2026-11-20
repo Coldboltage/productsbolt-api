@@ -14,6 +14,7 @@ import {
   ProductToWebpageInterface,
   ProductToWebpageSlimInterface,
   ProductToWebpageSlimInterfaceMinimal,
+  ProductToWebpageSlimInterfaceProductPage,
   ProductToWebpageSlimWithImageInterface,
   StrippedWebpage,
   StrippedWebpageSlim,
@@ -319,7 +320,6 @@ export class WebpageService {
   ): Promise<Webpage[]> {
     return this.webpagesRepository.find({
       where: {
-        notFoundCounter: LessThanOrEqual(3),
         shopProduct: {
           shop: {
             active: true,
@@ -331,6 +331,7 @@ export class WebpageService {
         inStock: state,
         price: Not(0),
         euroPrice: Not(0),
+        notFoundCounter: LessThanOrEqual(3),
       },
       relations: {
         shopProduct: {
@@ -560,19 +561,11 @@ export class WebpageService {
   async findAllWebpagesDividedByProductsStockStateShopInfoSlim(
     state: boolean,
     productName: string,
-  ): Promise<ProductToWebpageSlimInterface> {
+  ): Promise<ProductToWebpageSlimInterfaceProductPage> {
     console.log({ state, productName });
     this.logger.log('fired findAllWebpagesDividedByProductNameStockStateSlim');
     const product =
       await this.productService.findOneByProductSafeName(productName);
-    const response: {
-      productName: string;
-      productImage: string;
-      productBrand: string;
-      productUrlSafeName: string;
-      productBrandUrlSafeName: string;
-      webPages: StrippedWebpageSlimWithShop[];
-    }[] = [];
 
     console.log(product);
 
@@ -582,6 +575,7 @@ export class WebpageService {
       state,
       product.id,
     );
+
     if (specificWebPagesForProduct.length === 0)
       throw new NotFoundException('no_webpages_found_for_product');
     const strippedWebpageSlimWithShop = specificWebPagesForProduct
@@ -604,17 +598,17 @@ export class WebpageService {
           vatShown: webpage.shopProduct.shop.vatShown,
         },
       }));
-    response.push({
+
+    const payload = {
       productName: product.name,
       productImage: product.imageUrl,
       productBrand: product.brand.name,
       productBrandUrlSafeName: product.brand.urlSafeName,
       productUrlSafeName: productName,
       webPages: strippedWebpageSlimWithShop,
-    });
+    };
 
-    this.logger.log(response[0].webPages.length);
-    return response[0];
+    return payload;
   }
 
   async findAllWebpagesDividedByProductsStockStateShopInfoSlimMinimal(

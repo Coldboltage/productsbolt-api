@@ -2,8 +2,18 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Not, Repository, UpdateResult } from 'typeorm';
-import { Product, ProductStripped } from './entities/product.entity';
+import {
+  IsNull,
+  LessThanOrEqual,
+  Not,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
+import {
+  Product,
+  ProductStripped,
+  ProductStrippedWebpagesInstockTrue,
+} from './entities/product.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { BrandService } from 'src/brand/brand.service';
 
@@ -93,19 +103,40 @@ export class ProductService {
 
   async findProductsByBrandWithWebPages(
     brand: string,
-  ): Promise<ProductStripped[]> {
+  ): Promise<ProductStrippedWebpagesInstockTrue[]> {
     const allProducts = await this.productsRepository.find({
-      where: {
-        brand: {
-          urlSafeName: brand,
-        },
-        shopProducts: {
-          populated: true,
-          webPage: {
-            inStock: true,
+      where: [
+        {
+          brand: {
+            urlSafeName: brand,
+          },
+          shopProducts: {
+            populated: true,
+            webPage: {
+              inStock: true,
+              price: Not(0),
+              euroPrice: Not(0),
+              notFoundCounter: LessThanOrEqual(3),
+              inspected: true,
+            },
           },
         },
-      },
+        {
+          brand: {
+            urlSafeName: brand,
+          },
+          shopProducts: {
+            populated: true,
+            webPage: {
+              inStock: true,
+              price: Not(0),
+              euroPrice: Not(0),
+              notFoundCounter: LessThanOrEqual(3),
+              priceCheck: true,
+            },
+          },
+        },
+      ],
       select: {
         id: true,
         name: true,
@@ -125,17 +156,20 @@ export class ProductService {
       },
     });
     const onlyProducts = allProducts.map((product) => {
-      const onlyProduct: ProductStripped = {
+      const onlyProduct: ProductStrippedWebpagesInstockTrue = {
         id: product.id,
         name: product.name,
         brand: product.brand.name,
         urlSafeName: product.urlSafeName,
         imageUrl: product.imageUrl,
         releaseDate: product.releaseDate,
+        inStock: true,
       };
 
       return onlyProduct;
     });
+
+    // console.log(onlyProducts);
     return onlyProducts;
   }
 

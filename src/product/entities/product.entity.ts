@@ -115,3 +115,7 @@ export interface ProductStripped {
   imageUrl: string;
   releaseDate: Date;
 }
+
+export interface ProductStrippedWebpagesInstockTrue extends ProductStripped {
+  inStock: boolean;
+}

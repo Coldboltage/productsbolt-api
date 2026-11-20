@@ -159,6 +159,15 @@ export class ProductToWebpageInterface {
   webPages: StrippedWebpage[];
 }
 
+export class ProductToWebpageSlimInterfaceProductPage {
+  productName: string;
+  productImage: string;
+  productBrand: string;
+  productBrandUrlSafeName: string;
+  productUrlSafeName: string;
+  webPages: StrippedWebpageSlim[];
+}
+
 export class ProductToWebpageSlimInterface {
   productName: string;
   webPages: StrippedWebpageSlim[];
