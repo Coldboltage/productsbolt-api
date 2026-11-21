@@ -1020,7 +1020,8 @@ export class WebpageService {
       (page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
         page.shopProduct.shop.cloudflare === false) ||
       (page.shopProduct.shop.cloudflare === false &&
-        page.shopProduct.shop.headless === false)
+        page.shopProduct.shop.headless === false &&
+        page.shopProduct.shop.cloudflareEnhanced)
     ) {
       this.headlessClient.emit('updatePage', updatePageDto);
       this.logger.log('emitting to headlessClient');
