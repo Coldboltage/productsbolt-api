@@ -111,6 +111,9 @@ export class ProductService {
             urlSafeName: brand,
           },
           shopProducts: {
+            shop: {
+              active: true,
+            },
             populated: true,
             webPage: {
               inStock: true,
@@ -126,6 +129,9 @@ export class ProductService {
             urlSafeName: brand,
           },
           shopProducts: {
+            shop: {
+              active: true,
+            },
             populated: true,
             webPage: {
               inStock: true,
@@ -156,6 +162,12 @@ export class ProductService {
       },
     });
     const onlyProducts = allProducts.map((product) => {
+      if (
+        product.name.toLowerCase() ===
+        'Innistrad Remastered Collector Booster Box'.toLocaleLowerCase()
+      ) {
+        console.log(product.shopProducts.map((sp) => sp.webPage.url));
+      }
       const onlyProduct: ProductStrippedWebpagesInstockTrue = {
         id: product.id,
         name: product.name,
