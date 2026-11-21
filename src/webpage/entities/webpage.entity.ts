@@ -152,6 +152,7 @@ export class CheckPageDto {
   headless: boolean;
   country: string;
   currency: string;
+  pagePrice: number;
 }
 
 export class ProductToWebpageInterface {

@@ -845,6 +845,7 @@ export class WebpageService {
         headless: page.shopProduct.shop.headless,
         country: page.shopProduct.shop.country,
         currency: page.shopProduct.shop.country,
+        pagePrice: page.price,
       };
       if (
         (page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
@@ -889,6 +890,7 @@ export class WebpageService {
           headless: shop.headless,
           country: shop.country,
           currency: shop.country,
+          pagePrice: shopProduct.webPage.price,
         };
         webpagesForShop.push(updatePageDto);
       }
@@ -931,6 +933,7 @@ export class WebpageService {
         headless: page.shopProduct.shop.headless,
         country: page.shopProduct.shop.country,
         currency: page.shopProduct.shop.country,
+        pagePrice: page.price,
       };
       if (
         (page.shopProduct.shop.sitemapEntity.isShopifySite === true &&
@@ -976,6 +979,7 @@ export class WebpageService {
           headless: shop.headless,
           country: shop.country,
           currency: shop.country,
+          pagePrice: shopProduct.webPage.price,
         };
         webpagesForShop.push(updatePageDto);
       }
@@ -1009,6 +1013,7 @@ export class WebpageService {
       headless: page.shopProduct.shop.headless,
       country: page.shopProduct.shop.country,
       currency: page.shopProduct.shop.country,
+      pagePrice: page.price,
     };
     this.logger.log(page);
     if (

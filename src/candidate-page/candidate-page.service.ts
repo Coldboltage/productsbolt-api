@@ -160,6 +160,7 @@ export class CandidatePageService {
       headless: page.shopProduct.shop.headless,
       country: page.shopProduct.shop.country,
       currency: page.shopProduct.shop.country,
+      pagePrice: page.price,
     };
     console.log(page);
     if (page.shopProduct.shop.sitemapEntity.isShopifySite === true) {
