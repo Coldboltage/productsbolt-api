@@ -197,8 +197,10 @@ export class ShopProductService {
     this.logger.log(urls.length);
     this.logger.log(reducedSitemap);
 
-    if (reducedSitemap.resultWords.length === 0)
-      throw new Error('no_urls_found_for_product');
+    if (reducedSitemap.resultWords.length === 0) {
+      this.shopProductRepository.update({ id: shopProduct.id }, { links: [] });
+      throw new NotFoundException('no_urls_found_for_product');
+    }
 
     const limitedUrls = await this.filteredLimitedUrls(
       shopProduct,
@@ -209,6 +211,7 @@ export class ShopProductService {
       this.logger.log(
         `No URLs found for ${shopProduct.shop.name} - ${shopProduct.product.name} but was found in reduced sitemap: ${reducedSitemap}`,
       );
+      this.shopProductRepository.update({ id: shopProduct.id }, { links: [] });
       throw new NotFoundException(`No URLs found for ${shopProduct.shop.name}`);
     }
 
@@ -238,6 +241,8 @@ export class ShopProductService {
         productId: shopProduct.ebayProductDetail.productId,
       };
     }
+
+    console.log(limitedUrls.length);
 
     this.headlessClient.emit<CreateProcessDto>('findLinks', createProcess);
 
@@ -396,7 +401,14 @@ export class ShopProductService {
 
       totalUrls.push(...reducedSitemap.resultWords);
 
-      if (reducedSitemap.resultWords.length === 0) continue;
+      if (reducedSitemap.resultWords.length === 0) {
+        this.logger.log('removing all links');
+        this.shopProductRepository.update(
+          { id: shopProductsOrphan.id },
+          { links: [] },
+        );
+        continue;
+      }
 
       const limitedUrls = await this.filteredLimitedUrls(
         shopProductsOrphan,
@@ -406,6 +418,11 @@ export class ShopProductService {
       if (limitedUrls.length === 0) {
         this.logger.log(
           `No URLs found for ${shopProductsOrphan.shop.name} - ${shopProductsOrphan.product.name}`,
+        );
+        this.logger.log('removing all links');
+        this.shopProductRepository.update(
+          { id: shopProductsOrphan.id },
+          { links: [] },
         );
         continue;
       }
