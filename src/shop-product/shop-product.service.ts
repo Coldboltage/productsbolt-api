@@ -212,7 +212,7 @@ export class ShopProductService {
       throw new NotFoundException(`No URLs found for ${shopProduct.shop.name}`);
     }
 
-    limitedUrls.push(...shopProduct.links);
+    // limitedUrls.push(...shopProduct.links);
 
     // const test = limitedUrls.some((url) =>
     //   url.includes(
@@ -410,7 +410,7 @@ export class ShopProductService {
         continue;
       }
 
-      limitedUrls.push(...shopProductsOrphan.links);
+      // limitedUrls.push(...shopProductsOrphan.links);
 
       const createProcess =
         this.createProcessDtoTemplateFromFindLinksShopProduct(
