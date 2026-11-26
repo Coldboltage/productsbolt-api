@@ -2351,4 +2351,13 @@ export class ShopProductService {
       .setParameters({ url: blackListUrl })
       .execute();
   }
+
+  async removeLinks() {
+    await this.shopProductRepository.update(
+      {
+        populated: false,
+      },
+      { links: [] },
+    );
+  }
 }

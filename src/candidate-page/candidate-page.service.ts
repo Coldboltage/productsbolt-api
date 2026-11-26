@@ -534,4 +534,14 @@ export class CandidatePageService {
       pageType: 'CP',
     });
   }
+
+  /**
+   * Deletes candidate pages whose shop product has no webpage.
+   */
+  async deleteForShopProductsWithoutWebpage() {
+    await this.candidatePageRepository.delete({
+      shopProduct: { populated: false },
+    });
+    await this.shopProductService.removeLinks();
+  }
 }
